@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="site-navbar">
+    <div class="site-navbar-content">
+        <!-- Logo -->
+        <a th:href="@{/}" class="site-navbar-logo" aria-label="Komm home">
+            <img th:src="@{/favicon.svg}" alt="Komm logo" class="site-navbar-logo-icon">
+            <span>Komm</span>
+        </a>
+
+        <!-- Navigation Links -->
+        <div class="site-navbar-links" id="navbarLinks">
+            <a th:href="@{/#features}" class="site-navbar-link">Features</a>
+            <a th:href="@{/#platforms}" class="site-navbar-link">Platforms</a>
+            <a th:href="@{/#self-hosting}" class="site-navbar-link">Self-Hosting</a>
+            <a th:href="@{/#security}" class="site-navbar-link">Security</a>
+            <a th:href="@{/#faq}" class="site-navbar-link">FAQ</a>
+        </div>
+
+        <!-- Actions -->
+        <div class="site-navbar-actions">
+            <a th:href="${site.github.client}" class="site-navbar-github" target="_blank" rel="noopener"
+               aria-label="Komm on GitHub">
+                <i class="mdi mdi-github"></i>
+            </a>
+            <a th:href="@{/login}" class="btn btn-ghost">Log in</a>
+            <a th:href="@{/download}" class="btn btn-primary">
+                <i class="mdi mdi-download"></i> Download
+            </a>
+        </div>
+
+        <!-- Mobile menu toggle -->
+        <button class="site-navbar-mobile-toggle" id="mobileMenuToggle" aria-label="Toggle menu"
+                aria-expanded="false" aria-controls="navbarLinks">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+
+    <script>
+        (function () {
+            const toggle = document.getElementById('mobileMenuToggle');
+            const links = document.getElementById('navbarLinks');
+            if (!toggle) return;
+
+            toggle.addEventListener('click', function () {
+                const open = links.classList.toggle('open');
+                toggle.classList.toggle('open', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+
+            // Close the mobile menu when a link is chosen
+            links.addEventListener('click', function (e) {
+                if (e.target.closest('a')) {
+                    links.classList.remove('open');
+                    toggle.classList.remove('open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+    </script>
+</nav>
+</body>
+</html>

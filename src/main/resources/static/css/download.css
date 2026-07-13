@@ -1,0 +1,256 @@
+/* ============================================ */
+/* DOWNLOAD — HERO */
+/* ============================================ */
+
+/* The hero IS the primary download CTA — badge, title, description,
+   platform chips, download buttons, meta and the beta note all live in
+   one flowing block instead of a card stacked inside a section stacked
+   inside the hero. Server/hub keep their own denser section below. */
+.dl-hero {
+    padding: 120px 0 100px;
+    text-align: center;
+}
+
+.dl-hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.dl-hero-content .dl-note {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.dl-hero .hero-platforms,
+.dl-hero .dl-buttons,
+.dl-hero .dl-meta {
+    justify-content: center;
+}
+
+.dl-hero .dl-note {
+    text-align: left;
+}
+
+@media (max-width: 560px) {
+    .dl-hero { padding: 72px 0 56px; }
+}
+
+/* ============================================ */
+/* DOWNLOAD — CARDS */
+/* ============================================ */
+
+.dl-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dl-card:hover {
+    border-color: rgba(149, 128, 255, 0.4);
+    box-shadow: var(--shadow-md);
+}
+
+.dl-card-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.dl-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(149, 128, 255, 0.22), rgba(48, 214, 232, 0.12));
+    border: 1px solid rgba(149, 128, 255, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--accent-bright);
+    flex-shrink: 0;
+}
+
+.dl-card-kicker {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 2px;
+}
+
+.dl-card-description {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--fg-muted);
+}
+
+.dl-buttons {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.dl-meta {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.dl-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--fg-muted);
+}
+
+.dl-meta i {
+    color: var(--success);
+    font-size: 17px;
+}
+
+.dl-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(149, 128, 255, 0.3);
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--fg-muted);
+}
+
+.dl-note i {
+    font-size: 19px;
+    color: var(--accent-bright);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* Server + hub two-column grid */
+.dl-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+}
+
+
+@media (max-width: 968px) {
+    .dl-grid { grid-template-columns: 1fr; }
+    .dl-card { padding: 30px 26px; }
+}
+
+/* Steps inside server card */
+.dl-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dl-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--fg-muted);
+}
+
+.dl-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-glow);
+    border: 1px solid rgba(149, 128, 255, 0.4);
+    color: var(--accent-bright);
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* Requirement chips inside hub card */
+.dl-reqs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.dl-req {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--fg-muted);
+}
+
+.dl-req i {
+    color: var(--accent);
+    font-size: 15px;
+}
+
+.dl-inline-link {
+    color: var(--accent-bright);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.dl-inline-link:hover { text-decoration: underline; }
+
+/* ============================================ */
+/* DOWNLOAD — SOURCE / TRUST */
+/* ============================================ */
+
+.dl-source {
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+}
+
+.dl-source-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.dl-source-icon {
+    font-size: 44px;
+    color: var(--fg-muted);
+}
+
+.dl-source-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 15px;
+}
+
+.dl-source-sep { color: var(--fg-subtle); }

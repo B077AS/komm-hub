@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/site-layout}">
+<head>
+    <title>Download Komm — Client, Server &amp; Hub for Windows and Linux</title>
+    <meta name="description"
+          content="Download Komm for free: the desktop chat client for Windows, Linux X11 and Linux Wayland, plus the self-hosted Komm server and hub. Latest releases, straight from GitHub.">
+    <meta name="keywords"
+          content="download komm, komm client download, self-hosted chat server download, voice chat download, linux voice chat download, komm hub">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" th:content="${site.baseUrl + '/download'}">
+    <meta property="og:site_name" content="Komm">
+    <meta property="og:title" content="Download Komm — Voice, Video &amp; Text Chat">
+    <meta property="og:description"
+          content="Get the Komm desktop client for Windows and Linux, or host your own Komm server and hub. Free downloads from GitHub releases.">
+    <meta property="og:image" th:content="${site.baseUrl + '/logo.png'}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Download Komm">
+    <meta name="twitter:description" content="Free desktop chat client for Windows and Linux, plus self-hosted server and hub downloads.">
+    <meta name="twitter:image" th:content="${site.baseUrl + '/logo.png'}">
+
+    <link rel="stylesheet" th:href="@{/css/download.css}">
+</head>
+<body>
+<main layout:fragment="content">
+
+    <!-- ═══════════════ HERO + CLIENT DOWNLOAD ═══════════════ -->
+    <section class="dl-hero">
+        <div class="container dl-hero-content">
+            <span class="hero-badge"><i class="mdi mdi-download"></i> Latest release · straight from GitHub</span>
+
+            <h1 class="heading-lg">Download Komm</h1>
+
+            <p class="hero-description">
+                The desktop app for Windows and Linux — voice channels, HD screen sharing, rich chat and
+                soundboards, connecting to any community on the Komm network. Everything on this page is
+                free, served straight from official GitHub releases.
+            </p>
+
+            <div class="hero-platforms">
+                <span class="platform-chip"><i class="mdi mdi-microsoft-windows"></i> Windows 10/11</span>
+                <span class="platform-chip"><i class="mdi mdi-linux"></i> Linux X11</span>
+                <span class="platform-chip"><i class="mdi mdi-linux"></i> Linux Wayland</span>
+            </div>
+
+            <div class="dl-buttons">
+                <a th:href="${site.downloads.clientWindows}" class="btn btn-primary btn-lg" rel="noopener">
+                    <i class="mdi mdi-microsoft-windows"></i> Download for Windows
+                </a>
+                <a th:href="${site.downloads.clientLinux}" class="btn btn-primary btn-lg" rel="noopener">
+                    <i class="mdi mdi-linux"></i> Download for Linux <span style="opacity:.75; font-weight:400;">(AppImage)</span>
+                </a>
+            </div>
+
+            <div class="dl-meta">
+                <span><i class="mdi mdi-check-circle"></i> Automatic updates via the launcher</span>
+                <span><i class="mdi mdi-check-circle"></i> Wayland &amp; X11 supported</span>
+                <span><i class="mdi mdi-check-circle"></i> Java runtime bundled — nothing else to install</span>
+            </div>
+
+            <div class="dl-note">
+                <i class="mdi mdi-flask-outline"></i>
+                <span>
+                    Komm is in <strong>closed beta</strong>: creating an account requires an invite key.
+                    <a th:href="@{/#beta-access}" class="dl-inline-link">Request access</a> and we'll email
+                    you one.
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ SERVER + HUB ═══════════════ -->
+    <section class="dl-section section-compact">
+        <div class="container dl-grid">
+            <!-- Server -->
+            <div id="server" class="dl-card">
+                <div class="dl-card-header">
+                    <div class="dl-card-icon"><i class="mdi mdi-server"></i></div>
+                    <div>
+                        <span class="dl-card-kicker">For community owners</span>
+                        <h2 class="heading-sm">Komm Server</h2>
+                    </div>
+                </div>
+
+                <p class="dl-card-description">
+                    Host your community on your own hardware. Channels, messages, voice rooms and
+                    permissions all live on your machine — with an embedded database, there is
+                    nothing else to install.
+                </p>
+
+                <div class="dl-steps">
+                    <div class="dl-step">
+                        <span class="dl-step-num">1</span>
+                        <span><a th:href="@{/register}" class="dl-inline-link">Create an account</a> and register your server from the dashboard.</span>
+                    </div>
+                    <div class="dl-step">
+                        <span class="dl-step-num">2</span>
+                        <span>Download the JAR pre-configured for your installation — certificates included.</span>
+                    </div>
+                    <div class="dl-step">
+                        <span class="dl-step-num">3</span>
+                        <span>Run it with Java 21. It verifies itself with the hub and comes online.</span>
+                    </div>
+                </div>
+
+                <div class="dl-note">
+                    <i class="mdi mdi-information-outline"></i>
+                    <span>
+                        The plain JAR has <strong>no verification code built in</strong> — it only works for
+                        a server that has already been verified once, by downloading its pre-configured JAR
+                        from the dashboard and starting it on the machine where you host. Use the plain JAR
+                        to update an existing installation.
+                    </span>
+                </div>
+
+                <div class="dl-buttons">
+                    <a th:href="@{/login}" class="btn btn-primary">
+                        <i class="mdi mdi-rocket-launch"></i> Create a server
+                    </a>
+                    <a th:href="${site.downloads.server}" class="btn btn-secondary" rel="noopener">
+                        <i class="mdi mdi-download"></i> Plain server JAR
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hub -->
+            <div id="hub" class="dl-card">
+                <div class="dl-card-header">
+                    <div class="dl-card-icon"><i class="mdi mdi-hub"></i></div>
+                    <div>
+                        <span class="dl-card-kicker">For the fully independent</span>
+                        <h2 class="heading-sm">Komm Hub</h2>
+                    </div>
+                </div>
+
+                <p class="dl-card-description">
+                    Run your own network. The hub manages accounts, friends and direct messages, and acts
+                    as the certificate authority that servers register with. Most people can simply use
+                    the official hub at kommvoice.com — but you don't have to.
+                </p>
+
+                <div class="dl-reqs">
+                    <span class="dl-req"><i class="mdi mdi-language-java"></i> Java 21+</span>
+                    <span class="dl-req"><i class="mdi mdi-database"></i> PostgreSQL</span>
+                    <span class="dl-req"><i class="mdi mdi-email-outline"></i> SMTP account</span>
+                    <span class="dl-req"><i class="mdi mdi-certificate"></i> Keys generated on first boot</span>
+                </div>
+
+                <div class="dl-note">
+                    <i class="mdi mdi-wrench-outline"></i>
+                    <span>
+                        Fair warning: the hub is aimed at developers. It needs a database, mail credentials
+                        and a local properties file — and the bundled website is this site, meant to be
+                        forked and personalized rather than used as-is. The setup guide covers everything.
+                    </span>
+                </div>
+
+                <div class="dl-buttons">
+                    <a th:href="${site.github.hub}" class="btn btn-primary" target="_blank" rel="noopener">
+                        <i class="mdi mdi-github"></i> Source &amp; setup guide
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ SOURCE / TRUST ═══════════════ -->
+    <section class="dl-source section-compact">
+        <div class="container-narrow dl-source-content">
+            <i class="mdi mdi-github dl-source-icon"></i>
+            <h2 class="heading-sm">Verify everything</h2>
+            <p class="text-md">
+                All downloads on this page are release assets published on GitHub. Browse the code,
+                check the release notes and build from source if you prefer.
+            </p>
+            <div class="dl-source-links">
+                <a th:href="${site.github.client}" target="_blank" rel="noopener" class="dl-inline-link">komm (client)</a>
+                <span class="dl-source-sep">·</span>
+                <a th:href="${site.github.launcher}" target="_blank" rel="noopener" class="dl-inline-link">komm-launcher</a>
+                <span class="dl-source-sep">·</span>
+                <a th:href="${site.github.server}" target="_blank" rel="noopener" class="dl-inline-link">komm-server</a>
+                <span class="dl-source-sep">·</span>
+                <a th:href="${site.github.hub}" target="_blank" rel="noopener" class="dl-inline-link">komm-hub</a>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Verify Email</title>
+    <th:block layout:fragment="head-extra">
+    <style>
+        .code-box-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 24px 0;
+        }
+
+        .code-box {
+            width: 52px;
+            height: 60px;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--fg);
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.15s;
+            caret-color: var(--accent);
+        }
+
+        .code-box:focus { border-color: var(--accent); }
+
+        .resend-row {
+            text-align: center;
+            font-size: 13px;
+            color: var(--fg-subtle);
+            margin-top: 14px;
+        }
+
+        .resend-row button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 0;
+            text-decoration: none;
+        }
+
+        .resend-row button:hover { text-decoration: underline; }
+        .resend-row button:disabled { color: var(--fg-subtle); cursor: default; text-decoration: none; }
+
+        .timer { color: var(--fg-subtle); font-size: 12px; }
+    </style>
+    </th:block>
+</head>
+
+<th:block layout:fragment="body">
+<div class="centered">
+    <div class="container" style="max-width:480px;">
+        <a class="logo" href="/"><img th:src="@{/favicon.svg}" alt="Komm logo"> Komm</a>
+        <div class="card">
+            <h2 style="font-size:20px; font-weight:700; margin-bottom:6px; text-align:center;">Check your inbox</h2>
+            <p id="subtitle" style="color:var(--fg-subtle); font-size:13px; text-align:center; margin-bottom:8px;">
+                We sent a 6-digit code to<br>
+                <strong style="color:var(--fg)" id="email-display"></strong>
+            </p>
+            <p style="color:var(--fg-subtle); font-size:12px; text-align:center; margin-bottom:4px;">
+                The code expires in 15 minutes.
+            </p>
+
+            <div class="code-box-row">
+                <input class="code-box" id="d0" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
+                <input class="code-box" id="d1" type="text" inputmode="numeric" maxlength="1">
+                <input class="code-box" id="d2" type="text" inputmode="numeric" maxlength="1">
+                <input class="code-box" id="d3" type="text" inputmode="numeric" maxlength="1">
+                <input class="code-box" id="d4" type="text" inputmode="numeric" maxlength="1">
+                <input class="code-box" id="d5" type="text" inputmode="numeric" maxlength="1">
+            </div>
+
+            <button class="btn btn-primary" onclick="verify()">Verify Email</button>
+            <div id="error-msg" class="error-msg"></div>
+            <div id="success-msg" class="success-msg"></div>
+        </div>
+
+        <div class="resend-row" style="margin-top:14px;">
+            Didn't receive a code?
+            <button id="resend-btn" disabled onclick="resend()">Resend</button>
+            <span class="timer" id="timer">(60s)</span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const API_BASE = window.location.origin;
+    const email = new URLSearchParams(window.location.search).get('email') || '';
+    const returnTo = new URLSearchParams(window.location.search).get('return') || '/dashboard';
+
+    document.getElementById('email-display').textContent = email;
+
+    const boxes = [0,1,2,3,4,5].map(i => document.getElementById('d' + i));
+
+    // Auto-advance, backspace, and paste support
+    boxes.forEach((box, idx) => {
+        box.addEventListener('input', () => {
+            const val = box.value.replace(/\D/g, '');
+            box.value = val.slice(0, 1);
+            if (val && idx < 5) boxes[idx + 1].focus();
+        });
+
+        box.addEventListener('keydown', e => {
+            if (e.key === 'Backspace' && !box.value && idx > 0) {
+                boxes[idx - 1].focus();
+                boxes[idx - 1].value = '';
+            }
+            if (e.key === 'Enter') verify();
+        });
+
+        // Paste on any box: distribute all digits starting from that box
+        box.addEventListener('paste', e => {
+            e.preventDefault();
+            const pasted = (e.clipboardData || window.clipboardData)
+                .getData('text').replace(/\D/g, '');
+            [...pasted].forEach((ch, j) => {
+                if (boxes[idx + j]) boxes[idx + j].value = ch;
+            });
+            const nextFocus = Math.min(idx + pasted.length, 5);
+            boxes[nextFocus].focus();
+        });
+    });
+
+    boxes[0].focus();
+
+    // Resend countdown (60s since code was just sent)
+    let countdown = 60;
+    const timerEl = document.getElementById('timer');
+    const resendBtn = document.getElementById('resend-btn');
+
+    const interval = setInterval(() => {
+        countdown--;
+        if (countdown <= 0) {
+            clearInterval(interval);
+            timerEl.textContent = '';
+            resendBtn.disabled = false;
+        } else {
+            timerEl.textContent = '(' + countdown + 's)';
+        }
+    }, 1000);
+
+    async function verify() {
+        const code = boxes.map(b => b.value).join('');
+        if (code.length < 6) { showErr('Please enter the complete 6-digit code.'); return; }
+
+        const btn = document.querySelector('.btn-primary');
+        btn.disabled = true;
+        clearMessages();
+        try {
+            const resp = await fetch(API_BASE + '/api/auth/verify-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, code })
+            });
+            const data = await resp.json();
+            if (!resp.ok) { showErr(data.message || 'Verification failed.'); btn.disabled = false; return; }
+            showSuccess('Email verified! Redirecting to login…');
+            setTimeout(() => { window.location.href = '/login'; }, 1500);
+        } catch (e) {
+            showErr('Verification failed. Please try again.');
+            btn.disabled = false;
+        }
+    }
+
+    async function resend() {
+        resendBtn.disabled = true;
+        clearMessages();
+        try {
+            const resp = await fetch(API_BASE + '/api/auth/resend-verification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await resp.json();
+            if (!resp.ok) { showErr(data.message || 'Failed to resend.'); resendBtn.disabled = false; return; }
+            showSuccess('Code resent! Check your inbox.');
+            // Restart countdown
+            countdown = 60;
+            timerEl.textContent = '(60s)';
+            const newInterval = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(newInterval);
+                    timerEl.textContent = '';
+                    resendBtn.disabled = false;
+                } else {
+                    timerEl.textContent = '(' + countdown + 's)';
+                }
+            }, 1000);
+        } catch (e) {
+            showErr('Failed to resend. Please try again.');
+            resendBtn.disabled = false;
+        }
+    }
+
+    function showErr(msg)     { const e = document.getElementById('error-msg');   e.textContent = msg; e.style.display = 'block'; }
+    function showSuccess(msg) { const e = document.getElementById('success-msg'); e.textContent = msg; e.style.display = 'block'; }
+    function clearMessages()  { document.getElementById('error-msg').style.display = 'none'; document.getElementById('success-msg').style.display = 'none'; }
+</script>
+</th:block>
+</html>

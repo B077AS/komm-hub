@@ -1,0 +1,48 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# application-local.properties — per-deployment configuration for komm-hub
+#
+# Copy this file to application-local.properties (same directory) and fill in
+# your values. The real file is gitignored: it holds credentials and settings
+# that are specific to YOUR deployment and must never be committed.
+#
+# Everything in the committed application.properties is a sane default you can
+# also override here (server.port, komm.site.*, jwt.*, upload dirs, …).
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Database (required) ─────────────────────────────────────────────────────
+# A running PostgreSQL instance. Schema is auto-managed (ddl-auto=update).
+spring.datasource.url=jdbc:postgresql://localhost:5432/komm
+spring.datasource.username=postgres
+spring.datasource.password=changeme
+
+# ── Mail (required for registration) ────────────────────────────────────────
+# Used for account verification codes and beta access requests. Any SMTP
+# provider works.
+spring.mail.host=smtp.example.com
+spring.mail.port=587
+spring.mail.username=noreply@example.com
+spring.mail.password=changeme
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+# ── GIF search (optional) ───────────────────────────────────────────────────
+# Free API key from https://klipy.com — without it the GIF picker is empty.
+#klipy.api-key=your-klipy-api-key
+
+# ── Closed beta (optional) ──────────────────────────────────────────────────
+# Require an invite key to register. A SUPER_ADMIN generates keys from the
+# website dashboard. Leave off for an open, self-hosted hub.
+#komm.beta.enabled=true
+# Where "request beta access" form submissions go (default: spring.mail.username).
+#komm.beta.request-recipient=you@example.com
+
+# ── Public site (optional overrides) ────────────────────────────────────────
+# The bundled SSR pages (home, download, register, dashboard) showcase the
+# official hub at kommvoice.com. If you run your own hub, override these —
+# and ideally fork the templates in src/main/resources/templates to make the
+# site your own.
+#komm.site.base-url=https://your-domain.example
+#komm.site.github.client=https://github.com/you/komm
+#komm.site.github.server=https://github.com/you/komm-server
+#komm.site.github.hub=https://github.com/you/komm-hub
+#komm.site.github.launcher=https://github.com/you/komm-launcher

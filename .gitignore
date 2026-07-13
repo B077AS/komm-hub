@@ -1,0 +1,52 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+/keys
+/uploads/
+/logs/
+/jar/
+
+# Per-deployment secrets — copy application-local.properties.example to get started
+src/main/resources/application-local.properties
+
+# Per-profile DB password, injected into application-local.properties at build time
+# (mvn clean package -Pdev|-Pprod) — see src/main/filters/local-*.properties.example
+src/main/filters/local-dev.properties
+src/main/filters/local-prod.properties
+
+### Node (frontend asset pipeline) ###
+node_modules/
+/node/
+/src/main/resources/static/fonts/
+/CLAUDE.md

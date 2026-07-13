@@ -1,0 +1,4 @@
+# Copy to local-prod.properties (gitignored) and fill in the prod DB password.
+# Injected into application-local.properties's @db.password@ placeholder when
+# building with the "prod" profile: mvn clean package -Pprod
+db.password=changeme

@@ -1,0 +1,4 @@
+# Copy to local-dev.properties (gitignored) and fill in the dev DB password.
+# Injected into application-local.properties's @db.password@ placeholder when
+# building with the "dev" profile (active by default): mvn clean package
+db.password=changeme

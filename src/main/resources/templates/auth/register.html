@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Register</title>
+</head>
+
+<th:block layout:fragment="body">
+<div class="centered">
+    <div class="container-sm">
+        <a class="logo" href="/"><img th:src="@{/favicon.svg}" alt="Komm logo"> Komm</a>
+        <div class="card">
+            <h2 style="font-size:20px; font-weight:700; margin-bottom:6px; text-align:center;">Create an account</h2>
+            <p style="color:var(--fg-subtle); font-size:13px; text-align:center; margin-bottom:20px;">Join the conversation on Komm.</p>
+
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-icon-wrap">
+                    <i class="mdi mdi-account-outline"></i>
+                    <input type="text" id="username" placeholder="Choose a username" autocomplete="username">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <div class="input-icon-wrap">
+                    <i class="mdi mdi-email-outline"></i>
+                    <input type="email" id="email" placeholder="Enter your email" autocomplete="email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-icon-wrap">
+                    <i class="mdi mdi-lock-outline"></i>
+                    <input type="password" id="password" class="has-toggle" placeholder="Choose a password (min 6 chars)" autocomplete="new-password">
+                    <i class="mdi mdi-eye-outline password-toggle" onclick="togglePassword('password', this)"></i>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <div class="input-icon-wrap">
+                    <i class="mdi mdi-lock-check-outline"></i>
+                    <input type="password" id="password-confirm" class="has-toggle" placeholder="Repeat your password" autocomplete="new-password">
+                    <i class="mdi mdi-eye-outline password-toggle" onclick="togglePassword('password-confirm', this)"></i>
+                </div>
+            </div>
+            <div class="form-group" th:if="${betaEnabled}">
+                <label>Beta key</label>
+                <div class="input-icon-wrap">
+                    <i class="mdi mdi-key-outline"></i>
+                    <input type="text" id="beta-key" placeholder="KOMM-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" style="text-transform:uppercase;">
+                </div>
+                <p style="color:var(--fg-subtle); font-size:12px; margin-top:6px;">
+                    Komm is currently in closed beta — registration requires an invite key.
+                    <a class="inline-link" href="/#beta-access">Request access</a>
+                </p>
+            </div>
+            <button class="btn btn-primary" onclick="register()"><i class="mdi mdi-account-plus"></i> Create Account</button>
+            <div id="error-msg" class="error-msg"></div>
+        </div>
+        <div class="link-row">
+            Already have an account? <a href="/login">Log In</a>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const API_BASE = window.location.origin;
+    const BETA_ENABLED = /*[[${betaEnabled}]]*/ false;
+
+    function togglePassword(inputId, icon) {
+        const input = document.getElementById(inputId);
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        icon.classList.toggle('mdi-eye-outline', !show);
+        icon.classList.toggle('mdi-eye-off-outline', show);
+    }
+
+    async function register() {
+        const username = document.getElementById('username').value.trim();
+        const email    = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirm  = document.getElementById('password-confirm').value;
+        const betaKey  = BETA_ENABLED ? document.getElementById('beta-key').value.trim().toUpperCase() : null;
+        if (!username || !email || !password || !confirm) { showErr('Please fill in all fields.'); return; }
+        if (password.length < 6) { showErr('Password must be at least 6 characters.'); return; }
+        if (password !== confirm) { showErr('Passwords do not match.'); return; }
+        if (BETA_ENABLED && !betaKey) { showErr('A beta key is required during the closed beta.'); return; }
+
+        const btn = document.querySelector('.btn-primary');
+        btn.disabled = true;
+        clearErr();
+        try {
+            const resp = await fetch(API_BASE + '/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password, betaKey })
+            });
+            const data = await resp.json();
+            if (!resp.ok) { showErr(data.message || 'Registration failed.'); btn.disabled = false; return; }
+            // Redirect to email verification page
+            window.location.href = '/verify-email?email=' + encodeURIComponent(email);
+        } catch (e) {
+            showErr('Registration failed. Please try again.');
+            btn.disabled = false;
+        }
+    }
+
+    function showErr(msg) { const e = document.getElementById('error-msg'); e.textContent = msg; e.style.display = 'block'; }
+    function clearErr()   { document.getElementById('error-msg').style.display = 'none'; }
+</script>
+</th:block>
+</html>

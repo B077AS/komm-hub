@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="site-footer">
+    <div class="site-footer-content container">
+        <div class="site-footer-grid">
+            <!-- Brand Column -->
+            <div class="site-footer-brand">
+                <a th:href="@{/}" class="site-navbar-logo">
+                    <img th:src="@{/favicon.svg}" alt="Komm logo" class="site-navbar-logo-icon">
+                    <span>Komm</span>
+                </a>
+                <p class="site-footer-description">
+                    Self-hosted voice, video and text chat for communities that want to own their data.
+                    Free, private and built for Windows and Linux.
+                </p>
+            </div>
+
+            <!-- Product Column -->
+            <div>
+                <h4 class="site-footer-section-title">Product</h4>
+                <div class="site-footer-links">
+                    <a th:href="@{/#features}" class="site-footer-link">Features</a>
+                    <a th:href="@{/#platforms}" class="site-footer-link">Platforms</a>
+                    <a th:href="@{/download}" class="site-footer-link">Download</a>
+                    <a th:href="@{/register}" class="site-footer-link">Create an account</a>
+                </div>
+            </div>
+
+            <!-- Self-Hosting Column -->
+            <div>
+                <h4 class="site-footer-section-title">Self-Hosting</h4>
+                <div class="site-footer-links">
+                    <a th:href="@{/#self-hosting}" class="site-footer-link">How it works</a>
+                    <a th:href="@{/#security}" class="site-footer-link">Security model</a>
+                    <a th:href="@{/download#server}" class="site-footer-link">Host a server</a>
+                    <a th:href="@{/download#hub}" class="site-footer-link">Host a hub</a>
+                </div>
+            </div>
+
+            <!-- Source Column -->
+            <div>
+                <h4 class="site-footer-section-title">Source</h4>
+                <div class="site-footer-links">
+                    <a th:href="${site.github.client}" class="site-footer-link" target="_blank" rel="noopener">
+                        <i class="mdi mdi-github"></i> Komm Client
+                    </a>
+                    <a th:href="${site.github.server}" class="site-footer-link" target="_blank" rel="noopener">
+                        <i class="mdi mdi-github"></i> Komm Server
+                    </a>
+                    <a th:href="${site.github.hub}" class="site-footer-link" target="_blank" rel="noopener">
+                        <i class="mdi mdi-github"></i> Komm Hub
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="site-footer-bottom">
+            <span>© 2026 Komm. All rights reserved.</span>
+            <span class="site-footer-platforms">
+                <i class="mdi mdi-microsoft-windows" title="Windows"></i>
+                <i class="mdi mdi-linux" title="Linux X11 &amp; Wayland"></i>
+                Windows · Linux X11 · Linux Wayland
+            </span>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

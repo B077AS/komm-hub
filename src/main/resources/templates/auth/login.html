@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Log In</title>
+</head>
+
+<th:block layout:fragment="body">
+<div class="centered">
+    <div class="container-sm">
+        <a class="logo" href="/"><img th:src="@{/favicon.svg}" alt="Komm logo"> Komm</a>
+        <div class="card">
+            <h2 style="font-size:20px; font-weight:700; margin-bottom:6px; text-align:center;">Welcome back</h2>
+            <p style="color:var(--fg-subtle); font-size:13px; text-align:center; margin-bottom:20px;">We're so excited to see you again!</p>
+
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-icon-wrap">
+                    <i class="mdi mdi-account-outline"></i>
+                    <input type="text" id="username" placeholder="Enter your username" autocomplete="username">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-icon-wrap">
+                    <i class="mdi mdi-lock-outline"></i>
+                    <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+                </div>
+                <p style="font-size:12px; margin-top:6px;">
+                    <a class="inline-link" href="/forgot-password">Forgot your password?</a>
+                </p>
+            </div>
+            <button class="btn btn-primary" onclick="login()"><i class="mdi mdi-login"></i> Log In</button>
+            <div id="error-msg" class="error-msg"></div>
+        </div>
+        <div class="link-row">
+            Need an account? <a href="/register">Register</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = window.location.origin;
+    const returnTo = new URLSearchParams(window.location.search).get('return') || '/dashboard';
+
+    if (sessionStorage.getItem('komm_access_token') && sessionStorage.getItem('komm_username')) {
+        window.location.href = returnTo;
+    }
+
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+    async function login() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        if (!username || !password) { showErr('Please fill in all fields.'); return; }
+
+        document.querySelector('.btn-primary').disabled = true;
+        clearErr();
+        try {
+            const resp = await fetch(API_BASE + '/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await resp.json();
+            if (!resp.ok) { showErr(data.message || 'Invalid credentials.'); document.querySelector('.btn-primary').disabled = false; return; }
+            sessionStorage.setItem('komm_access_token', data.accessToken);
+            sessionStorage.setItem('komm_refresh_token', data.refreshToken);
+            sessionStorage.setItem('komm_username', username);
+            window.location.href = returnTo;
+        } catch (e) {
+            showErr('Login failed. Please try again.');
+            document.querySelector('.btn-primary').disabled = false;
+        }
+    }
+
+    function showErr(msg) { const e = document.getElementById('error-msg'); e.textContent = msg; e.style.display = 'block'; }
+    function clearErr()   { document.getElementById('error-msg').style.display = 'none'; }
+</script>
+</th:block>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+
+<th:block layout:fragment="body">
+
+<nav class="navbar">
+    <div class="navbar-content">
+        <a class="nav-logo" href="/"><img th:src="@{/favicon.svg}" alt="Komm logo"> Komm</a>
+        <div class="nav-links">
+            <a class="nav-link active" href="/dashboard"><i class="mdi mdi-view-dashboard-outline"></i> Dashboard</a>
+            <a class="nav-link" href="#" onclick="logout(); return false;"><i class="mdi mdi-logout"></i> Log out</a>
+        </div>
+    </div>
+</nav>
+
+<div class="page-content">
+    <div id="loading"><span class="spinner"></span> Loading profile...</div>
+
+    <div id="content" style="display:none;">
+        <div class="profile-card">
+            <div id="user-avatar" class="avatar"></div>
+            <div class="profile-info">
+                <h2 id="user-name"></h2>
+                <div class="email" id="user-email"></div>
+                <div class="status-row">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span id="status-text"></span>
+                    <span id="status-msg" style="color:var(--fg-subtle);"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beta keys — visible to SUPER_ADMIN only -->
+        <div id="beta-admin" class="profile-card" style="display:none; margin-top:20px; flex-direction:column; align-items:stretch;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                <div>
+                    <h2 style="margin:0; font-size:18px;"><i class="mdi mdi-key-chain-variant"></i> Beta keys</h2>
+                    <div style="color:var(--fg-subtle); font-size:13px; margin-top:2px;">
+                        Single-use invite keys for closed-beta registration.
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="number" id="beta-count" class="beta-count-input" value="1" min="1" max="100">
+                    <button class="btn btn-primary btn-inline" id="beta-generate" onclick="generateBetaKeys()">
+                        <i class="mdi mdi-plus"></i> Generate
+                    </button>
+                </div>
+            </div>
+            <div id="beta-keys-list" style="margin-top:14px; display:flex; flex-direction:column; gap:6px;"></div>
+        </div>
+
+        <!-- Badges — visible to SUPER_ADMIN only -->
+        <div id="badge-admin" class="profile-card" style="display:none; margin-top:20px; flex-direction:column; align-items:stretch;">
+            <div>
+                <h2 style="margin:0; font-size:18px;"><i class="mdi mdi-seal"></i> Badges</h2>
+                <div style="color:var(--fg-subtle); font-size:13px; margin-top:2px;">
+                    Profile badges. System badges are awarded automatically; each custom badge has a single redeemable token.
+                </div>
+            </div>
+
+            <div id="badges-list" style="margin-top:14px; display:flex; flex-direction:column; gap:6px;"></div>
+
+            <!-- Create badge -->
+            <div class="badge-create" id="badge-create">
+                <h3 style="margin:0; font-size:15px;"><i class="mdi mdi-plus-circle-outline"></i> Create a badge</h3>
+                <div style="color:var(--fg-subtle); font-size:13px; margin:2px 0 12px 0;">
+                    Pick an icon and color, then share the generated token so users can add it to their profile.
+                </div>
+                <div class="badge-create-row">
+                    <button type="button" class="badge-icon-btn" id="badge-icon-btn" onclick="toggleIconPicker()" title="Choose icon">
+                        <span id="badge-icon-preview" class="mdi-glyph">&#xF0004;</span>
+                    </button>
+                    <input type="text" id="badge-name" class="badge-input" placeholder="Badge name" maxlength="50">
+                    <input type="color" id="badge-color" class="badge-color-input" value="#58A6FF" title="Badge color">
+                </div>
+                <input type="text" id="badge-description" class="badge-input" placeholder="Description (optional)" style="margin-top:8px; width:100%;">
+                <!-- Limits for the badge's first token, generated together with the badge -->
+                <div style="display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                    <span style="font-size:12.5px; color:var(--fg-subtle);">Token max uses</span>
+                    <input type="number" id="badge-token-max-uses" class="beta-count-input" placeholder="∞" min="1">
+                    <span style="font-size:12.5px; color:var(--fg-subtle);">Expires</span>
+                    <input type="date" id="badge-token-expires" class="badge-input" style="flex:0 1 auto; width:auto;">
+                </div>
+                <button class="btn btn-primary" id="badge-create-btn" onclick="createBadge()" style="margin-top:14px;">
+                    <i class="mdi mdi-plus"></i> Create
+                </button>
+                <div id="icon-picker" class="icon-picker" style="display:none;">
+                    <input type="text" id="icon-search" class="badge-input" placeholder="Search icons…" oninput="filterIcons()" style="width:100%;">
+                    <div id="icon-grid" class="icon-grid"></div>
+                </div>
+                <div id="badge-error" class="badge-error" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = window.location.origin;
+
+    const STATUS_COLORS = { ONLINE: '#3fb950', AWAY: '#f0a830', DO_NOT_DISTURB: '#ef4444', INVISIBLE: '#6e7681', OFFLINE: '#6e7681' };
+    const STATUS_LABELS = { ONLINE: 'Online', AWAY: 'Away', DO_NOT_DISTURB: 'Do Not Disturb', INVISIBLE: 'Invisible', OFFLINE: 'Offline' };
+
+    async function init() {
+        const token = sessionStorage.getItem('komm_access_token');
+        if (!token) { window.location.href = '/login?return=/dashboard'; return; }
+
+        try {
+            const resp = await fetch(API_BASE + '/api/users/me', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (resp.status === 401) { logout(); return; }
+            if (!resp.ok) throw new Error('Failed to load profile');
+
+            const user = await resp.json();
+            renderProfile(user);
+
+            if (user.role === 'SUPER_ADMIN') {
+                document.getElementById('beta-admin').style.display = 'flex';
+                document.getElementById('badge-admin').style.display = 'flex';
+                loadBetaKeys();
+                loadBadges();
+            }
+        } catch (e) {
+            document.getElementById('loading').textContent = 'Failed to load profile. Please refresh.';
+        }
+    }
+
+    // ── Beta keys (SUPER_ADMIN) ──────────────────────────────────────────────
+
+    function authHeaders() {
+        return {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('komm_access_token'),
+            'Content-Type': 'application/json'
+        };
+    }
+
+    async function loadBetaKeys() {
+        try {
+            const resp = await fetch(API_BASE + '/api/admin/beta-keys', { headers: authHeaders() });
+            if (!resp.ok) return;
+            renderBetaKeys(await resp.json());
+        } catch (e) { /* section stays empty */ }
+    }
+
+    async function generateBetaKeys() {
+        const btn = document.getElementById('beta-generate');
+        const count = parseInt(document.getElementById('beta-count').value, 10) || 1;
+        btn.disabled = true;
+        try {
+            const resp = await fetch(API_BASE + '/api/admin/beta-keys', {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ count })
+            });
+            if (resp.ok) loadBetaKeys();
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function deleteBetaKey(id) {
+        try {
+            const resp = await fetch(API_BASE + '/api/admin/beta-keys/' + id, {
+                method: 'DELETE',
+                headers: authHeaders()
+            });
+            if (resp.ok) loadBetaKeys();
+        } catch (e) { /* ignore */ }
+    }
+
+    function copyBetaKey(key, el) {
+        navigator.clipboard.writeText(key).then(() => {
+            el.innerHTML = '<i class="mdi mdi-check"></i>';
+            setTimeout(() => { el.innerHTML = '<i class="mdi mdi-content-copy"></i>'; }, 1200);
+        });
+    }
+
+    function renderBetaKeys(keys) {
+        const list = document.getElementById('beta-keys-list');
+        list.innerHTML = '';
+        if (!keys.length) {
+            list.innerHTML = '<div style="color:var(--fg-subtle); font-size:13px;">No keys yet — generate some to invite people.</div>';
+            return;
+        }
+        for (const k of keys) {
+            const row = document.createElement('div');
+            row.className = 'beta-key-row';
+
+            const keySpan = document.createElement('code');
+            keySpan.textContent = k.keyValue;
+            keySpan.style.cssText = 'font-family:monospace; letter-spacing:.5px;' + (k.used ? 'opacity:.45; text-decoration:line-through;' : '');
+            row.appendChild(keySpan);
+
+            const status = document.createElement('span');
+            status.style.cssText = 'flex:1; color:var(--fg-subtle); font-size:12.5px;';
+            status.textContent = k.used ? ('used by ' + (k.usedByUsername || 'unknown')) : 'available';
+            row.appendChild(status);
+
+            if (!k.used) {
+                const copyBtn = document.createElement('a');
+                copyBtn.href = '#';
+                copyBtn.className = 'beta-key-action';
+                copyBtn.innerHTML = '<i class="mdi mdi-content-copy"></i>';
+                copyBtn.title = 'Copy key';
+                copyBtn.onclick = (e) => { e.preventDefault(); copyBetaKey(k.keyValue, copyBtn); };
+                row.appendChild(copyBtn);
+
+                const delBtn = document.createElement('a');
+                delBtn.href = '#';
+                delBtn.className = 'beta-key-action danger';
+                delBtn.innerHTML = '<i class="mdi mdi-trash-can-outline"></i>';
+                delBtn.title = 'Delete key';
+                delBtn.onclick = (e) => { e.preventDefault(); deleteBetaKey(k.betaKeyId); };
+                row.appendChild(delBtn);
+            }
+            list.appendChild(row);
+        }
+    }
+
+    // ── Badges (SUPER_ADMIN) ─────────────────────────────────────────────────
+
+    let iconCatalog = null;          // [{n: "mdi2a-account", c: "F0002"}, ...]
+    let selectedIcon = { n: 'mdi2a-account', c: 'F0004' };
+
+    function glyph(codepointHex, color) {
+        const span = document.createElement('span');
+        span.className = 'mdi-glyph';
+        if (codepointHex) span.textContent = String.fromCodePoint(parseInt(codepointHex, 16));
+        if (color) span.style.color = color;
+        return span;
+    }
+
+    async function loadBadges() {
+        try {
+            const resp = await fetch(API_BASE + '/api/admin/badges', { headers: authHeaders() });
+            if (!resp.ok) return;
+            renderBadges(await resp.json());
+        } catch (e) { /* section stays empty */ }
+    }
+
+    function renderBadges(badges) {
+        const list = document.getElementById('badges-list');
+        list.innerHTML = '';
+        for (const b of badges) {
+            const row = document.createElement('div');
+            row.className = 'badge-row';
+
+            row.appendChild(glyph(b.iconCodepoint, b.color));
+
+            const name = document.createElement('span');
+            name.style.cssText = 'font-weight:600;';
+            name.textContent = b.name;
+            row.appendChild(name);
+
+            const meta = document.createElement('span');
+            meta.style.cssText = 'flex:1; color:var(--fg-subtle); font-size:12.5px;';
+            meta.textContent = (b.type === 'SYSTEM' ? 'system · ' : '')
+                + (b.userCount != null ? b.userCount + ' user' + (b.userCount === 1 ? '' : 's') : '')
+                + (b.description ? ' · ' + b.description : '');
+            row.appendChild(meta);
+
+            if (b.type !== 'SYSTEM') {
+                const t = b.token;
+                if (t) {
+                    const dead = t.expired || t.exhausted;
+                    const tokenSpan = document.createElement('code');
+                    tokenSpan.textContent = t.tokenValue;
+                    tokenSpan.title = 'uses ' + t.usedCount + '/' + (t.maxUses != null ? t.maxUses : '∞')
+                        + ' · expires ' + (t.expiresAt ? new Date(t.expiresAt).toLocaleString() : 'never');
+                    tokenSpan.style.cssText = 'font-family:monospace; letter-spacing:.5px; font-size:12px;'
+                        + (dead ? 'opacity:.45; text-decoration:line-through;' : '');
+                    row.appendChild(tokenSpan);
+
+                    if (!dead) {
+                        const copyBtn = document.createElement('a');
+                        copyBtn.href = '#';
+                        copyBtn.className = 'beta-key-action';
+                        copyBtn.innerHTML = '<i class="mdi mdi-content-copy"></i>';
+                        copyBtn.title = 'Copy token';
+                        copyBtn.onclick = (e) => { e.preventDefault(); copyBetaKey(t.tokenValue, copyBtn); };
+                        row.appendChild(copyBtn);
+                    }
+                }
+
+                const delBtn = document.createElement('a');
+                delBtn.href = '#';
+                delBtn.className = 'beta-key-action danger';
+                delBtn.innerHTML = '<i class="mdi mdi-trash-can-outline"></i>';
+                delBtn.title = 'Delete badge (removes it from all profiles)';
+                delBtn.onclick = (e) => {
+                    e.preventDefault();
+                    if (confirm('Delete badge "' + b.name + '"? It will disappear from every profile that has it.')) {
+                        deleteBadge(b.badgeId);
+                    }
+                };
+                row.appendChild(delBtn);
+            }
+            list.appendChild(row);
+        }
+    }
+
+    async function createBadge() {
+        const btn = document.getElementById('badge-create-btn');
+        const errEl = document.getElementById('badge-error');
+        errEl.style.display = 'none';
+        const maxUsesRaw = document.getElementById('badge-token-max-uses').value;
+        const expiresRaw = document.getElementById('badge-token-expires').value;
+        const body = {
+            name: document.getElementById('badge-name').value.trim(),
+            description: document.getElementById('badge-description').value.trim() || null,
+            icon: selectedIcon.n,
+            color: document.getElementById('badge-color').value,
+            maxUses: maxUsesRaw ? parseInt(maxUsesRaw, 10) : null,
+            expiresAt: expiresRaw ? expiresRaw + 'T23:59:59' : null
+        };
+        if (!body.name) { showBadgeError('Badge name is required'); return; }
+        btn.disabled = true;
+        try {
+            const resp = await fetch(API_BASE + '/api/admin/badges', {
+                method: 'POST', headers: authHeaders(), body: JSON.stringify(body)
+            });
+            if (resp.ok) {
+                document.getElementById('badge-name').value = '';
+                document.getElementById('badge-description').value = '';
+                document.getElementById('badge-token-max-uses').value = '';
+                document.getElementById('badge-token-expires').value = '';
+                document.getElementById('icon-picker').style.display = 'none';
+                loadBadges();
+            } else {
+                const err = await resp.json().catch(() => null);
+                showBadgeError((err && err.message) || 'Failed to create badge');
+            }
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function showBadgeError(msg) {
+        const errEl = document.getElementById('badge-error');
+        errEl.textContent = msg;
+        errEl.style.display = 'block';
+    }
+
+    async function deleteBadge(id) {
+        const resp = await fetch(API_BASE + '/api/admin/badges/' + id, {
+            method: 'DELETE', headers: authHeaders()
+        });
+        if (resp.ok) loadBadges();
+    }
+
+    // ── Icon picker ──────────────────────────────────────────────────────────
+
+    async function toggleIconPicker() {
+        const picker = document.getElementById('icon-picker');
+        if (picker.style.display !== 'none') { picker.style.display = 'none'; return; }
+        picker.style.display = 'block';
+        if (!iconCatalog) {
+            const resp = await fetch(API_BASE + '/api/admin/badges/icons', { headers: authHeaders() });
+            if (resp.ok) iconCatalog = await resp.json();
+        }
+        filterIcons();
+        document.getElementById('icon-search').focus();
+    }
+
+    function filterIcons() {
+        if (!iconCatalog) return;
+        const q = document.getElementById('icon-search').value.trim().toLowerCase();
+        const grid = document.getElementById('icon-grid');
+        grid.innerHTML = '';
+        let shown = 0;
+        for (const icon of iconCatalog) {
+            if (q && !icon.n.includes(q)) continue;
+            if (++shown > 180) break;
+            const cell = document.createElement('a');
+            cell.href = '#';
+            cell.className = 'icon-cell' + (icon.n === selectedIcon.n ? ' selected' : '');
+            cell.title = icon.n;
+            cell.appendChild(glyph(icon.c, null));
+            cell.onclick = (e) => { e.preventDefault(); selectIcon(icon); };
+            grid.appendChild(cell);
+        }
+        if (!shown) grid.innerHTML = '<div style="color:var(--fg-subtle); font-size:13px; padding:8px;">No icons match.</div>';
+    }
+
+    function selectIcon(icon) {
+        selectedIcon = icon;
+        document.getElementById('badge-icon-preview').textContent = String.fromCodePoint(parseInt(icon.c, 16));
+        document.getElementById('icon-picker').style.display = 'none';
+    }
+
+    function renderProfile(user) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+
+        const avatarEl = document.getElementById('user-avatar');
+        if (user.avatar) {
+            const fmt = user.avatarImageFormat || 'png';
+            avatarEl.innerHTML = '<img src="data:image/' + fmt + ';base64,' + user.avatar + '" alt="Avatar">';
+        } else {
+            avatarEl.textContent = (user.username || '?').charAt(0).toUpperCase();
+        }
+
+        document.getElementById('user-name').textContent  = user.username || '';
+        document.getElementById('user-email').textContent = user.email    || '';
+
+        const statusKey = user.status || 'OFFLINE';
+        const dot = document.getElementById('status-dot');
+        dot.style.background = STATUS_COLORS[statusKey] || '#6e7681';
+        document.getElementById('status-text').textContent = STATUS_LABELS[statusKey] || statusKey;
+        if (user.statusMessage) {
+            document.getElementById('status-msg').textContent = '— ' + user.statusMessage;
+        }
+    }
+
+    function logout() {
+        ['komm_access_token','komm_refresh_token','komm_username'].forEach(k => sessionStorage.removeItem(k));
+        window.location.href = '/login';
+    }
+
+    init();
+</script>
+</th:block>
+</html>

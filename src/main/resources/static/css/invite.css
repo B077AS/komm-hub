@@ -1,0 +1,9 @@
+.server-avatar { margin: 0 auto 12px; }
+.server-name { font-size: 20px; font-weight: 700; text-align: center; color: var(--fg); margin-bottom: 6px; }
+.server-meta { font-size: 13px; color: var(--fg-subtle); text-align: center; margin-bottom: 6px; }
+#loading-section { text-align: center; padding: 24px 0; color: var(--fg-subtle); }
+#already-member  { display: none; }
+.open-in-app { text-align: center; margin-top: 14px; font-size: 13px; color: var(--fg-subtle); }
+.open-in-app a { display: inline-flex; align-items: center; gap: 5px; color: var(--accent); text-decoration: none; font-weight: 500; }
+.open-in-app a i { font-size: 14px; }
+.open-in-app a:hover { text-decoration: underline; }

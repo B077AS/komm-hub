@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komm</title>
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Komm">
+    <meta name="theme-color" content="#0d0e12">
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="canonical" th:href="${site.baseUrl + canonicalPath}">
+
+    <link rel="stylesheet" th:href="@{/css/icons.css}">
+    <link rel="stylesheet" th:href="@{/css/site.css}">
+
+    <!-- Page-specific CSS -->
+    <th:block layout:fragment="styles"></th:block>
+</head>
+<body class="site-body">
+<!-- Ambient background -->
+<div class="bg-animation" aria-hidden="true">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+</div>
+
+<nav th:replace="~{fragments/site-navbar :: navbar}"></nav>
+
+<main class="site-main">
+    <div layout:fragment="content"></div>
+</main>
+
+<footer th:replace="~{fragments/site-footer :: footer}"></footer>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>

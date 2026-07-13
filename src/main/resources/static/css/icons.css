@@ -1,0 +1,340 @@
+/* MaterialDesignIcons.com */
+@font-face {
+  font-family: "Material Design Icons";
+  src: url("../fonts/materialdesignicons-webfont.eot?v=7.4.47");
+  src: url("../fonts/materialdesignicons-webfont.eot?#iefix&v=7.4.47") format("embedded-opentype"), url("../fonts/materialdesignicons-webfont.woff2?v=7.4.47") format("woff2"), url("../fonts/materialdesignicons-webfont.woff?v=7.4.47") format("woff"), url("../fonts/materialdesignicons-webfont.ttf?v=7.4.47") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.mdi:before {
+  display: inline-block;
+  font: normal normal normal 24px/1 "Material Design Icons";
+  font-size: inherit;
+  text-rendering: auto;
+  line-height: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mdi-account-multiple-plus::before {
+  content: "\F0010";
+}
+
+.mdi-account-outline::before {
+  content: "\F0013";
+}
+
+.mdi-account-plus::before {
+  content: "\F0014";
+}
+
+.mdi-arrow-right::before {
+  content: "\F0054";
+}
+
+.mdi-bullhorn::before {
+  content: "\F00E6";
+}
+
+.mdi-certificate::before {
+  content: "\F0124";
+}
+
+.mdi-chart-line::before {
+  content: "\F012A";
+}
+
+.mdi-check::before {
+  content: "\F012C";
+}
+
+.mdi-check-circle::before {
+  content: "\F05E0";
+}
+
+.mdi-chevron-down::before {
+  content: "\F0140";
+}
+
+.mdi-chevron-up::before {
+  content: "\F0143";
+}
+
+.mdi-code-braces::before {
+  content: "\F0169";
+}
+
+.mdi-code-tags::before {
+  content: "\F0174";
+}
+
+.mdi-cog::before {
+  content: "\F0493";
+}
+
+.mdi-content-copy::before {
+  content: "\F018F";
+}
+
+.mdi-currency-usd-off::before {
+  content: "\F067A";
+}
+
+.mdi-database::before {
+  content: "\F01BC";
+}
+
+.mdi-database-lock::before {
+  content: "\F0AAA";
+}
+
+.mdi-dots-vertical::before {
+  content: "\F01D9";
+}
+
+.mdi-download::before {
+  content: "\F01DA";
+}
+
+.mdi-email-fast-outline::before {
+  content: "\F1870";
+}
+
+.mdi-email-outline::before {
+  content: "\F01F0";
+}
+
+.mdi-emoticon-outline::before {
+  content: "\F01F2";
+}
+
+.mdi-eye-off-outline::before {
+  content: "\F06D1";
+}
+
+.mdi-eye-outline::before {
+  content: "\F06D0";
+}
+
+.mdi-file-gif-box::before {
+  content: "\F0D78";
+}
+
+.mdi-flask-outline::before {
+  content: "\F0096";
+}
+
+.mdi-format-list-bulleted::before {
+  content: "\F0279";
+}
+
+.mdi-gavel::before {
+  content: "\F029B";
+}
+
+.mdi-github::before {
+  content: "\F02A4";
+}
+
+.mdi-headphones::before {
+  content: "\F02CB";
+}
+
+.mdi-home::before {
+  content: "\F02DC";
+}
+
+.mdi-hub::before {
+  content: "\F1C95";
+}
+
+.mdi-information-outline::before {
+  content: "\F02FD";
+}
+
+.mdi-key-chain-variant::before {
+  content: "\F1575";
+}
+
+.mdi-key-outline::before {
+  content: "\F0DD6";
+}
+
+.mdi-key-variant::before {
+  content: "\F030B";
+}
+
+.mdi-keyboard::before {
+  content: "\F030C";
+}
+
+.mdi-language-java::before {
+  content: "\F0B37";
+}
+
+.mdi-laptop::before {
+  content: "\F0322";
+}
+
+.mdi-linux::before {
+  content: "\F033D";
+}
+
+.mdi-lock::before {
+  content: "\F033E";
+}
+
+.mdi-lock-check::before {
+  content: "\F139A";
+}
+
+.mdi-lock-check-outline::before {
+  content: "\F16A8";
+}
+
+.mdi-lock-outline::before {
+  content: "\F0341";
+}
+
+.mdi-lock-reset::before {
+  content: "\F0773";
+}
+
+.mdi-login::before {
+  content: "\F0342";
+}
+
+.mdi-logout::before {
+  content: "\F0343";
+}
+
+.mdi-magnify::before {
+  content: "\F0349";
+}
+
+.mdi-message-text::before {
+  content: "\F0369";
+}
+
+.mdi-microphone::before {
+  content: "\F036C";
+}
+
+.mdi-microsoft-windows::before {
+  content: "\F05B3";
+}
+
+.mdi-monitor-share::before {
+  content: "\F1483";
+}
+
+.mdi-music::before {
+  content: "\F075A";
+}
+
+.mdi-music-box-multiple-outline::before {
+  content: "\F0F04";
+}
+
+.mdi-open-in-new::before {
+  content: "\F03CC";
+}
+
+.mdi-paperclip::before {
+  content: "\F03E2";
+}
+
+.mdi-phone-hangup::before {
+  content: "\F03F5";
+}
+
+.mdi-plus::before {
+  content: "\F0415";
+}
+
+.mdi-plus-circle-outline::before {
+  content: "\F0419";
+}
+
+.mdi-pound::before {
+  content: "\F0423";
+}
+
+.mdi-rocket-launch::before {
+  content: "\F14DE";
+}
+
+.mdi-seal::before {
+  content: "\F047A";
+}
+
+.mdi-send::before {
+  content: "\F048A";
+}
+
+.mdi-server::before {
+  content: "\F048B";
+}
+
+.mdi-server-security::before {
+  content: "\F0492";
+}
+
+.mdi-shield-account::before {
+  content: "\F088F";
+}
+
+.mdi-timer-lock::before {
+  content: "\F1AD4";
+}
+
+.mdi-trash-can-outline::before {
+  content: "\F0A7A";
+}
+
+.mdi-video-outline::before {
+  content: "\F0BDC";
+}
+
+.mdi-view-dashboard-outline::before {
+  content: "\F0A1D";
+}
+
+.mdi-window-close::before {
+  content: "\F05AD";
+}
+
+.mdi-window-maximize::before {
+  content: "\F05AF";
+}
+
+.mdi-window-minimize::before {
+  content: "\F05B0";
+}
+
+.mdi-wrench-outline::before {
+  content: "\F0BE0";
+}
+
+@-webkit-keyframes mdi-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+
+@keyframes mdi-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}

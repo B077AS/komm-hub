@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Join Server</title>
+    <link rel="stylesheet" th:href="@{/css/invite.css}">
+</head>
+
+<th:block layout:fragment="body">
+<div class="centered">
+    <div class="container">
+        <a class="logo" href="/"><img th:src="@{/favicon.svg}" alt="Komm logo"> Komm</a>
+        <div class="card">
+            <div id="loading-section">
+                <span class="spinner"></span> Loading invite...
+            </div>
+
+            <div id="invite-content" style="display:none;">
+                <div id="server-avatar" class="avatar" style="margin:0 auto 12px;"></div>
+                <div id="server-name" class="server-name"></div>
+                <div id="server-meta" class="server-meta"></div>
+                <div id="expiry-info" style="text-align:center;"></div>
+
+                <hr class="divider">
+
+                <div id="already-member">
+                    <p style="text-align:center; color:var(--success); font-size:14px; padding:8px 0;">
+                        You are already a member of this server.
+                    </p>
+                </div>
+
+                <div id="join-section">
+                    <div id="auth-section">
+                        <div id="login-form">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <div class="input-icon-wrap">
+                                    <i class="mdi mdi-account-outline"></i>
+                                    <input type="text" id="login-username" placeholder="Enter your username" autocomplete="username">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <div class="input-icon-wrap">
+                                    <i class="mdi mdi-lock-outline"></i>
+                                    <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="loginAndJoin()"><i class="mdi mdi-login"></i> Log In &amp; Join Server</button>
+                            <p style="text-align:center; font-size:13px; color:var(--fg-muted); margin-top:14px;">
+                                Don't have an account? <a th:href="@{/register}" style="color:var(--accent);">Register</a>, then come back to this invite link to join.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="logged-in-section" style="display:none;">
+                        <p style="text-align:center; font-size:13px; color:var(--fg-muted); margin-bottom:12px;">
+                            Logged in as <strong id="current-username" style="color:var(--accent);"></strong>
+                        </p>
+                        <button class="btn btn-success" onclick="joinServer()"><i class="mdi mdi-account-multiple-plus"></i> Join Server</button>
+                        <p style="text-align:center; font-size:12px; color:var(--fg-subtle); margin-top:10px; cursor:pointer;" onclick="logout()">
+                            Not you? Log out
+                        </p>
+                    </div>
+                </div>
+
+                <div id="error-msg" class="error-msg"></div>
+                <div id="success-msg" class="success-msg"></div>
+
+                <div class="open-in-app">
+                    <a href="#" id="open-app-link"><i class="mdi mdi-open-in-new"></i> Open in Komm app</a>
+                </div>
+            </div>
+
+            <div id="error-section" style="display:none; text-align:center; padding:8px 0;">
+                <p style="color:var(--danger); font-size:15px; margin-bottom:8px;">⚠</p>
+                <p id="error-section-msg" style="color:var(--danger); font-size:14px;"></p>
+                <p style="color:var(--fg-subtle); font-size:13px; margin-top:8px;">This invite link is no longer valid.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const INVITE_CODE = /*[[${inviteCode}]]*/ 'CODE';
+    const API_BASE = window.location.origin;
+    let inviteInfo = null;
+
+    async function init() {
+        document.getElementById('open-app-link').href = 'komm://invite/' + INVITE_CODE;
+        try {
+            const resp = await fetch(API_BASE + '/api/invites/' + INVITE_CODE + '/info');
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                showError(err.message || 'This invite link is not valid.');
+                return;
+            }
+            inviteInfo = await resp.json();
+            renderInviteInfo();
+            checkAuthState();
+        } catch (e) {
+            showError('Failed to load invite info. Please try again.');
+        }
+    }
+
+    function renderInviteInfo() {
+        document.getElementById('loading-section').style.display = 'none';
+        document.getElementById('invite-content').style.display = 'block';
+
+        const avatarEl = document.getElementById('server-avatar');
+        if (inviteInfo.serverAvatarBase64) {
+            const fmt = inviteInfo.serverAvatarImageFormat || 'png';
+            avatarEl.innerHTML = '<img src="data:image/' + fmt + ';base64,' + inviteInfo.serverAvatarBase64 + '" alt="Server Avatar">';
+        } else {
+            avatarEl.textContent = (inviteInfo.serverName || '?').charAt(0).toUpperCase();
+        }
+
+        document.getElementById('server-name').textContent = inviteInfo.serverName || 'Unknown Server';
+        document.getElementById('server-meta').textContent = 'Invited by ' + (inviteInfo.creatorUsername || 'someone');
+
+        const expiryEl = document.getElementById('expiry-info');
+        if (inviteInfo.expiresAt) {
+            const exp = new Date(inviteInfo.expiresAt);
+            const cls = exp < new Date() ? 'badge badge-danger' : 'badge badge-success';
+            const txt = exp < new Date() ? 'Expired' : 'Expires ' + formatDate(exp);
+            expiryEl.innerHTML = '<span class="' + cls + '">' + txt + '</span>';
+        } else {
+            expiryEl.innerHTML = '<span class="badge badge-success">Never expires</span>';
+        }
+    }
+
+    function checkAuthState() {
+        const token    = sessionStorage.getItem('komm_access_token');
+        const username = sessionStorage.getItem('komm_username');
+        if (token && username) {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('logged-in-section').style.display = 'block';
+            document.getElementById('current-username').textContent = username;
+        }
+    }
+
+    async function loginAndJoin() {
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value;
+        if (!username || !password) { showErr('Please enter your credentials.'); return; }
+        setLoading(true); clearMessages();
+        try {
+            const resp = await fetch(API_BASE + '/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await resp.json();
+            if (!resp.ok) { showErr(data.message || 'Login failed.'); setLoading(false); return; }
+            sessionStorage.setItem('komm_access_token', data.accessToken);
+            sessionStorage.setItem('komm_refresh_token', data.refreshToken);
+            sessionStorage.setItem('komm_username', username);
+            await joinServer();
+        } catch (e) { showErr('Login failed. Please try again.'); setLoading(false); }
+    }
+
+    async function joinServer() {
+        const token = sessionStorage.getItem('komm_access_token');
+        if (!token) { checkAuthState(); return; }
+        setLoading(true); clearMessages();
+        try {
+            const resp = await fetch(API_BASE + '/api/invites/' + INVITE_CODE + '/join', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await resp.json();
+            if (resp.status === 409) {
+                document.getElementById('join-section').style.display = 'none';
+                document.getElementById('already-member').style.display = 'block';
+                setLoading(false); return;
+            }
+            if (!resp.ok) {
+                if (resp.status === 401) { logout(); showErr('Session expired. Please log in again.'); setLoading(false); return; }
+                showErr(data.message || 'Failed to join server.'); setLoading(false); return;
+            }
+            document.getElementById('join-section').style.display = 'none';
+            document.getElementById('success-msg').textContent = '✓ You have joined ' + inviteInfo.serverName + '! Open the Komm app to start chatting.';
+            document.getElementById('success-msg').style.display = 'block';
+            setLoading(false);
+        } catch (e) { showErr('Failed to join server. Please try again.'); setLoading(false); }
+    }
+
+    function logout() {
+        ['komm_access_token','komm_refresh_token','komm_username'].forEach(k => sessionStorage.removeItem(k));
+        document.getElementById('logged-in-section').style.display = 'none';
+        document.getElementById('auth-section').style.display = 'block';
+    }
+
+    function showError(msg) {
+        document.getElementById('loading-section').style.display = 'none';
+        document.getElementById('invite-content').style.display = 'none';
+        document.getElementById('error-section').style.display = 'block';
+        document.getElementById('error-section-msg').textContent = msg;
+    }
+
+    function showErr(msg) { const e = document.getElementById('error-msg'); e.textContent = msg; e.style.display = 'block'; }
+    function clearMessages() {
+        document.getElementById('error-msg').style.display = 'none';
+        document.getElementById('success-msg').style.display = 'none';
+    }
+    function setLoading(on) { document.querySelectorAll('.btn').forEach(b => b.disabled = on); }
+    function formatDate(date) {
+        const diff = date - new Date();
+        const h = Math.floor(diff / 3600000);
+        if (h < 48) return 'in ' + h + ' hour' + (h !== 1 ? 's' : '');
+        const d = Math.floor(h / 24);
+        return 'in ' + d + ' day' + (d !== 1 ? 's' : '');
+    }
+
+    init();
+</script>
+</th:block>
+</html>
