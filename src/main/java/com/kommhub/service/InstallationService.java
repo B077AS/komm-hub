@@ -115,6 +115,8 @@ public class InstallationService {
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(templateJar.toFile()));
              ZipOutputStream zos = new ZipOutputStream(outputJar)) {
 
+            boolean manifestFound = false;
+
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 zos.putNextEntry(new ZipEntry(entry.getName()));
@@ -128,6 +130,7 @@ public class InstallationService {
                     props.setProperty("sfu.media-port", String.valueOf(installation.getMediaPort()));
                     props.store(new OutputStreamWriter(zos), "KommServer Installation Config - DO NOT EDIT");
                 } else if (entry.getName().equals(manifestPath)) {
+                    manifestFound = true;
                     Manifest manifest = new Manifest(zis);
                     manifest.getMainAttributes().putValue(manifestTokenAttr, installation.getSetupToken());
                     manifest.write(zos);
@@ -137,6 +140,17 @@ public class InstallationService {
 
                 zos.closeEntry();
                 zis.closeEntry();
+            }
+
+            if (!manifestFound) {
+                log.warn("Manifest entry {} missing from template JAR — creating it for installation {}",
+                        manifestPath, installation.getInstallationId());
+                zos.putNextEntry(new ZipEntry(manifestPath));
+                Manifest manifest = new Manifest();
+                manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+                manifest.getMainAttributes().putValue(manifestTokenAttr, installation.getSetupToken());
+                manifest.write(zos);
+                zos.closeEntry();
             }
         }
 

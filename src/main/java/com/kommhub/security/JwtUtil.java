@@ -278,6 +278,9 @@ public class JwtUtil {
         Instant now = Instant.now();
         return Jwts.builder()
                 .issuer(issuer)
+                // Refresh tokens are stored server-side by hash (single-use rotation),
+                // so each one must be unique even when issued within the same second
+                .id(UUID.randomUUID().toString())
                 .subject(user.getEmail())
                 .claim("userId", user.getUserId().toString())
                 .claim("type", TokenType.REFRESH.name().toLowerCase())

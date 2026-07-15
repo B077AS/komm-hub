@@ -5,6 +5,7 @@ import com.kommhub.model.dto.request.ForgotPasswordRequest;
 import com.kommhub.model.dto.request.ResendVerificationRequest;
 import com.kommhub.model.dto.request.ResetPasswordRequest;
 import com.kommhub.model.dto.request.VerifyEmailRequest;
+import com.kommhub.model.dto.response.AuthResponse;
 import com.kommhub.model.dto.response.ErrorResponse;
 import com.kommhub.model.dto.response.SuccessResponse;
 import com.kommhub.model.dto.request.LoginRequest;
@@ -14,10 +15,14 @@ import com.kommhub.service.BetaKeyService;
 import com.kommhub.service.EmailService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -40,11 +45,26 @@ public class AuthController {
     @Value("${komm.beta.request-recipient:${spring.mail.username}}")
     private String betaRequestRecipient;
 
+    @Value("${jwt.refresh-token.expiration}")
+    private long refreshTokenExpiration;
+
+    @Value("${jwt.refresh-cookie.secure:true}")
+    private boolean refreshCookieSecure;
+
+    // The refresh token is delivered to browsers as an HttpOnly cookie so page
+    // scripts (and any XSS) can never read it. Path-scoped to /api/auth so it is
+    // only ever sent to the refresh/logout endpoints. Non-browser clients keep
+    // using the refreshToken from the response body with a Bearer header.
+    private static final String REFRESH_COOKIE = "komm_refresh";
+    private static final String REFRESH_COOKIE_PATH = "/api/auth";
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         log.debug("Login attempt for username: {}", request.getUsername());
         try {
-            return ResponseEntity.ok(authService.login(request));
+            AuthResponse auth = authService.login(request);
+            setRefreshCookie(response, auth.getRefreshToken());
+            return ResponseEntity.ok(auth);
         } catch (DisabledException e) {
             log.warn("Login blocked for unverified account: {}", request.getUsername());
             return ErrorResponse.of(HttpStatus.FORBIDDEN, "Email not verified. Please check your inbox for the verification code.");
@@ -58,26 +78,46 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(HttpServletRequest request) {
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
         log.debug("Token refresh attempt");
         try {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                return ErrorResponse.of(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header. Expected Bearer token.");
+            String refreshToken = extractRefreshToken(request);
+            if (refreshToken == null) {
+                return ErrorResponse.of(HttpStatus.UNAUTHORIZED, "Missing refresh token. Expected " + REFRESH_COOKIE + " cookie or Bearer token.");
             }
-            return ResponseEntity.ok(authService.refresh(authHeader.substring(7)));
+            AuthResponse auth = authService.refresh(refreshToken);
+            setRefreshCookie(response, auth.getRefreshToken());
+            return ResponseEntity.ok(auth);
         } catch (IllegalArgumentException e) {
+            clearRefreshCookie(response);
             return ErrorResponse.of(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (ExpiredJwtException e) {
             log.warn("Refresh token has expired");
+            clearRefreshCookie(response);
             return ErrorResponse.of(HttpStatus.UNAUTHORIZED, "Refresh token has expired. Please login again.");
         } catch (JwtException e) {
             log.warn("Invalid refresh token: {}", e.getMessage());
+            clearRefreshCookie(response);
             return ErrorResponse.of(HttpStatus.UNAUTHORIZED, "Invalid refresh token: " + e.getMessage());
         } catch (Exception e) {
             log.error("Token refresh error: {}", e.getMessage());
             return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    /** Revokes the presented refresh token (cookie or Bearer) and clears the cookie. */
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String refreshToken = extractRefreshToken(request);
+            if (refreshToken != null) {
+                authService.logout(refreshToken);
+            }
+        } catch (Exception e) {
+            log.debug("Ignoring error while revoking refresh token on logout: {}", e.getMessage());
+        }
+        clearRefreshCookie(response);
+        return SuccessResponse.of("Logged out");
     }
 
     @PostMapping("/register")
@@ -173,10 +213,12 @@ public class AuthController {
     }
 
     @PostMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestBody VerifyEmailRequest request) {
+    public ResponseEntity<?> verifyEmail(@RequestBody VerifyEmailRequest request, HttpServletResponse response) {
         log.debug("Email verification attempt for: {}", request.getEmail());
         try {
-            return ResponseEntity.ok(authService.verifyEmail(request));
+            AuthResponse auth = authService.verifyEmail(request);
+            setRefreshCookie(response, auth.getRefreshToken());
+            return ResponseEntity.ok(auth);
         } catch (IllegalStateException e) {
             log.warn("Email verification failed for {}: {}", request.getEmail(), e.getMessage());
             return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -199,5 +241,38 @@ public class AuthController {
             log.error("Unexpected error during resend verification for: {}", request.getEmail(), e);
             return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
         }
+    }
+
+    /** Cookie takes precedence; the Bearer header keeps non-browser clients working. */
+    private String extractRefreshToken(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (REFRESH_COOKIE.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        String authHeader = request.getHeader("Authorization");
+        return authHeader != null && authHeader.startsWith("Bearer ") ? authHeader.substring(7) : null;
+    }
+
+    private void setRefreshCookie(HttpServletResponse response, String refreshToken) {
+        response.addHeader(HttpHeaders.SET_COOKIE, buildRefreshCookie(refreshToken, refreshTokenExpiration).toString());
+    }
+
+    private void clearRefreshCookie(HttpServletResponse response) {
+        response.addHeader(HttpHeaders.SET_COOKIE, buildRefreshCookie("", 0).toString());
+    }
+
+    private ResponseCookie buildRefreshCookie(String value, long maxAgeSeconds) {
+        // SameSite=Strict + the narrow path make CSRF against /api/auth/refresh a
+        // non-issue; a forged request could not read the response body anyway.
+        return ResponseCookie.from(REFRESH_COOKIE, value)
+                .httpOnly(true)
+                .secure(refreshCookieSecure)
+                .sameSite("Strict")
+                .path(REFRESH_COOKIE_PATH)
+                .maxAge(maxAgeSeconds)
+                .build();
     }
 }

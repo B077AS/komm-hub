@@ -108,13 +108,12 @@
     const STATUS_LABELS = { ONLINE: 'Online', AWAY: 'Away', DO_NOT_DISTURB: 'Do Not Disturb', INVISIBLE: 'Invisible', OFFLINE: 'Offline' };
 
     async function init() {
-        const token = sessionStorage.getItem('komm_access_token');
+        // Recovers the session from the refresh cookie when this tab has no token yet
+        const token = await KommAuth.ensureSession();
         if (!token) { window.location.href = '/login?return=/dashboard'; return; }
 
         try {
-            const resp = await fetch(API_BASE + '/api/users/me', {
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
+            const resp = await KommAuth.fetch(API_BASE + '/api/users/me');
             if (resp.status === 401) { logout(); return; }
             if (!resp.ok) throw new Error('Failed to load profile');
 
@@ -134,16 +133,11 @@
 
     // ── Beta keys (SUPER_ADMIN) ──────────────────────────────────────────────
 
-    function authHeaders() {
-        return {
-            'Authorization': 'Bearer ' + sessionStorage.getItem('komm_access_token'),
-            'Content-Type': 'application/json'
-        };
-    }
+    const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
     async function loadBetaKeys() {
         try {
-            const resp = await fetch(API_BASE + '/api/admin/beta-keys', { headers: authHeaders() });
+            const resp = await KommAuth.fetch(API_BASE + '/api/admin/beta-keys');
             if (!resp.ok) return;
             renderBetaKeys(await resp.json());
         } catch (e) { /* section stays empty */ }
@@ -154,9 +148,9 @@
         const count = parseInt(document.getElementById('beta-count').value, 10) || 1;
         btn.disabled = true;
         try {
-            const resp = await fetch(API_BASE + '/api/admin/beta-keys', {
+            const resp = await KommAuth.fetch(API_BASE + '/api/admin/beta-keys', {
                 method: 'POST',
-                headers: authHeaders(),
+                headers: JSON_HEADERS,
                 body: JSON.stringify({ count })
             });
             if (resp.ok) loadBetaKeys();
@@ -167,9 +161,8 @@
 
     async function deleteBetaKey(id) {
         try {
-            const resp = await fetch(API_BASE + '/api/admin/beta-keys/' + id, {
-                method: 'DELETE',
-                headers: authHeaders()
+            const resp = await KommAuth.fetch(API_BASE + '/api/admin/beta-keys/' + id, {
+                method: 'DELETE'
             });
             if (resp.ok) loadBetaKeys();
         } catch (e) { /* ignore */ }
@@ -239,7 +232,7 @@
 
     async function loadBadges() {
         try {
-            const resp = await fetch(API_BASE + '/api/admin/badges', { headers: authHeaders() });
+            const resp = await KommAuth.fetch(API_BASE + '/api/admin/badges');
             if (!resp.ok) return;
             renderBadges(await resp.json());
         } catch (e) { /* section stays empty */ }
@@ -323,8 +316,8 @@
         if (!body.name) { showBadgeError('Badge name is required'); return; }
         btn.disabled = true;
         try {
-            const resp = await fetch(API_BASE + '/api/admin/badges', {
-                method: 'POST', headers: authHeaders(), body: JSON.stringify(body)
+            const resp = await KommAuth.fetch(API_BASE + '/api/admin/badges', {
+                method: 'POST', headers: JSON_HEADERS, body: JSON.stringify(body)
             });
             if (resp.ok) {
                 document.getElementById('badge-name').value = '';
@@ -349,8 +342,8 @@
     }
 
     async function deleteBadge(id) {
-        const resp = await fetch(API_BASE + '/api/admin/badges/' + id, {
-            method: 'DELETE', headers: authHeaders()
+        const resp = await KommAuth.fetch(API_BASE + '/api/admin/badges/' + id, {
+            method: 'DELETE'
         });
         if (resp.ok) loadBadges();
     }
@@ -362,7 +355,7 @@
         if (picker.style.display !== 'none') { picker.style.display = 'none'; return; }
         picker.style.display = 'block';
         if (!iconCatalog) {
-            const resp = await fetch(API_BASE + '/api/admin/badges/icons', { headers: authHeaders() });
+            const resp = await KommAuth.fetch(API_BASE + '/api/admin/badges/icons');
             if (resp.ok) iconCatalog = await resp.json();
         }
         filterIcons();
@@ -419,8 +412,8 @@
         }
     }
 
-    function logout() {
-        ['komm_access_token','komm_refresh_token','komm_username'].forEach(k => sessionStorage.removeItem(k));
+    async function logout() {
+        await KommAuth.logout();
         window.location.href = '/login';
     }
 

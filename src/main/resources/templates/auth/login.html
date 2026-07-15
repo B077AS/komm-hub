@@ -45,9 +45,8 @@
     const API_BASE = window.location.origin;
     const returnTo = new URLSearchParams(window.location.search).get('return') || '/dashboard';
 
-    if (sessionStorage.getItem('komm_access_token') && sessionStorage.getItem('komm_username')) {
-        window.location.href = returnTo;
-    }
+    // Already signed in (this tab, or via the refresh cookie in another tab)? Skip the form.
+    KommAuth.ensureSession().then(token => { if (token) window.location.href = returnTo; });
 
     document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 
@@ -66,8 +65,8 @@
             });
             const data = await resp.json();
             if (!resp.ok) { showErr(data.message || 'Invalid credentials.'); document.querySelector('.btn-primary').disabled = false; return; }
+            // The refresh token arrives as an HttpOnly cookie — never store it here
             sessionStorage.setItem('komm_access_token', data.accessToken);
-            sessionStorage.setItem('komm_refresh_token', data.refreshToken);
             sessionStorage.setItem('komm_username', username);
             window.location.href = returnTo;
         } catch (e) {
