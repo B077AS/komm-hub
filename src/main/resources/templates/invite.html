@@ -131,13 +131,14 @@
         }
     }
 
-    function checkAuthState() {
-        const token    = sessionStorage.getItem('komm_access_token');
-        const username = sessionStorage.getItem('komm_username');
-        if (token && username) {
+    async function checkAuthState() {
+        // Recovers the session from the refresh cookie when this tab has no token yet
+        const token = await KommAuth.ensureSession();
+        if (token) {
             document.getElementById('auth-section').style.display = 'none';
             document.getElementById('logged-in-section').style.display = 'block';
-            document.getElementById('current-username').textContent = username;
+            document.getElementById('current-username').textContent =
+                sessionStorage.getItem('komm_username') || 'your account';
         }
     }
 
@@ -154,21 +155,20 @@
             });
             const data = await resp.json();
             if (!resp.ok) { showErr(data.message || 'Login failed.'); setLoading(false); return; }
+            // The refresh token arrives as an HttpOnly cookie — never store it here
             sessionStorage.setItem('komm_access_token', data.accessToken);
-            sessionStorage.setItem('komm_refresh_token', data.refreshToken);
             sessionStorage.setItem('komm_username', username);
             await joinServer();
         } catch (e) { showErr('Login failed. Please try again.'); setLoading(false); }
     }
 
     async function joinServer() {
-        const token = sessionStorage.getItem('komm_access_token');
-        if (!token) { checkAuthState(); return; }
+        const token = await KommAuth.ensureSession();
+        if (!token) { await checkAuthState(); return; }
         setLoading(true); clearMessages();
         try {
-            const resp = await fetch(API_BASE + '/api/invites/' + INVITE_CODE + '/join', {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + token }
+            const resp = await KommAuth.fetch(API_BASE + '/api/invites/' + INVITE_CODE + '/join', {
+                method: 'POST'
             });
             const data = await resp.json();
             if (resp.status === 409) {
@@ -177,7 +177,7 @@
                 setLoading(false); return;
             }
             if (!resp.ok) {
-                if (resp.status === 401) { logout(); showErr('Session expired. Please log in again.'); setLoading(false); return; }
+                if (resp.status === 401) { await logout(); showErr('Session expired. Please log in again.'); setLoading(false); return; }
                 showErr(data.message || 'Failed to join server.'); setLoading(false); return;
             }
             document.getElementById('join-section').style.display = 'none';
@@ -187,8 +187,8 @@
         } catch (e) { showErr('Failed to join server. Please try again.'); setLoading(false); }
     }
 
-    function logout() {
-        ['komm_access_token','komm_refresh_token','komm_username'].forEach(k => sessionStorage.removeItem(k));
+    async function logout() {
+        await KommAuth.logout();
         document.getElementById('logged-in-section').style.display = 'none';
         document.getElementById('auth-section').style.display = 'block';
     }

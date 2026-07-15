@@ -12,10 +12,12 @@ import com.kommhub.model.dto.request.RegisterRequest;
 import com.kommhub.model.dto.request.ResendVerificationRequest;
 import com.kommhub.model.dto.request.ResetPasswordRequest;
 import com.kommhub.model.dto.request.VerifyEmailRequest;
+import com.kommhub.model.db.RefreshToken;
 import com.kommhub.model.dto.response.AuthResponse;
 import com.kommhub.model.dto.response.RegisterResponse;
 import com.kommhub.repository.EmailVerificationTokenRepository;
 import com.kommhub.repository.PasswordResetTokenRepository;
+import com.kommhub.repository.RefreshTokenRepository;
 import com.kommhub.repository.UserRepository;
 import com.kommhub.security.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -28,6 +30,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -52,6 +57,7 @@ public class AuthService {
     private final EmailService emailService;
     private final EmailVerificationTokenRepository tokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final SiteProperties siteProperties;
     private final BetaKeyService betaKeyService;
     private final BadgeService badgeService;
@@ -79,12 +85,34 @@ public class AuthService {
             throw new IllegalArgumentException("Invalid token type. Expected refresh token.");
         }
 
-        String userId = claims.get("userId", String.class);
-        User user = userRepository.findById(UUID.fromString(userId))
+        UUID userId = UUID.fromString(claims.get("userId", String.class));
+
+        // Rotation: each refresh token is single-use. A token with a valid
+        // signature that is not in the store was either already rotated (reuse —
+        // possibly stolen) or revoked, so kill every session for this user.
+        RefreshToken stored = refreshTokenRepository.findByTokenHash(hashToken(refreshToken)).orElse(null);
+        if (stored == null) {
+            refreshTokenRepository.deleteByUserId(userId);
+            log.warn("Refresh token reuse detected for user {} — all refresh tokens revoked", userId);
+            throw new IllegalArgumentException("Refresh token is no longer valid. Please login again.");
+        }
+        refreshTokenRepository.delete(stored);
+
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         log.info("Tokens refreshed successfully for user: {}", user.getUsername());
         return buildAuthResponse(user);
+    }
+
+    /** Revokes the presented refresh token; unknown tokens are ignored. */
+    @Transactional
+    public void logout(String refreshToken) {
+        refreshTokenRepository.findByTokenHash(hashToken(refreshToken))
+                .ifPresent(stored -> {
+                    refreshTokenRepository.delete(stored);
+                    log.info("Refresh token revoked for user {}", stored.getUserId());
+                });
     }
 
     @Transactional
@@ -312,11 +340,34 @@ public class AuthService {
     }
 
     private AuthResponse buildAuthResponse(User user) {
+        String refreshToken = jwtUtil.generateRefreshToken(user);
+        storeRefreshToken(user.getUserId(), refreshToken);
         return AuthResponse.builder()
                 .accessToken(jwtUtil.generateAccessToken(user))
-                .refreshToken(jwtUtil.generateRefreshToken(user))
+                .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(900)
                 .build();
+    }
+
+    private void storeRefreshToken(UUID userId, String refreshToken) {
+        LocalDateTime now = LocalDateTime.now();
+        // Drop this user's expired rows right away; RefreshTokenCleanupService
+        // sweeps the rest (users who never come back) on a schedule
+        refreshTokenRepository.deleteByUserIdAndExpiresAtBefore(userId, now);
+        refreshTokenRepository.save(RefreshToken.builder()
+                .userId(userId)
+                .tokenHash(hashToken(refreshToken))
+                .expiresAt(now.plusSeconds(jwtUtil.getRefreshTokenExpiration()))
+                .build());
+    }
+
+    private String hashToken(String token) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return Base64.getEncoder().encodeToString(digest.digest(token.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
+        }
     }
 }
