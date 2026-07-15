@@ -14,7 +14,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -44,6 +46,11 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
 
     private final Map<UUID, WebSocketSession> installationSessions = new ConcurrentHashMap<>();
 
+    private static final String ATTR_LAST_PONG = "lastPong";
+
+    @Value("${app.ws.heartbeat-timeout-ms:90000}")
+    private long heartbeatTimeoutMs;
+
     @PostConstruct
     private void init() {
         inboundHandlers = inboundHandlerList.stream()
@@ -59,6 +66,7 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
         }
 
         String ipAddress = (String) session.getAttributes().get("clientIpAddress");
+        session.getAttributes().put(ATTR_LAST_PONG, System.currentTimeMillis());
         installationSessions.put(installationId, session);
 
         installationRepository.findById(installationId).ifPresent(inst -> {
@@ -106,6 +114,46 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
         } catch (Exception e) {
             log.error("Error handling installation message (session {})", session.getId(), e);
         }
+    }
+
+    @Override
+    protected void handlePongMessage(WebSocketSession session, PongMessage message) {
+        session.getAttributes().put(ATTR_LAST_PONG, System.currentTimeMillis());
+    }
+
+    /**
+     * Liveness sweep — same rationale as {@link AppSessionsManager#heartbeatSweep()}:
+     * an installation that dies without a TCP close would otherwise stay ONLINE forever.
+     */
+    @Scheduled(fixedDelayString = "${app.ws.heartbeat-interval-ms:30000}")
+    public void heartbeatSweep() {
+        long now = System.currentTimeMillis();
+        installationSessions.forEach((installationId, session) -> {
+            Long lastPong = (Long) session.getAttributes().get(ATTR_LAST_PONG);
+            boolean stale = lastPong == null || now - lastPong > heartbeatTimeoutMs;
+            if (!session.isOpen() || stale) {
+                log.warn("Dropping dead installation session {} ({})",
+                        installationId, stale ? "heartbeat timeout" : "already closed");
+                dropSession(installationId, session);
+                return;
+            }
+            try {
+                session.sendMessage(new PingMessage());
+            } catch (IOException e) {
+                log.warn("Ping failed for installation {}: {}", installationId, e.getMessage());
+                dropSession(installationId, session);
+            } catch (Exception e) {
+                // e.g. a concurrent text send in progress — connection is alive, retry next sweep
+                log.debug("Ping skipped for installation {}: {}", installationId, e.getMessage());
+            }
+        });
+    }
+
+    private void dropSession(UUID installationId, WebSocketSession session) {
+        if (installationSessions.remove(installationId, session)) {
+            markOffline(installationId);
+        }
+        closeQuietly(session, CloseStatus.GOING_AWAY);
     }
 
     @PreDestroy
