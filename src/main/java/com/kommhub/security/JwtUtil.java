@@ -7,7 +7,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
 import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
+import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -242,6 +246,21 @@ public class JwtUtil {
                     csr.getSubjectPublicKeyInfo()
             );
 
+            // TLS-grade extensions: the installation serves HTTPS/WSS with this cert,
+            // and also presents it as a client credential when connecting to the hub.
+            // Clients identify the installation by the CN (= installationId), which the
+            // SAN mirrors for standard tooling.
+            certBuilder.addExtension(Extension.basicConstraints, true,
+                    new BasicConstraints(false));
+            certBuilder.addExtension(Extension.keyUsage, true,
+                    new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyAgreement));
+            certBuilder.addExtension(Extension.extendedKeyUsage, false,
+                    new ExtendedKeyUsage(new KeyPurposeId[]{
+                            KeyPurposeId.id_kp_serverAuth, KeyPurposeId.id_kp_clientAuth}));
+            certBuilder.addExtension(Extension.subjectAlternativeName, false,
+                    new GeneralNames(new GeneralName(GeneralName.dNSName,
+                            installationId.toString().toLowerCase())));
+
             ContentSigner signer = new JcaContentSignerBuilder("SHA384withECDSA")
                     .setProvider("BC")
                     .build(privateKey);
@@ -304,6 +323,23 @@ public class JwtUtil {
                 .expiration(Date.from(now.plus(60, ChronoUnit.SECONDS)))  // 60s, one-time use
                 .signWith(privateKey, Jwts.SIG.ES384)
                 .compact();
+    }
+
+    /**
+     * The hub CA certificate in PEM form. Public by design: clients fetch it (over
+     * the hub's regular TLS) to build the truststore they validate installation
+     * certificates against.
+     */
+    public String getCaCertificateAsPem() {
+        try {
+            StringWriter sw = new StringWriter();
+            try (JcaPEMWriter writer = new JcaPEMWriter(sw)) {
+                writer.writeObject(caCertificate);
+            }
+            return sw.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to serialize CA certificate to PEM", e);
+        }
     }
 
     public String getPublicKeyAsPem() {

@@ -76,6 +76,12 @@ public class Installation {
     @Column(name = "last_seen_at")
     private LocalDateTime lastSeenAt;
 
+    // Whether the installation JAR is currently serving TLS with its hub-signed
+    // certificate. Reported by the JAR on every WS connect; null (pre-TLS builds)
+    // means plain HTTP. Clients pick ws:// vs wss:// based on this.
+    @Column(name = "tls_enabled")
+    private Boolean tlsEnabled;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

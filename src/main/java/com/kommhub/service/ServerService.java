@@ -209,6 +209,7 @@ public class ServerService {
                 .ipAddress(installation != null ? installation.getIpAddress() : null)
                 .port(installation != null ? installation.getPort() : null)
                 .signalPort(installation != null ? installation.getSignalPort() : null)
+                .tlsEnabled(installation != null && Boolean.TRUE.equals(installation.getTlsEnabled()))
                 .avatar(avatarBase64)
                 .avatarImageFormat(avatarImageFormat)
                 .role(member.getRole())

@@ -69,10 +69,12 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
         session.getAttributes().put(ATTR_LAST_PONG, System.currentTimeMillis());
         installationSessions.put(installationId, session);
 
+        Boolean tlsEnabled = (Boolean) session.getAttributes().get("tlsEnabled");
         installationRepository.findById(installationId).ifPresent(inst -> {
             inst.setStatus(Installation.InstallationStatus.ONLINE);
             inst.setLastSeenAt(LocalDateTime.now());
             inst.setIpAddress(installationService.resolveEffectiveIp(ipAddress));
+            inst.setTlsEnabled(Boolean.TRUE.equals(tlsEnabled));
             installationRepository.save(inst);
         });
 

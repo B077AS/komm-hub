@@ -10,6 +10,7 @@ import com.kommhub.model.dto.response.ErrorResponse;
 import com.kommhub.model.dto.response.SuccessResponse;
 import com.kommhub.model.dto.request.LoginRequest;
 import com.kommhub.model.dto.request.RegisterRequest;
+import com.kommhub.security.JwtUtil;
 import com.kommhub.service.AuthService;
 import com.kommhub.service.BetaKeyService;
 import com.kommhub.service.EmailService;
@@ -40,6 +41,7 @@ public class AuthController {
     private final AuthService authService;
     private final BetaKeyService betaKeyService;
     private final EmailService emailService;
+    private final JwtUtil jwtUtil;
 
     // Recipient for beta access requests; defaults to the mail account the hub sends from
     @Value("${komm.beta.request-recipient:${spring.mail.username}}")
@@ -151,6 +153,13 @@ public class AuthController {
     @GetMapping("/register-info")
     public ResponseEntity<?> registerInfo() {
         return ResponseEntity.ok(Map.of("betaRequired", betaKeyService.isBetaEnabled()));
+    }
+
+    // The hub CA certificate (PEM). Clients fetch it over the hub's regular TLS and
+    // use it as the trust anchor when connecting to installations over wss/https.
+    @GetMapping(value = "/ca", produces = "text/plain")
+    public ResponseEntity<String> caCertificate() {
+        return ResponseEntity.ok(jwtUtil.getCaCertificateAsPem());
     }
 
     /** Public: forwards a closed-beta participation request to the hub operator. */

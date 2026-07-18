@@ -118,6 +118,8 @@ public class InstallationHandshakeInterceptor implements HandshakeInterceptor {
         // ── 8. Stash attributes for the handler ───────────────────────────────
         attributes.put("installationId", installationId);
         attributes.put("clientIpAddress", extractIpAddress(request));
+        attributes.put("tlsEnabled",
+                Boolean.parseBoolean(request.getHeaders().getFirst("X-Tls-Enabled")));
         log.debug("WS handshake accepted for installationId={}", installationId);
         return true;
     }

@@ -24,6 +24,7 @@ public class ServerSummary {
     private String ipAddress;
     private Integer port;
     private Integer signalPort;
+    private boolean tlsEnabled;
     private String avatar;
     private String avatarImageFormat;
     private ServerMember.Role role;
