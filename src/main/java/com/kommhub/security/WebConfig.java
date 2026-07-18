@@ -84,6 +84,7 @@ public class WebConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/auth/logout").permitAll()
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/register-info").permitAll()
+                        .requestMatchers("/api/auth/ca").permitAll()
                         .requestMatchers("/api/auth/beta-request").permitAll()
                         .requestMatchers("/api/auth/verify-email").permitAll()
                         .requestMatchers("/api/auth/resend-verification").permitAll()

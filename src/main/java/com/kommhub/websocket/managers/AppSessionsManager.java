@@ -15,7 +15,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -42,6 +44,13 @@ public class AppSessionsManager extends TextWebSocketHandler {
     private final PresenceService presenceService;
 
     private Map<WsMessageType, AppInboundMessageHandler> inboundHandlers;
+
+    private static final String ATTR_LAST_PONG = "lastPong";
+
+    // A session that hasn't answered a ping within this window is considered dead
+    // (client crashed / BSOD / network cut — no TCP close ever arrives in those cases).
+    @Value("${app.ws.heartbeat-timeout-ms:90000}")
+    private long heartbeatTimeoutMs;
 
     @PostConstruct
     private void init() {
@@ -70,6 +79,7 @@ public class AppSessionsManager extends TextWebSocketHandler {
             try { existing.close(CloseStatus.NORMAL); } catch (Exception ignored) {}
         }
 
+        session.getAttributes().put(ATTR_LAST_PONG, System.currentTimeMillis());
         appMessageSender.register(user.getUserId(), session);
 
         // Restore the status the user chose for themselves (defaults to ONLINE).
@@ -116,6 +126,51 @@ public class AppSessionsManager extends TextWebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
         log.warn("WebSocket transport error (session {}): {}", session.getId(), exception.getMessage());
+    }
+
+    @Override
+    protected void handlePongMessage(WebSocketSession session, PongMessage message) {
+        session.getAttributes().put(ATTR_LAST_PONG, System.currentTimeMillis());
+    }
+
+    /**
+     * Liveness sweep. A client that vanished without a TCP close (crash, bluescreen,
+     * pulled cable) never triggers afterConnectionClosed, so its user would stay ONLINE
+     * forever. Tyrus on the client answers protocol-level pings automatically, so a
+     * session that stops ponging is dead and gets dropped + marked OFFLINE here.
+     */
+    @Scheduled(fixedDelayString = "${app.ws.heartbeat-interval-ms:30000}")
+    public void heartbeatSweep() {
+        long now = System.currentTimeMillis();
+        appMessageSender.getSessions().forEach((userId, session) -> {
+            Long lastPong = (Long) session.getAttributes().get(ATTR_LAST_PONG);
+            boolean stale = lastPong == null || now - lastPong > heartbeatTimeoutMs;
+            if (!session.isOpen() || stale) {
+                log.warn("Dropping dead WebSocket session for user {} ({})",
+                        userId, stale ? "heartbeat timeout" : "already closed");
+                dropSession(userId, session);
+                return;
+            }
+            try {
+                session.sendMessage(new PingMessage());
+            } catch (IOException e) {
+                log.warn("Ping failed for user {} (session {}): {}", userId, session.getId(), e.getMessage());
+                dropSession(userId, session);
+            } catch (Exception e) {
+                // e.g. a concurrent text send in progress — connection is alive, retry next sweep
+                log.debug("Ping skipped for user {}: {}", userId, e.getMessage());
+            }
+        });
+    }
+
+    private void dropSession(UUID userId, WebSocketSession session) {
+        // Mark offline directly: closing a dead TCP connection may never fire
+        // afterConnectionClosed, and unregister() makes the two paths idempotent.
+        boolean wasActive = appMessageSender.unregister(userId, session);
+        if (wasActive) {
+            userRepository.findById(userId).ifPresent(this::markOffline);
+        }
+        try { session.close(CloseStatus.GOING_AWAY); } catch (Exception ignored) {}
     }
 
     @Override
