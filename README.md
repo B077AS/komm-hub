@@ -56,13 +56,13 @@ What the hub deliberately does **not** do: channel messaging, voice, files and p
 
 1. A user registers an installation from the dashboard — the hub validates a CSR (P-384 EC key) and issues a single-use setup token.
 2. The user downloads a JAR **pre-configured just for them** — the hub injects the setup token and port configuration into the JAR before serving it.
-3. On first start, the JAR presents its CSR and setup token; the hub acts as a certificate authority (BouncyCastle), signs the certificate and marks the installation verified.
-4. The installation connects back over WebSocket (`/ws/installations`) and goes **online**.
+3. On first start, the JAR presents its CSR and setup token; the hub acts as a certificate authority (BouncyCastle), signs the certificate and marks the installation verified. The certificate doubles as the server's **TLS identity** — from its next start the installation serves HTTPS/WSS with it.
+4. The installation connects back over WebSocket (`/ws/installations`) and goes **online**, reporting whether it serves TLS — clients pick `wss://` or legacy `ws://` accordingly.
 
 **A client joining a community server:**
 
 1. The client asks the hub for a ticket (`POST /api/servers/{serverId}/ticket`). The hub verifies membership, checks that the installation is online and its certificate is not revoked.
-2. The hub issues a short-lived (**60 s**) single-purpose JWT ticket; the client connects **directly** to the community's server with it. Messages never pass through the hub.
+2. The hub issues a short-lived (**60 s**) single-purpose JWT ticket; the client connects **directly** to the community's server with it, over TLS validated against the hub CA. Messages never pass through the hub.
 
 **WebSockets:** two separate endpoints with distinct session managers — `/ws` for app clients, `/ws/installations` for server JARs. Message types are dispatched to handler beans auto-registered at startup; some features (permissions, voice presence, moderation) are proxied hub → installation via `CompletableFuture` pending registries.
 
@@ -71,6 +71,7 @@ What the hub deliberately does **not** do: channel messaging, voice, files and p
 Security isn't a feature bolted on — it's the architecture:
 
 - **X.509 mutual authentication** — every self-hosted server proves its identity with a certificate signed by the hub's built-in CA (P-384 elliptic curve).
+- **Automatic TLS for every server** — that same hub-signed certificate is the server's HTTPS/WSS identity. Clients fetch the hub CA (public `GET /api/auth/ca`) and validate a server's certificate against it, verifying the installation's identity embedded in the certificate instead of a hostname — so community servers get real transport encryption on a bare IP, with no domain name and no third-party certificate.
 - **ES384 signed tokens** — sessions use modern elliptic-curve signatures. No shared secrets, nothing to leak.
 - **Short-lived connection tickets** — joining a server uses a single-purpose ticket that expires in 60 seconds, verified against membership and certificate status.
 - **API rate limiting** — token-bucket limits on `/api/**` (Bucket4j), keyed per user for authenticated calls and per client IP for public ones, guarding login, registration, email sending and your GIF/CA resources against abuse. See [Rate limiting](#rate-limiting--running-behind-a-proxy).
