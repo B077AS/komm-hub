@@ -22,8 +22,9 @@ import java.nio.file.Paths;
 
 /**
  * Serves the launcher's own self-update artifacts — mirrors {@link ClientUpdateController}
- * but per-OS, since the launcher's jar bundles platform-specific JavaFX natives.
- * The running client (never GitHub directly) reads {@link LauncherReleaseSyncService}'s
+ * but per-OS, since Windows and Linux need different artifact types (a plain jar
+ * vs. a full AppImage — see {@link LauncherReleaseSyncService}). The running
+ * client (never GitHub directly) reads {@link LauncherReleaseSyncService}'s
  * cache through here to decide whether the launcher that started it is stale.
  */
 @Slf4j
@@ -37,8 +38,8 @@ public class ClientLauncherController {
     @Value("${kommhub.launcher.jar.windows.path}")
     private String windowsJarPath;
 
-    @Value("${kommhub.launcher.jar.linux.path}")
-    private String linuxJarPath;
+    @Value("${kommhub.launcher.appimage.linux.path}")
+    private String linuxAppImagePath;
 
     @GetMapping("/latest")
     public ResponseEntity<LauncherVersionResponse> getLatest(@RequestParam String os) {
@@ -66,23 +67,24 @@ public class ClientLauncherController {
 
     @GetMapping("/download")
     public ResponseEntity<Resource> download(@RequestParam String os) {
-        Path jar = resolveJarPath(os);
-        if (jar == null) {
+        Path artifact = resolveArtifactPath(os);
+        if (artifact == null) {
             return ResponseEntity.badRequest().build();
         }
         try {
-            if (!Files.exists(jar)) {
-                log.error("Launcher jar not found at: {}", jar.toAbsolutePath());
+            if (!Files.exists(artifact)) {
+                log.error("Launcher artifact not found at: {}", artifact.toAbsolutePath());
                 return ResponseEntity.notFound().build();
             }
-            Resource resource = new FileSystemResource(jar);
+            Resource resource = new FileSystemResource(artifact);
+            String filename = "windows".equals(normalize(os)) ? "komm-launcher.jar" : "komm-launcher.AppImage";
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=komm-launcher.jar")
-                    .contentLength(jar.toFile().length())
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                    .contentLength(artifact.toFile().length())
                     .body(resource);
         } catch (Exception e) {
-            log.error("Failed to serve launcher jar: {}", e.getMessage());
+            log.error("Failed to serve launcher artifact: {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -95,10 +97,10 @@ public class ClientLauncherController {
         };
     }
 
-    private Path resolveJarPath(String os) {
+    private Path resolveArtifactPath(String os) {
         return switch (normalize(os)) {
             case "windows" -> Paths.get(windowsJarPath);
-            case "linux" -> Paths.get(linuxJarPath);
+            case "linux" -> Paths.get(linuxAppImagePath);
             default -> null;
         };
     }
