@@ -79,6 +79,33 @@ Security isn't a feature bolted on — it's the architecture:
 
 The hub's EC P-384 key pair (generated in `keys/` on first boot) is both its JWT signing key and its CA identity — **every certificate in your network chains to it**.
 
+## Client & launcher updates
+
+The hub is also where the [komm](https://github.com/B077AS/komm) client and [komm-launcher](https://github.com/B077AS/komm-launcher) launcher get their update information from — `ClientUpdateController` and `ClientLauncherController` serve `/api/client/**` and `/api/launcher/**`, both deliberately **public** (no login — see `WebConfig.publicSecurityFilterChain`, since neither the launcher nor a freshly-installed client has a session yet).
+
+Both are backed by a scheduled sync service that polls the relevant repo's GitHub releases directly, rather than requiring anyone to manually place a jar on the server:
+
+| Endpoint | Backed by | What it does |
+|---|---|---|
+| `GET /api/client/latest` / `/api/client/download` | `ClientReleaseSyncService` | Polls [komm](https://github.com/B077AS/komm)'s releases for the `komm-<version>.jar` asset, mirrors it locally, serves `{ version, sha256, downloadUrl }` |
+| `GET /api/launcher/latest?os=` / `/api/launcher/download?os=` | `LauncherReleaseSyncService` | Polls [komm-launcher](https://github.com/B077AS/komm-launcher)'s releases for its two per-OS artifacts, mirrors them locally, serves the same shape per-platform |
+
+- **Polling, not pushing.** Every `kommhub.github.*.poll-interval-ms` (30 s by default) the hub does a conditional `GET .../releases/latest` (`If-None-Match`); GitHub doesn't count an unchanged (`304`) response against the rate limit, so even the default interval stays well inside the unauthenticated 60/hour budget — a `kommhub.github.token` (no scopes needed, just raises the limit to 5000/hour) is optional but recommended.
+- **Every download is verified twice** where possible: against the checksum GitHub itself reports for that release asset (`digest`), and by confirming the downloaded jar can state its own version (`client.version` / `launcher.version` in its bundled `app.properties`) matching the release tag. A release published without its asset yet, a GitHub hiccup, or a failed verification never touches what's already being served — the sync just retries on the next tick.
+- **Windows and Linux need different launcher artifact *types*, not just different natives.** The launcher's own code is a discrete swappable jar on Windows, but an AppImage is one opaque unit on Linux — so the Linux artifact is a full standalone AppImage, which can't be introspected as a zip the way a jar can. It's verified only against GitHub's digest; its version is tracked via a small sidecar `.version` file written alongside it (see `LauncherReleaseSyncService` for the reasoning, or the launcher repo's README for the client-side half of this — the client is what actually performs the swap, once per start).
+
+### Configuration
+
+| Property | Default | Purpose |
+|---|---|---|
+| `kommhub.client.jar.path` | `jar/komm-client.jar` | Where the synced client jar is mirrored |
+| `kommhub.github.client.owner` / `.repo` | `B077AS` / `komm` | Client repo to poll |
+| `kommhub.launcher.jar.windows.path` | `jar/komm-launcher-windows.jar` | Where the synced Windows launcher jar is mirrored |
+| `kommhub.launcher.appimage.linux.path` | `jar/komm-launcher-linux.AppImage` | Where the synced Linux launcher AppImage is mirrored |
+| `kommhub.github.launcher.owner` / `.repo` | `B077AS` / `komm-launcher` | Launcher repo to poll |
+| `kommhub.github.client.poll-interval-ms` | `30000` | Shared poll interval for both sync services |
+| `kommhub.github.token` | — | Optional PAT (no scopes needed) — set in `application-local.properties` |
+
 ## Tech stack
 
 | Layer | Technology |
@@ -131,6 +158,7 @@ The hub starts on port **8085**. On first boot it generates its EC P-384 key pai
 | `komm.ratelimit.enabled` | — | Master switch for API rate limiting (on by default) |
 | `komm.ratelimit.enforce` | — | `true` returns HTTP 429 on breach; `false` is shadow mode (log only) |
 | `server.forward-headers-strategy` | — | `framework` behind a reverse proxy so limits see the real client IP |
+| `kommhub.github.*` | — | Client & launcher GitHub-release sync — see [Client & launcher updates](#client--launcher-updates) |
 
 ## A note on the bundled website
 
