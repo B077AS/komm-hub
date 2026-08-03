@@ -343,9 +343,12 @@ public class DirectMessageService {
 
         DirectMessageReaction.DirectMessageReactionId id =
                 new DirectMessageReaction.DirectMessageReactionId(messageId, userId, emoji);
-        if (!reactionRepository.existsById(id)) {
-            reactionRepository.save(DirectMessageReaction.builder().id(id).message(message).build());
+        // Duplicate add (double-click, retry): don't re-send the event — clients
+        // count events, so a duplicate would inflate their counters.
+        if (reactionRepository.existsById(id)) {
+            return;
         }
+        reactionRepository.save(DirectMessageReaction.builder().id(id).message(message).build());
 
         UUID partnerId = message.getSenderId().equals(userId) ? message.getRecipientId() : message.getSenderId();
         appMessageSender.sendToUser(userId, new WsAppMessage(WsMessageType.DM_REACTION_ADDED,
@@ -364,7 +367,13 @@ public class DirectMessageService {
         DirectMessage message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found"));
 
-        reactionRepository.deleteById(new DirectMessageReaction.DirectMessageReactionId(messageId, userId, emoji));
+        DirectMessageReaction.DirectMessageReactionId id =
+                new DirectMessageReaction.DirectMessageReactionId(messageId, userId, emoji);
+        // Same idempotency rule as addReaction: nothing deleted → no event.
+        if (!reactionRepository.existsById(id)) {
+            return;
+        }
+        reactionRepository.deleteById(id);
 
         UUID partnerId = message.getSenderId().equals(userId) ? message.getRecipientId() : message.getSenderId();
         appMessageSender.sendToUser(userId, new WsAppMessage(WsMessageType.DM_REACTION_REMOVED,

@@ -29,6 +29,13 @@ spring.mail.properties.mail.smtp.starttls.enable=true
 # Free API key from https://klipy.com — without it the GIF picker is empty.
 #klipy.api-key=your-klipy-api-key
 
+# ── GitHub releases (optional) ──────────────────────────────────────────────
+# Personal access token for polling the client repo's releases (see
+# kommhub.github.* in application.properties). Not required — public release
+# metadata is readable unauthenticated — but raises the rate limit from
+# 60/hr to 5000/hr. No scopes needed for public repos.
+#kommhub.github.token=ghp_your-token-here
+
 # ── Closed beta (optional) ──────────────────────────────────────────────────
 # Require an invite key to register. A SUPER_ADMIN generates keys from the
 # website dashboard. Leave off for an open, self-hosted hub.
