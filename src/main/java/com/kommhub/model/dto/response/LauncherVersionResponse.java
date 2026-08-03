@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientVersionResponse {
+public class LauncherVersionResponse {
     private String version;
     private String downloadUrl;
     private String sha256;
