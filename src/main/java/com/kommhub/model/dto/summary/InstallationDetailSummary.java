@@ -23,4 +23,5 @@ public class InstallationDetailSummary {
     private int hostedServersCount;
     private Installation.InstallationStatus status;
     private String ipAddress;
+    private String verificationCode;
 }

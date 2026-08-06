@@ -10,7 +10,6 @@ import com.kommhub.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -20,22 +19,19 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.StringReader;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.file.*;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.interfaces.ECPublicKey;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.jar.*;
-import java.util.zip.*;
+import java.util.Base64;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -44,18 +40,6 @@ public class InstallationService {
 
     private final InstallationRepository installationRepository;
     private final JwtUtil jwtUtil;
-
-    @Value("${kommhub.jar.path}")
-    private String jarPath;
-
-    @Value("${kommhub.jar.properties-entry}")
-    private String propertiesEntry;
-
-    @Value("${kommhub.jar.manifest-path}")
-    private String manifestPath;
-
-    @Value("${kommhub.jar.manifest-token-attr}")
-    private String manifestTokenAttr;
 
     public ResponseEntity<?> createInstallation(CreateInstallationRequest request, UUID userId) {
         ResponseEntity<?> csrValidation = validateCsr(request, userId);
@@ -79,83 +63,6 @@ public class InstallationService {
 
         UUID id = installationRepository.save(installation).getInstallationId();
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
-    }
-
-    public ResponseEntity<?> buildInstallationJar(UUID installationId, UUID userId) {
-        Installation installation = installationRepository.findById(installationId).orElse(null);
-
-        if (installation == null)
-            return ErrorResponse.of(HttpStatus.NOT_FOUND, "Installation not found");
-
-        if (!installation.getOwnerId().equals(userId))
-            return ErrorResponse.of(HttpStatus.FORBIDDEN, "Not your installation");
-
-        if (installation.getSetupToken() == null)
-            return ErrorResponse.of(HttpStatus.GONE, "Setup token already used");
-
-        try {
-            byte[] jar = injectPropertiesIntoJar(installation);
-            return ResponseEntity.ok()
-                    .header("Content-Disposition",
-                            "attachment; filename=\"kommserver-" + installationId + ".jar\"")
-                    .body(jar);
-        } catch (IOException e) {
-            log.error("Failed to build JAR for installation {}", installationId, e);
-            return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to build installation JAR");
-        }
-    }
-
-    private byte[] injectPropertiesIntoJar(Installation installation) throws IOException {
-        Path templateJar = Paths.get(jarPath);
-        if (!Files.exists(templateJar))
-            throw new IOException("Template JAR not found at: " + jarPath);
-
-        ByteArrayOutputStream outputJar = new ByteArrayOutputStream();
-
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(templateJar.toFile()));
-             ZipOutputStream zos = new ZipOutputStream(outputJar)) {
-
-            boolean manifestFound = false;
-
-            ZipEntry entry;
-            while ((entry = zis.getNextEntry()) != null) {
-                zos.putNextEntry(new ZipEntry(entry.getName()));
-
-                if (entry.getName().equals(propertiesEntry)) {
-                    Properties props = new Properties();
-                    props.load(zis);
-                    props.setProperty("server.port", String.valueOf(installation.getPort()));
-                    props.setProperty("sfu.signal-port", String.valueOf(installation.getSignalPort()));
-                    props.setProperty("sfu.tcp-port", String.valueOf(installation.getTcpPort()));
-                    props.setProperty("sfu.media-port", String.valueOf(installation.getMediaPort()));
-                    props.store(new OutputStreamWriter(zos), "KommServer Installation Config - DO NOT EDIT");
-                } else if (entry.getName().equals(manifestPath)) {
-                    manifestFound = true;
-                    Manifest manifest = new Manifest(zis);
-                    manifest.getMainAttributes().putValue(manifestTokenAttr, installation.getSetupToken());
-                    manifest.write(zos);
-                } else {
-                    IOUtils.copy(zis, zos);
-                }
-
-                zos.closeEntry();
-                zis.closeEntry();
-            }
-
-            if (!manifestFound) {
-                log.warn("Manifest entry {} missing from template JAR — creating it for installation {}",
-                        manifestPath, installation.getInstallationId());
-                zos.putNextEntry(new ZipEntry(manifestPath));
-                Manifest manifest = new Manifest();
-                manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-                manifest.getMainAttributes().putValue(manifestTokenAttr, installation.getSetupToken());
-                manifest.write(zos);
-                zos.closeEntry();
-            }
-        }
-
-        log.info("JAR built for installation {}", installation.getInstallationId());
-        return outputJar.toByteArray();
     }
 
     @Transactional
@@ -191,6 +98,10 @@ public class InstallationService {
                 .installationId(installation.getInstallationId())
                 .installationName(installation.getInstallationName())
                 .ownerId(installation.getOwnerId())
+                .port(installation.getPort())
+                .signalPort(installation.getSignalPort())
+                .tcpPort(installation.getTcpPort())
+                .mediaPort(installation.getMediaPort())
                 .build();
     }
 
