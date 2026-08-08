@@ -95,25 +95,24 @@
                 <div class="dl-steps">
                     <div class="dl-step">
                         <span class="dl-step-num">1</span>
-                        <span><a th:href="@{/register}" class="dl-inline-link">Create an account</a> and register your server from the dashboard.</span>
+                        <span><a th:href="@{/register}" class="dl-inline-link">Create an account</a>, then create an installation right from the Komm client — name it and pick your ports.</span>
                     </div>
                     <div class="dl-step">
                         <span class="dl-step-num">2</span>
-                        <span>Download the JAR pre-configured for your installation — certificates included.</span>
+                        <span>Download the server JAR below and grab the one-time verification code from that installation's card in the client.</span>
                     </div>
                     <div class="dl-step">
                         <span class="dl-step-num">3</span>
-                        <span>Run it with Java 21. It verifies itself with the hub and comes online.</span>
+                        <span>Run it with Java 21 and hand it the verification code. It verifies itself with the hub and comes online.</span>
                     </div>
                 </div>
 
                 <div class="dl-note">
                     <i class="mdi mdi-information-outline"></i>
                     <span>
-                        The plain JAR has <strong>no verification code built in</strong> — it only works for
-                        a server that has already been verified once, by downloading its pre-configured JAR
-                        from the dashboard and starting it on the machine where you host. Use the plain JAR
-                        to update an existing installation.
+                        The server JAR is generic and carries <strong>no verification code built in</strong> — it
+                        needs one from an unverified installation in the Komm client the first time it starts.
+                        Once a server has verified, its own JAR download is only for updating that same install.
                     </span>
                 </div>
 

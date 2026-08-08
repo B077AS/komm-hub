@@ -54,8 +54,8 @@ What the hub deliberately does **not** do: channel messaging, voice, files and p
 
 **Server (installation) lifecycle:**
 
-1. A user registers an installation from the dashboard — the hub validates a CSR (P-384 EC key) and issues a single-use setup token.
-2. The user downloads a JAR **pre-configured just for them** — the hub injects the setup token and port configuration into the JAR before serving it.
+1. A user creates an installation from the [Komm client](https://github.com/B077AS/komm) — the hub validates a CSR (P-384 EC key) generated there and issues a single-use setup token, shown back in the client as a verification code.
+2. The user gets the generic server JAR running (bare `java -jar`, or as a service via [komm-server-launcher](https://github.com/B077AS/komm-server-launcher)) and supplies that verification code to it.
 3. On first start, the JAR presents its CSR and setup token; the hub acts as a certificate authority (BouncyCastle), signs the certificate and marks the installation verified. The certificate doubles as the server's **TLS identity** — from its next start the installation serves HTTPS/WSS with it.
 4. The installation connects back over WebSocket (`/ws/installations`) and goes **online**, reporting whether it serves TLS — clients pick `wss://` or legacy `ws://` accordingly.
 
