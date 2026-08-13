@@ -112,6 +112,7 @@ public class InstallationController {
                 .hostedServersCount((int) serverRepository.countByInstallationId(installationId))
                 .status(installation.getStatus())
                 .ipAddress(installation.getIpAddress())
+                .verificationCode(isOwner ? installation.getSetupToken() : null)
                 .build();
         return ResponseEntity.ok(detail);
     }
@@ -148,11 +149,6 @@ public class InstallationController {
             log.error("Failed to delete installation {}", installationId, e);
             return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete installation");
         }
-    }
-
-    @GetMapping("/jar")
-    public ResponseEntity<?> downloadInstallationJar(@RequestParam UUID installationId) {
-        return installationService.buildInstallationJar(installationId, securityUtil.getCurrentUserId());
     }
 
     // ── Access token endpoints ────────────────────────────────────────────────
