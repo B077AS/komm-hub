@@ -22,6 +22,8 @@
     --cyan:           #30d6e8;
     --success:        #8aff80;
     --success-bg:     rgba(138, 255, 128, 0.12);
+    --warning:        #ffca80;
+    --warning-bg:     rgba(255, 202, 128, 0.07);
     --danger:         #ff9580;
     --danger-bg:      rgba(255, 149, 128, 0.12);
 
@@ -94,59 +96,21 @@ body.site-body {
 /* AMBIENT BACKGROUND */
 /* ============================================ */
 
+/* Quiet, static backdrop: a faint dot grid that fades out down the
+   viewport. No blurred glows, no animation. */
 .bg-animation {
     position: fixed;
     inset: 0;
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
-}
-
-.orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(90px);
-    opacity: 0.14;
-    animation: orbFloat 22s infinite ease-in-out;
-}
-
-.orb1 {
-    width: 520px;
-    height: 520px;
-    background: radial-gradient(circle, var(--accent), transparent 70%);
-    top: -220px;
-    left: -180px;
-}
-
-.orb2 {
-    width: 420px;
-    height: 420px;
-    background: radial-gradient(circle, var(--cyan), transparent 70%);
-    top: 45%;
-    right: -170px;
-    opacity: 0.08;
-    animation-delay: -7s;
-    animation-duration: 27s;
-}
-
-.orb3 {
-    width: 620px;
-    height: 620px;
-    background: radial-gradient(circle, var(--accent-hover), transparent 70%);
-    bottom: -280px;
-    left: 28%;
-    animation-delay: -13s;
-    animation-duration: 32s;
-}
-
-@keyframes orbFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33%      { transform: translate(90px, -80px) scale(1.08); }
-    66%      { transform: translate(-60px, 90px) scale(0.94); }
+    background-image: radial-gradient(rgba(148, 149, 155, 0.13) 1px, transparent 1.4px);
+    background-size: 28px 28px;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 78%);
+    mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 78%);
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .orb { animation: none; }
     html { scroll-behavior: auto; }
 }
 
@@ -591,6 +555,13 @@ i,
     border-top: 1px solid var(--border);
     padding: 56px 0 32px;
     margin-top: 0;
+}
+
+/* Footer content spans the full page width (no container cap), with
+   padding that scales down smoothly on smaller viewports. */
+.site-footer-content {
+    width: 100%;
+    padding: 0 clamp(20px, 4.5vw, 72px);
 }
 
 .site-footer-grid {

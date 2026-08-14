@@ -88,8 +88,8 @@
 
                 <p class="dl-card-description">
                     Host your community on your own hardware. Channels, messages, voice rooms and
-                    permissions all live on your machine — with an embedded database, there is
-                    nothing else to install.
+                    permissions all live on your machine — database and media server are embedded,
+                    and the bundled launcher installs everything as a real OS service.
                 </p>
 
                 <div class="dl-steps">
@@ -99,29 +99,34 @@
                     </div>
                     <div class="dl-step">
                         <span class="dl-step-num">2</span>
-                        <span>Download the server JAR below and grab the one-time verification code from that installation's card in the client.</span>
+                        <span>Run the Windows installer, or unpack the Linux package and run <code>sudo ./install.sh</code>. The launcher registers the server as a Windows Service or systemd unit.</span>
                     </div>
                     <div class="dl-step">
                         <span class="dl-step-num">3</span>
-                        <span>Run it with Java 21 and hand it the verification code. It verifies itself with the hub and comes online.</span>
+                        <span>Hand it the one-time verification code from the installation's card in the client. It fetches its certificate, verifies with the hub and comes online — <code>kommserver update</code> keeps it current.</span>
                     </div>
                 </div>
 
                 <div class="dl-note">
                     <i class="mdi mdi-information-outline"></i>
                     <span>
-                        The server JAR is generic and carries <strong>no verification code built in</strong> — it
-                        needs one from an unverified installation in the Komm client the first time it starts.
-                        Once a server has verified, its own JAR download is only for updating that same install.
+                        Prefer to run things yourself? Grab the
+                        <a th:href="${site.downloads.server}" class="dl-inline-link" rel="noopener">plain server JAR</a>
+                        instead — it carries <strong>no verification code built in</strong>: drop your code into a
+                        <code>setup-token.txt</code> next to it and run it with Java 21. The launcher remains the
+                        recommended way — service install, crash recovery and automatic updates included.
                     </span>
                 </div>
 
                 <div class="dl-buttons">
-                    <a th:href="@{/login}" class="btn btn-primary">
-                        <i class="mdi mdi-rocket-launch"></i> Create a server
+                    <a th:href="${site.downloads.serverWindows}" class="btn btn-primary" rel="noopener">
+                        <i class="mdi mdi-microsoft-windows"></i> Download for Windows
                     </a>
-                    <a th:href="${site.downloads.server}" class="btn btn-secondary" rel="noopener">
-                        <i class="mdi mdi-download"></i> Plain server JAR
+                    <a th:href="${site.downloads.serverLinux}" class="btn btn-primary" rel="noopener">
+                        <i class="mdi mdi-linux"></i> Download for Linux <span style="opacity:.75; font-weight:400;">(tar.gz)</span>
+                    </a>
+                    <a th:href="@{/login}" class="btn btn-secondary">
+                        <i class="mdi mdi-rocket-launch"></i> Create a server
                     </a>
                 </div>
             </div>
@@ -182,6 +187,8 @@
                 <a th:href="${site.github.launcher}" target="_blank" rel="noopener" class="dl-inline-link">komm-launcher</a>
                 <span class="dl-source-sep">·</span>
                 <a th:href="${site.github.server}" target="_blank" rel="noopener" class="dl-inline-link">komm-server</a>
+                <span class="dl-source-sep">·</span>
+                <a th:href="${site.github.serverLauncher}" target="_blank" rel="noopener" class="dl-inline-link">komm-server-launcher</a>
                 <span class="dl-source-sep">·</span>
                 <a th:href="${site.github.hub}" target="_blank" rel="noopener" class="dl-inline-link">komm-hub</a>
             </div>

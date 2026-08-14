@@ -92,7 +92,7 @@
           "name": "How is Komm secured?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Komm uses ES384 (P-384 elliptic curve) signed tokens, X.509 mutual certificate authentication between servers and the hub, and short-lived single-use connection tickets."
+            "text": "Komm uses ES384 (P-384 elliptic curve) signed tokens, X.509 mutual certificate authentication between servers and the hub, TLS-encrypted client-to-server connections secured by hub-signed certificates, and short-lived single-use connection tickets."
           }
         }
       ]
@@ -109,13 +109,14 @@
     <section class="hero">
         <div class="hero-content container">
             <div class="hero-text">
-                <span class="hero-badge">
-                    <i class="mdi mdi-server-security"></i> Self-hosted · Private · Free
-                </span>
+                <p class="hero-eyebrow">
+                    self-hosted<span class="eyebrow-sep" aria-hidden="true">/</span>private<span class="eyebrow-sep" aria-hidden="true">/</span>free
+                </p>
 
                 <h1 class="hero-title">
-                    Your voice. Your servers.<br>
-                    <span class="text-gradient">Your data.</span>
+                    <span class="hero-line">Your voice.</span>
+                    <span class="hero-line">Your servers.</span>
+                    <span class="hero-line"><mark class="hero-mark">Your data.</mark><span class="hero-caret" aria-hidden="true"></span></span>
                 </h1>
 
                 <p class="hero-description">
@@ -139,10 +140,11 @@
                     <a th:href="@{/#beta-access}" style="color:var(--accent);">Request access</a>
                 </p>
 
-                <div class="hero-platforms">
-                    <span class="platform-chip"><i class="mdi mdi-microsoft-windows"></i> Windows</span>
-                    <span class="platform-chip"><i class="mdi mdi-linux"></i> Linux X11</span>
-                    <span class="platform-chip"><i class="mdi mdi-linux"></i> Linux Wayland</span>
+                <div class="hero-spec" aria-label="Supported platforms">
+                    <span class="hero-spec-label">runs on</span>
+                    <span class="hero-spec-item"><i class="mdi mdi-microsoft-windows"></i> Windows 10/11</span>
+                    <span class="hero-spec-item"><i class="mdi mdi-linux"></i> Linux X11</span>
+                    <span class="hero-spec-item"><i class="mdi mdi-linux"></i> Linux Wayland</span>
                 </div>
             </div>
 
@@ -486,7 +488,8 @@
                     <h3 class="feature-title">Komm Server</h3>
                     <p class="feature-description">
                         A self-hosted server that owns your channels, messages, voice rooms and permissions.
-                        Ships with an embedded database — one JAR, zero configuration, run it anywhere.
+                        Database and media server are embedded, and the launcher installs it as a real
+                        OS service — Windows or Linux, one installer, zero configuration.
                     </p>
                     <a th:href="@{/download#server}" class="arch-link">Host your own server <i class="mdi mdi-arrow-right"></i></a>
                 </div>
@@ -515,8 +518,8 @@
                     </div>
                     <div class="step">
                         <span class="step-number">2</span>
-                        <h4 class="step-title">Run one JAR</h4>
-                        <p class="step-text">Start it on any machine with Java and hand it your verification code. The embedded database means there's nothing else to install.</p>
+                        <h4 class="step-title">Run the installer</h4>
+                        <p class="step-text">The server launcher installs Komm Server as a real OS service — Windows Service or systemd — hand it your verification code and it takes care of the rest, updates included.</p>
                     </div>
                     <div class="step">
                         <span class="step-number">3</span>
@@ -553,6 +556,13 @@
                         </div>
                     </li>
                     <li>
+                        <i class="mdi mdi-lock-check-outline"></i>
+                        <div>
+                            <strong>TLS between client and server</strong>
+                            <span>The hub-signed certificate doubles as the server's HTTPS/WSS certificate, so every client connection is encrypted — and validated against the hub CA and the installation's identity, stronger than a plain hostname check. Voice media is separately encrypted via WebRTC (DTLS/SRTP).</span>
+                        </div>
+                    </li>
+                    <li>
                         <i class="mdi mdi-key-variant"></i>
                         <div>
                             <strong>ES384 signed tokens</strong>
@@ -579,7 +589,7 @@
             <div class="security-visual" aria-hidden="true">
                 <div class="security-diagram">
                     <div class="diagram-node client"><i class="mdi mdi-laptop"></i><span>Client</span></div>
-                    <div class="diagram-link l1"><span class="diagram-label"><i class="mdi mdi-lock"></i> 60s ticket</span></div>
+                    <div class="diagram-link l1"><span class="diagram-label"><i class="mdi mdi-lock"></i> TLS · 60s ticket</span></div>
                     <div class="diagram-node server"><i class="mdi mdi-server"></i><span>Your Server</span></div>
                     <div class="diagram-link l2"><span class="diagram-label"><i class="mdi mdi-certificate"></i> X.509 mTLS</span></div>
                     <div class="diagram-node hub"><i class="mdi mdi-hub"></i><span>Hub · CA</span></div>
@@ -659,7 +669,8 @@
                     <summary>Do I have to host my own server?</summary>
                     <p>No. You can simply download the client, create an account and join communities through
                        invite links. Hosting is for communities that want full ownership of their data — and
-                       it's a single JAR with an embedded database, so it takes minutes.</p>
+                       the server launcher installs it as a system service with one installer on Windows or
+                       one script on Linux, so it takes minutes.</p>
                 </details>
                 <details class="faq-item">
                     <summary>Can I run my own hub too?</summary>

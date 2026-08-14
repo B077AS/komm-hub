@@ -53,3 +53,4 @@ spring.mail.properties.mail.smtp.starttls.enable=true
 #komm.site.github.server=https://github.com/you/komm-server
 #komm.site.github.hub=https://github.com/you/komm-hub
 #komm.site.github.launcher=https://github.com/you/komm-launcher
+#komm.site.github.server-launcher=https://github.com/you/komm-server-launcher

@@ -26,12 +26,15 @@ public class SiteProperties {
         private String server;
         private String hub;
         private String launcher;
+        private String serverLauncher;
     }
 
     @Data
     public static class Downloads {
         private String clientWindows;
         private String clientLinux;
+        private String serverWindows;
+        private String serverLinux;
         private String server;
     }
 }
