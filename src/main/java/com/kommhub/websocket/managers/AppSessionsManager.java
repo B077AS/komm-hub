@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.kommhub.model.db.User;
 import com.kommhub.repository.UserRepository;
 import com.kommhub.service.PresenceService;
+import com.kommhub.websocket.WsSessionUtil;
 import com.kommhub.websocket.interfaces.AppInboundMessageHandler;
 import com.kommhub.websocket.messages.WsAppMessage;
 import com.kommhub.websocket.messages.WsMessageType;
@@ -18,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -60,14 +60,14 @@ public class AppSessionsManager extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        User principal = getUser(session);
-        if (principal == null) {
+        UUID userId = WsSessionUtil.getUserId(session);
+        if (userId == null) {
             log.warn("Unauthenticated WebSocket connection rejected (session {})", session.getId());
             closeQuietly(session);
             return;
         }
 
-        User user = userRepository.findById(principal.getUserId()).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             closeQuietly(session);
             return;
@@ -100,18 +100,18 @@ public class AppSessionsManager extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        User principal = getUser(session);
-        if (principal != null) {
-            boolean wasActive = appMessageSender.unregister(principal.getUserId(), session);
+        UUID userId = WsSessionUtil.getUserId(session);
+        if (userId != null) {
+            boolean wasActive = appMessageSender.unregister(userId, session);
             if (wasActive) {
                 if (applicationContext.isActive()) {
-                    userRepository.findById(principal.getUserId())
+                    userRepository.findById(userId)
                             .ifPresent(this::markOffline);
                 } else {
-                    log.warn("Skipping DB update for user={} — context is shutting down", principal.getUsername());
+                    log.warn("Skipping DB update for user={} — context is shutting down", userId);
                 }
             }
-            log.info("WebSocket disconnected: {} — {} (wasActive={})", principal.getUsername(), status, wasActive);
+            log.info("WebSocket disconnected: {} — {} (wasActive={})", userId, status, wasActive);
         }
     }
 
@@ -227,14 +227,6 @@ public class AppSessionsManager extends TextWebSocketHandler {
         } catch (IOException e) {
             log.warn("Failed to send error to session {}: {}", session.getId(), e.getMessage());
         }
-    }
-
-    private User getUser(WebSocketSession session) {
-        if (session.getPrincipal() instanceof UsernamePasswordAuthenticationToken auth
-                && auth.getPrincipal() instanceof User user) {
-            return user;
-        }
-        return null;
     }
 
     private void closeQuietly(WebSocketSession session) {

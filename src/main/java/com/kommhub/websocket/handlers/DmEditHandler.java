@@ -3,7 +3,6 @@ package com.kommhub.websocket.handlers;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.kommhub.model.db.DirectMessage;
-import com.kommhub.model.db.User;
 import com.kommhub.service.DirectMessageService;
 import com.kommhub.websocket.WsSessionUtil;
 import com.kommhub.websocket.interfaces.AppInboundMessageHandler;
@@ -38,30 +37,30 @@ public class DmEditHandler implements AppInboundMessageHandler {
 
     @Override
     public void handle(WebSocketSession session, JsonObject payload) {
-        User sender = WsSessionUtil.getUser(session);
-        if (sender == null) return;
+        UUID senderId = WsSessionUtil.getUserId(session);
+        if (senderId == null) return;
 
         DmEditPayload req = gson.fromJson(payload, DmEditPayload.class);
         if (req.getMessageId() == null || req.getContent() == null) return;
 
         int maxLength = req.getCodeLanguage() != null ? MAX_CODE_MESSAGE_LENGTH : MAX_MESSAGE_LENGTH;
         if (req.getContent().length() > maxLength) {
-            log.warn("DM_EDIT denied: content exceeds {} chars (senderId={})", maxLength, sender.getUserId());
+            log.warn("DM_EDIT denied: content exceeds {} chars (senderId={})", maxLength, senderId);
             return;
         }
 
         DirectMessage edited;
         try {
-            edited = directMessageService.editMessage(req.getMessageId(), sender.getUserId(), req.getContent(), req.getCodeLanguage());
+            edited = directMessageService.editMessage(req.getMessageId(), senderId, req.getContent(), req.getCodeLanguage());
         } catch (Exception e) {
-            log.warn("DM_EDIT denied for user={}: {}", sender.getUserId(), e.getMessage());
+            log.warn("DM_EDIT denied for user={}: {}", senderId, e.getMessage());
             return;
         }
 
-        UUID partnerId = edited.getSenderId().equals(sender.getUserId())
+        UUID partnerId = edited.getSenderId().equals(senderId)
                 ? edited.getRecipientId() : edited.getSenderId();
 
-        appMessageSender.sendToUser(sender.getUserId(), new WsAppMessage(WsMessageType.DM_EDITED,
+        appMessageSender.sendToUser(senderId, new WsAppMessage(WsMessageType.DM_EDITED,
                 DmEditedPayload.builder()
                         .messageId(edited.getMessageId())
                         .content(edited.getContent())
@@ -74,7 +73,7 @@ public class DmEditHandler implements AppInboundMessageHandler {
                             .messageId(edited.getMessageId())
                             .content(edited.getContent())
                             .codeLanguage(edited.getCodeLanguage())
-                            .conversationPartnerId(sender.getUserId())
+                            .conversationPartnerId(senderId)
                             .build()));
         }
     }

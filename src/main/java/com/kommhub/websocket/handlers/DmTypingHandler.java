@@ -2,7 +2,6 @@ package com.kommhub.websocket.handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.kommhub.model.db.User;
 import com.kommhub.websocket.WsSessionUtil;
 import com.kommhub.websocket.interfaces.AppInboundMessageHandler;
 import com.kommhub.websocket.senders.AppMessageSender;
@@ -12,6 +11,8 @@ import com.kommhub.websocket.messages.payloads.DmTypingPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -27,8 +28,8 @@ public class DmTypingHandler implements AppInboundMessageHandler {
 
     @Override
     public void handle(WebSocketSession session, JsonObject payload) {
-        User sender = WsSessionUtil.getUser(session);
-        if (sender == null) return;
+        UUID senderId = WsSessionUtil.getUserId(session);
+        if (senderId == null) return;
 
         DmTypingPayload req = gson.fromJson(payload, DmTypingPayload.class);
         if (req.getRecipientId() == null) return;
@@ -37,7 +38,7 @@ public class DmTypingHandler implements AppInboundMessageHandler {
 
         DmTypingPayload forward = DmTypingPayload.builder()
                 .recipientId(req.getRecipientId())
-                .senderId(sender.getUserId())
+                .senderId(senderId)
                 .build();
         appMessageSender.sendToUser(req.getRecipientId(),
                 new WsAppMessage(WsMessageType.DM_TYPING, forward));

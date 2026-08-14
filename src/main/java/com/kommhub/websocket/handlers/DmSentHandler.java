@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.util.UUID;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -41,30 +43,30 @@ public class DmSentHandler implements AppInboundMessageHandler {
 
     @Override
     public void handle(WebSocketSession session, JsonObject payload) {
-        User sender = WsSessionUtil.getUser(session);
-        if (sender == null) return;
+        UUID senderId = WsSessionUtil.getUserId(session);
+        if (senderId == null) return;
 
         DmSentPayload sent = gson.fromJson(payload, DmSentPayload.class);
         if (sent.getRecipientId() == null) {
-            log.warn("DM_SENT denied: missing recipientId (senderId={})", sender.getUserId());
+            log.warn("DM_SENT denied: missing recipientId (senderId={})", senderId);
             return;
         }
 
-        if (sender.getUserId().equals(sent.getRecipientId())) {
-            log.warn("DM_SENT denied: user {} attempted to message themselves", sender.getUserId());
+        if (senderId.equals(sent.getRecipientId())) {
+            log.warn("DM_SENT denied: user {} attempted to message themselves", senderId);
             return;
         }
 
         User recipient = userRepository.findById(sent.getRecipientId()).orElse(null);
         if (recipient == null) {
-            log.warn("DM_SENT denied: recipient {} not found (senderId={})", sent.getRecipientId(), sender.getUserId());
+            log.warn("DM_SENT denied: recipient {} not found (senderId={})", sent.getRecipientId(), senderId);
             return;
         }
 
-        if (!isDeliveryAllowed(sender, recipient)) {
+        if (!isDeliveryAllowed(senderId, recipient)) {
             log.info("DM_SENT rejected by privacy ({}): {} → {}",
-                    recipient.getDmPrivacy(), sender.getUserId(), recipient.getUserId());
-            appMessageSender.sendToUser(sender.getUserId(), new WsAppMessage(
+                    recipient.getDmPrivacy(), senderId, recipient.getUserId());
+            appMessageSender.sendToUser(senderId, new WsAppMessage(
                     WsMessageType.DM_SEND_REJECTED, buildRejection(recipient)));
             return;
         }
@@ -72,26 +74,26 @@ public class DmSentHandler implements AppInboundMessageHandler {
         int maxLength = sent.getMessageType() == DirectMessage.MessageType.CODE
                 ? MAX_CODE_MESSAGE_LENGTH : MAX_MESSAGE_LENGTH;
         if (sent.getContent() != null && sent.getContent().length() > maxLength) {
-            log.warn("DM_SENT denied: content exceeds {} chars (senderId={})", maxLength, sender.getUserId());
+            log.warn("DM_SENT denied: content exceeds {} chars (senderId={})", maxLength, senderId);
             return;
         }
 
-        DmReceivedPayload received = directMessageService.save(sender.getUserId(), sent);
-        log.info("DM saved: {} → {}, messageId={}", sender.getUserId(), sent.getRecipientId(), received.getMessageId());
+        DmReceivedPayload received = directMessageService.save(senderId, sent);
+        log.info("DM saved: {} → {}, messageId={}", senderId, sent.getRecipientId(), received.getMessageId());
 
         WsAppMessage receivedMsg = new WsAppMessage(WsMessageType.DM_RECEIVED, received);
 
-        appMessageSender.sendToUser(sender.getUserId(), receivedMsg);
+        appMessageSender.sendToUser(senderId, receivedMsg);
         if (appMessageSender.isOnline(sent.getRecipientId()))
             appMessageSender.sendToUser(sent.getRecipientId(), receivedMsg);
     }
 
-    private boolean isDeliveryAllowed(User sender, User recipient) {
+    private boolean isDeliveryAllowed(UUID senderId, User recipient) {
         User.DmPrivacy privacy = recipient.getDmPrivacy() != null
                 ? recipient.getDmPrivacy() : User.DmPrivacy.EVERYONE;
         return switch (privacy) {
             case EVERYONE -> true;
-            case FRIENDS_ONLY -> friendRepository.areFriends(sender.getUserId(), recipient.getUserId());
+            case FRIENDS_ONLY -> friendRepository.areFriends(senderId, recipient.getUserId());
             case NONE -> false;
         };
     }
