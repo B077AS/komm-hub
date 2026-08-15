@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/site-layout}">
 <head>
-    <title>Download Komm — Client, Server &amp; Hub for Windows and Linux</title>
+    <title>Download Komm - Client, Server &amp; Hub for Windows and Linux</title>
     <meta name="description"
           content="Download Komm for free: the desktop chat client for Windows, Linux X11 and Linux Wayland, plus the self-hosted Komm server and hub. Latest releases, straight from GitHub.">
     <meta name="keywords"
@@ -12,7 +12,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" th:content="${site.baseUrl + '/download'}">
     <meta property="og:site_name" content="Komm">
-    <meta property="og:title" content="Download Komm — Voice, Video &amp; Text Chat">
+    <meta property="og:title" content="Download Komm - Voice, Video &amp; Text Chat">
     <meta property="og:description"
           content="Get the Komm desktop client for Windows and Linux, or host your own Komm server and hub. Free downloads from GitHub releases.">
     <meta property="og:image" th:content="${site.baseUrl + '/logo.png'}">
@@ -28,15 +28,15 @@
 <body>
 <main layout:fragment="content">
 
-    <!-- ═══════════════ HERO + CLIENT DOWNLOAD ═══════════════ -->
+    <!-- --------------- HERO + CLIENT DOWNLOAD --------------- -->
     <section class="dl-hero">
         <div class="container dl-hero-content">
-            <span class="hero-badge"><i class="mdi mdi-download"></i> Latest release · straight from GitHub</span>
+            <span class="hero-badge"><i class="mdi mdi-download"></i> Latest release - straight from GitHub</span>
 
             <h1 class="heading-lg">Download Komm</h1>
 
             <p class="hero-description">
-                The desktop app for Windows and Linux — voice channels, HD screen sharing, rich chat and
+                The desktop app for Windows and Linux - voice channels, HD screen sharing, rich chat and
                 soundboards, connecting to any community on the Komm network. Everything on this page is
                 free, served straight from official GitHub releases.
             </p>
@@ -59,7 +59,7 @@
             <div class="dl-meta">
                 <span><i class="mdi mdi-check-circle"></i> Automatic updates via the launcher</span>
                 <span><i class="mdi mdi-check-circle"></i> Wayland &amp; X11 supported</span>
-                <span><i class="mdi mdi-check-circle"></i> Java runtime bundled — nothing else to install</span>
+                <span><i class="mdi mdi-check-circle"></i> Java runtime bundled - nothing else to install</span>
             </div>
 
             <div class="dl-note">
@@ -73,7 +73,7 @@
         </div>
     </section>
 
-    <!-- ═══════════════ SERVER + HUB ═══════════════ -->
+    <!-- --------------- SERVER + HUB --------------- -->
     <section class="dl-section section-compact">
         <div class="container dl-grid">
             <!-- Server -->
@@ -88,14 +88,14 @@
 
                 <p class="dl-card-description">
                     Host your community on your own hardware. Channels, messages, voice rooms and
-                    permissions all live on your machine — database and media server are embedded,
+                    permissions all live on your machine - database and media server are embedded,
                     and the bundled launcher installs everything as a real OS service.
                 </p>
 
                 <div class="dl-steps">
                     <div class="dl-step">
                         <span class="dl-step-num">1</span>
-                        <span><a th:href="@{/register}" class="dl-inline-link">Create an account</a>, then create an installation right from the Komm client — name it and pick your ports.</span>
+                        <span><a th:href="@{/register}" class="dl-inline-link">Create an account</a>, then create an installation right from the Komm client - name it and pick your ports.</span>
                     </div>
                     <div class="dl-step">
                         <span class="dl-step-num">2</span>
@@ -103,7 +103,7 @@
                     </div>
                     <div class="dl-step">
                         <span class="dl-step-num">3</span>
-                        <span>Hand it the one-time verification code from the installation's card in the client. It fetches its certificate, verifies with the hub and comes online — <code>kommserver update</code> keeps it current.</span>
+                        <span>Hand it the one-time verification code from the installation's card in the client. It fetches its certificate, verifies with the hub and comes online - <code>kommserver update</code> keeps it current.</span>
                     </div>
                 </div>
 
@@ -112,9 +112,9 @@
                     <span>
                         Prefer to run things yourself? Grab the
                         <a th:href="${site.downloads.server}" class="dl-inline-link" rel="noopener">plain server JAR</a>
-                        instead — it carries <strong>no verification code built in</strong>: drop your code into a
+                        instead - it carries <strong>no verification code built in</strong>: drop your code into a
                         <code>setup-token.txt</code> next to it and run it with Java 21. The launcher remains the
-                        recommended way — service install, crash recovery and automatic updates included.
+                        recommended way - service install, crash recovery and automatic updates included.
                     </span>
                 </div>
 
@@ -144,7 +144,7 @@
                 <p class="dl-card-description">
                     Run your own network. The hub manages accounts, friends and direct messages, and acts
                     as the certificate authority that servers register with. Most people can simply use
-                    the official hub at kommvoice.com — but you don't have to.
+                    the official hub at kommvoice.com - but you don't have to.
                 </p>
 
                 <div class="dl-reqs">
@@ -158,7 +158,7 @@
                     <i class="mdi mdi-wrench-outline"></i>
                     <span>
                         Fair warning: the hub is aimed at developers. It needs a database, mail credentials
-                        and a local properties file — and the bundled website is this site, meant to be
+                        and a local properties file - and the bundled website is this site, meant to be
                         forked and personalized rather than used as-is. The setup guide covers everything.
                     </span>
                 </div>
@@ -172,7 +172,7 @@
         </div>
     </section>
 
-    <!-- ═══════════════ SOURCE / TRUST ═══════════════ -->
+    <!-- --------------- SOURCE / TRUST --------------- -->
     <section class="dl-source section-compact">
         <div class="container-narrow dl-source-content">
             <i class="mdi mdi-github dl-source-icon"></i>
@@ -183,13 +183,13 @@
             </p>
             <div class="dl-source-links">
                 <a th:href="${site.github.client}" target="_blank" rel="noopener" class="dl-inline-link">komm (client)</a>
-                <span class="dl-source-sep">·</span>
+                <span class="dl-source-sep">-</span>
                 <a th:href="${site.github.launcher}" target="_blank" rel="noopener" class="dl-inline-link">komm-launcher</a>
-                <span class="dl-source-sep">·</span>
+                <span class="dl-source-sep">-</span>
                 <a th:href="${site.github.server}" target="_blank" rel="noopener" class="dl-inline-link">komm-server</a>
-                <span class="dl-source-sep">·</span>
+                <span class="dl-source-sep">-</span>
                 <a th:href="${site.github.serverLauncher}" target="_blank" rel="noopener" class="dl-inline-link">komm-server-launcher</a>
-                <span class="dl-source-sep">·</span>
+                <span class="dl-source-sep">-</span>
                 <a th:href="${site.github.hub}" target="_blank" rel="noopener" class="dl-inline-link">komm-hub</a>
             </div>
         </div>

@@ -1,8 +1,8 @@
 /* ============================================ */
-/* DOWNLOAD — HERO */
+/* DOWNLOAD - HERO */
 /* ============================================ */
 
-/* The hero IS the primary download CTA — badge, title, description,
+/* The hero IS the primary download CTA - badge, title, description,
    platform chips, download buttons, meta and the beta note all live in
    one flowing block instead of a card stacked inside a section stacked
    inside the hero. Server/hub keep their own denser section below. */
@@ -40,7 +40,7 @@
 }
 
 /* ============================================ */
-/* DOWNLOAD — CARDS */
+/* DOWNLOAD - CARDS */
 /* ============================================ */
 
 .dl-card {
@@ -233,7 +233,7 @@
 .dl-inline-link:hover { text-decoration: underline; }
 
 /* ============================================ */
-/* DOWNLOAD — SOURCE / TRUST */
+/* DOWNLOAD - SOURCE / TRUST */
 /* ============================================ */
 
 .dl-source {

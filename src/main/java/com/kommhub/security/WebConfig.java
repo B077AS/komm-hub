@@ -42,7 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final CustomUserDetailsService userDetailsService;
 
     // Prevent Spring Boot from also auto-registering the rate-limit filter as a
-    // container-level filter — it must run inside the security chains (after auth)
+    // container-level filter - it must run inside the security chains (after auth)
     // so per-user keying works, not ahead of them where no principal exists yet.
     @Bean
     public org.springframework.boot.web.servlet.FilterRegistrationBean<RateLimitFilter> rateLimitFilterRegistration() {

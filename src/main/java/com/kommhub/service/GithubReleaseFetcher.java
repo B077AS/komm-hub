@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Shared GitHub-releases polling mechanics: a conditional {@code releases/latest}
  * fetch plus a digest-verified streaming download. Used by both
- * {@link ClientReleaseSyncService} and {@link LauncherReleaseSyncService} — each
+ * {@link ClientReleaseSyncService} and {@link LauncherReleaseSyncService} - each
  * keeps its own asset-name resolution and cached-version bookkeeping, only the
  * GitHub HTTP protocol bits live here.
  */
@@ -79,7 +79,7 @@ public class GithubReleaseFetcher {
     /**
      * Streams {@code asset} to {@code destination}, hashing as it writes, and cross-checks
      * against GitHub's own per-asset {@code digest} field when present. Returns the computed
-     * lowercase-hex SHA-256. Throws on any HTTP failure or digest mismatch — callers should
+     * lowercase-hex SHA-256. Throws on any HTTP failure or digest mismatch - callers should
      * delete a partial {@code destination} on catch.
      */
     public String downloadAndHash(GithubAsset asset, Path destination) throws Exception {

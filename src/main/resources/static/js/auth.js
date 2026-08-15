@@ -43,7 +43,7 @@ const KommAuth = (() => {
     async function logout() {
         try {
             await fetch(API_BASE + '/api/auth/logout', { method: 'POST' });
-        } catch (e) { /* best effort — local state is cleared regardless */ }
+        } catch (e) { /* best effort - local state is cleared regardless */ }
         ['komm_access_token', 'komm_refresh_token', 'komm_username']
             .forEach(k => sessionStorage.removeItem(k));
     }

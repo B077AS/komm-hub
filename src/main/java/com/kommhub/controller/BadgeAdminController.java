@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 /**
- * Badge management — SUPER_ADMIN only. Used by the website dashboard to create
+ * Badge management - SUPER_ADMIN only. Used by the website dashboard to create
  * custom badges, and to generate/inspect redemption tokens.
  */
 @Slf4j

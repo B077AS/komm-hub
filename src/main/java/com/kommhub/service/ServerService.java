@@ -145,7 +145,7 @@ public class ServerService {
                 .join();
 
         // Group servers by installation and fetch effective permissions in one batch call per installation.
-        // Skip offline installations — their permissions are irrelevant until they come back online.
+        // Skip offline installations - their permissions are irrelevant until they come back online.
         Map<UUID, List<ServerSummary>> byInstallation = summaries.stream()
                 .filter(s -> s.getInstallationId() != null)
                 .collect(Collectors.groupingBy(ServerSummary::getInstallationId));

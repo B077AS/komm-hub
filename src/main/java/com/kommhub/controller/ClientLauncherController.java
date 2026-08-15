@@ -21,9 +21,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Serves the launcher's own self-update artifacts — mirrors {@link ClientUpdateController}
+ * Serves the launcher's own self-update artifacts - mirrors {@link ClientUpdateController}
  * but per-OS, since Windows and Linux need different artifact types (a plain jar
- * vs. a full AppImage — see {@link LauncherReleaseSyncService}). The running
+ * vs. a full AppImage - see {@link LauncherReleaseSyncService}). The running
  * client (never GitHub directly) reads {@link LauncherReleaseSyncService}'s
  * cache through here to decide whether the launcher that started it is stale.
  */

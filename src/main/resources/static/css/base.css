@@ -1,4 +1,4 @@
-/* ── Reset & Base ──────────────────────────────────────────────────────────── */
+/* -- Reset & Base ------------------------------------------------------------ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -51,7 +51,7 @@ body > *:not(.bg-animation):not(.navbar) {
     z-index: 1;
 }
 
-/* ── Ambient background ────────────────────────────────────────────────────── */
+/* -- Ambient background ------------------------------------------------------ */
 .bg-animation {
     position: fixed;
     inset: 0;
@@ -107,7 +107,7 @@ body > *:not(.bg-animation):not(.navbar) {
     .orb { animation: none; }
 }
 
-/* ── Layout helpers ────────────────────────────────────────────────────────── */
+/* -- Layout helpers ---------------------------------------------------------- */
 .centered {
     display: flex;
     align-items: center;
@@ -127,7 +127,7 @@ body > *:not(.bg-animation):not(.navbar) {
     padding: 16px;
 }
 
-/* ── Logo ──────────────────────────────────────────────────────────────────── */
+/* -- Logo -------------------------------------------------------------------- */
 .logo {
     display: flex;
     align-items: center;
@@ -148,7 +148,7 @@ body > *:not(.bg-animation):not(.navbar) {
     display: block;
 }
 
-/* ── Card ──────────────────────────────────────────────────────────────────── */
+/* -- Card -------------------------------------------------------------------- */
 .card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -157,7 +157,7 @@ body > *:not(.bg-animation):not(.navbar) {
     box-shadow: var(--shadow-lg);
 }
 
-/* ── Form elements ─────────────────────────────────────────────────────────── */
+/* -- Form elements ----------------------------------------------------------- */
 .form-group { margin-bottom: 14px; }
 
 .form-group label {
@@ -217,7 +217,7 @@ body > *:not(.bg-animation):not(.navbar) {
 
 .password-toggle:hover { color: var(--fg); }
 
-/* ── Buttons ───────────────────────────────────────────────────────────────── */
+/* -- Buttons ----------------------------------------------------------------- */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -266,7 +266,7 @@ body > *:not(.bg-animation):not(.navbar) {
 }
 .btn-ghost:hover { background: var(--bg-hover); }
 
-/* ── Feedback messages ─────────────────────────────────────────────────────── */
+/* -- Feedback messages ------------------------------------------------------- */
 .error-msg {
     color: var(--danger);
     font-size: 13px;
@@ -283,7 +283,7 @@ body > *:not(.bg-animation):not(.navbar) {
     display: none;
 }
 
-/* ── Spinner ───────────────────────────────────────────────────────────────── */
+/* -- Spinner ----------------------------------------------------------------- */
 .spinner {
     display: inline-block;
     width: 16px;
@@ -298,7 +298,7 @@ body > *:not(.bg-animation):not(.navbar) {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Navigation bar ────────────────────────────────────────────────────────── */
+/* -- Navigation bar ---------------------------------------------------------- */
 .navbar {
     position: sticky;
     top: 0;
@@ -370,7 +370,7 @@ body > *:not(.bg-animation):not(.navbar) {
     .navbar .nav-link { padding: 8px 10px; }
 }
 
-/* ── Link row ──────────────────────────────────────────────────────────────── */
+/* -- Link row ---------------------------------------------------------------- */
 .link-row {
     text-align: center;
     font-size: 13px;
@@ -387,7 +387,7 @@ body > *:not(.bg-animation):not(.navbar) {
 .inline-link:active { color: var(--accent-hover); text-decoration: none; font-weight: 600; }
 .inline-link:hover { text-decoration: underline; }
 
-/* ── Badge / pill ──────────────────────────────────────────────────────────── */
+/* -- Badge / pill ------------------------------------------------------------ */
 .badge {
     display: inline-block;
     font-size: 12px;
@@ -399,14 +399,14 @@ body > *:not(.bg-animation):not(.navbar) {
 .badge-danger  { background: var(--danger-bg);   color: var(--danger);  }
 .badge-accent  { background: var(--accent-glow); color: var(--accent-hover); }
 
-/* ── Divider ───────────────────────────────────────────────────────────────── */
+/* -- Divider ----------------------------------------------------------------- */
 .divider {
     border: none;
     border-top: 1px solid var(--border);
     margin: 20px 0;
 }
 
-/* ── Auth tabs ─────────────────────────────────────────────────────────────── */
+/* -- Auth tabs --------------------------------------------------------------- */
 .auth-tabs {
     display: flex;
     gap: 0;
@@ -441,7 +441,7 @@ body > *:not(.bg-animation):not(.navbar) {
     color: var(--accent-hover);
 }
 
-/* ── Stat grid ─────────────────────────────────────────────────────────────── */
+/* -- Stat grid --------------------------------------------------------------- */
 .stat-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -471,7 +471,7 @@ body > *:not(.bg-animation):not(.navbar) {
     margin-top: 4px;
 }
 
-/* ── Avatar ────────────────────────────────────────────────────────────────── */
+/* -- Avatar ------------------------------------------------------------------ */
 .avatar {
     width: 72px;
     height: 72px;

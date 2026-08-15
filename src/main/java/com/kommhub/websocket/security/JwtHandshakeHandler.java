@@ -21,7 +21,7 @@ public class JwtHandshakeHandler extends DefaultHandshakeHandler {
         UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) attributes.get("principal");
 
         if (auth == null) {
-            log.warn("No principal in WebSocket session attributes — rejecting");
+            log.warn("No principal in WebSocket session attributes - rejecting");
             return null;
         }
 

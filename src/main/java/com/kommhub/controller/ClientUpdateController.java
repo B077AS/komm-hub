@@ -33,7 +33,7 @@ public class ClientUpdateController {
     @GetMapping("/latest")
     public ResponseEntity<ClientVersionResponse> getLatest() {
         // Version/sha256 come from the last successful GitHub sync (or the on-disk
-        // jar primed at startup) rather than re-reading the zip on every request —
+        // jar primed at startup) rather than re-reading the zip on every request -
         // see ClientReleaseSyncService.
         ClientReleaseSyncService.CachedVersion cached = releaseSyncService.getCached();
         if (cached == null) {

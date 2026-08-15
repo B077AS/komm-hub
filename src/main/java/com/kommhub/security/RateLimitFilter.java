@@ -28,7 +28,7 @@ import java.util.UUID;
 /**
  * Token-bucket rate limiting for {@code /api/**}. Runs after {@link JwtAuthenticationFilter}
  * on the authenticated chain (so the user principal is available) and standalone on the
- * public chain. Authenticated requests are keyed per user; public ones per client IP —
+ * public chain. Authenticated requests are keyed per user; public ones per client IP -
  * which is only correct because {@code server.forward-headers-strategy=framework} makes
  * {@code getRemoteAddr()} return the real client IP behind the reverse proxy.
  *
@@ -55,7 +55,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     // key = ruleId + "|" + subject (userId or IP) -> that subject's bucket for that rule.
     // Idle expiry MUST stay >= the longest rule refill window (1h) so an entry is only ever
-    // evicted after it has fully refilled — otherwise idling could reset a drained budget.
+    // evicted after it has fully refilled - otherwise idling could reset a drained budget.
     // maximumSize is a hard memory ceiling against IP churn; active subjects keep their entry
     // alive because every request re-touches the key (expireAfterAccess).
     private final Cache<String, Bucket> buckets = Caffeine.newBuilder()
@@ -70,7 +70,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     // Ordered; first match wins. Public endpoints are keyed per IP (no principal on those paths),
     // authenticated ones per user. See conversation notes for the reasoning behind each number.
     private static final List<Rule> RULES = List.of(
-            // ── Public, per-IP: strict on abuse-prone + email/CPU/bandwidth-heavy paths ──
+            // -- Public, per-IP: strict on abuse-prone + email/CPU/bandwidth-heavy paths --
             new Rule("login",            "POST", "/api/auth/login",               10, 10, Duration.ofMinutes(1)),
             new Rule("register",         "POST", "/api/auth/register",             5,  5,  Duration.ofHours(1)),
             new Rule("verify-email",     "POST", "/api/auth/verify-email",         10, 10, Duration.ofMinutes(15)),
@@ -82,7 +82,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             new Rule("invite-info",      "GET",  "/api/invites/*/info",            30, 30, Duration.ofMinutes(1)),
             new Rule("client-download",  "GET",  "/api/client/download",           5,  5,  Duration.ofHours(1)),
 
-            // ── Authenticated, per-user: expensive or spammy ──
+            // -- Authenticated, per-user: expensive or spammy --
             new Rule("gifs",             "GET",  "/api/gifs/**",                   60, 60, Duration.ofMinutes(1)),
             new Rule("dm-attach",        "POST", "/api/dm/attachments",            20, 20, Duration.ofMinutes(1)),
             new Rule("friend-request",   "POST", "/api/friends/request/**",        10, 10, Duration.ofMinutes(1)),
@@ -93,7 +93,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             new Rule("permissions",      "*",    "/api/permissions/**",            40, 40, Duration.ofMinutes(1)),
             new Rule("moderation",       "*",    "/api/moderation/**",             40, 40, Duration.ofMinutes(1)),
 
-            // ── Catch-all default: loose, just stops runaway loops ──
+            // -- Catch-all default: loose, just stops runaway loops --
             new Rule("default",          "*",    "/api/**",                        300, 300, Duration.ofMinutes(1))
     );
 

@@ -13,7 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Reads the self-describing metadata off the client jar — the same
+ * Reads the self-describing metadata off the client jar - the same
  * {@code app.properties} entry the client itself carries and the launcher
  * reads on its side. Shared by {@link com.kommhub.controller.ClientUpdateController}
  * and {@link ClientReleaseSyncService} so there's one place that knows how.

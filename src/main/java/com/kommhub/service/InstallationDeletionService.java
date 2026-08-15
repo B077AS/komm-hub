@@ -45,14 +45,14 @@ public class InstallationDeletionService {
 
         List<Server> servers = serverRepository.findByInstallationId(installationId);
 
-        // Collect user IDs via a projection query — avoids loading ServerMember entities into the
+        // Collect user IDs via a projection query - avoids loading ServerMember entities into the
         // session, which would cause a TransientPropertyValueException when the Server is deleted
         // in the same flush cycle.
         Set<UUID> affectedUserIds = servers.stream()
                 .flatMap(s -> serverMemberRepository.findUserIdsByServerId(s.getServerId()).stream())
                 .collect(Collectors.toSet());
 
-        // Cascade-delete hub-side data for each server (bulk JPQL — no entity tracking)
+        // Cascade-delete hub-side data for each server (bulk JPQL - no entity tracking)
         for (Server server : servers) {
             inviteLinkRepository.deleteByServerId(server.getServerId());
             serverMemberRepository.deleteByServerId(server.getServerId());

@@ -22,7 +22,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BetaKeyService {
 
-    // No 0/O/1/I — keys get read aloud and typed by hand
+    // No 0/O/1/I - keys get read aloud and typed by hand
     private static final char[] KEY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".toCharArray();
     private static final int MAX_KEYS_PER_BATCH = 100;
 

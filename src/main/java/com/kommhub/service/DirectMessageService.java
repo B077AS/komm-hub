@@ -63,7 +63,7 @@ public class DirectMessageService {
     @Value("${app.dm.attachments.dir}")
     private String attachmentsBaseDir;
 
-    // ── Send ──────────────────────────────────────────────────────────────────
+    // -- Send ------------------------------------------------------------------
 
     public DmReceivedPayload save(UUID senderId, DmSentPayload sent) {
         DirectMessage saved = messageRepository.save(DirectMessage.builder()
@@ -154,7 +154,7 @@ public class DirectMessageService {
                 .build();
     }
 
-    // ── Upload ────────────────────────────────────────────────────────────────
+    // -- Upload ----------------------------------------------------------------
 
     public AttachmentUploadResponse uploadDmAttachment(UUID uploaderId, byte[] fileBytes,
                                                        String originalFileName, String contentType) throws IOException {
@@ -179,7 +179,7 @@ public class DirectMessageService {
         return AttachmentUploadResponse.builder().attachmentId(saved.getAttachmentId()).build();
     }
 
-    // ── History ───────────────────────────────────────────────────────────────
+    // -- History ---------------------------------------------------------------
 
     public List<DmReceivedPayload> getMessagesBefore(UUID userId, UUID partnerId, LocalDateTime cursor, int limit) {
         LocalDateTime hiddenBefore = hiddenRepository.findByUserIdAndOtherUserId(userId, partnerId)
@@ -205,7 +205,7 @@ public class DirectMessageService {
                 .toList();
     }
 
-    // ── Conversations ─────────────────────────────────────────────────────────
+    // -- Conversations ---------------------------------------------------------
 
     public List<ConversationSummary> getConversations(UUID userId) {
         List<DirectMessage> latest = messageRepository.findLatestMessagePerConversation(userId);
@@ -251,7 +251,7 @@ public class DirectMessageService {
         readRepository.save(record);
     }
 
-    // ── Edit ──────────────────────────────────────────────────────────────────
+    // -- Edit ------------------------------------------------------------------
 
     public DirectMessage editMessage(UUID messageId, UUID requesterId, String newContent, String codeLanguage) {
         DirectMessage message = messageRepository.findById(messageId)
@@ -267,7 +267,7 @@ public class DirectMessageService {
         return messageRepository.save(message);
     }
 
-    // ── Delete ────────────────────────────────────────────────────────────────
+    // -- Delete ----------------------------------------------------------------
 
     public DirectMessage deleteMessage(UUID messageId, UUID requesterId) {
         DirectMessage message = messageRepository.findById(messageId)
@@ -335,7 +335,7 @@ public class DirectMessageService {
         attachmentRepository.deleteAll(attachments);
     }
 
-    // ── Reactions ─────────────────────────────────────────────────────────────
+    // -- Reactions -------------------------------------------------------------
 
     public void addReaction(UUID messageId, UUID userId, String emoji) {
         DirectMessage message = messageRepository.findById(messageId)
@@ -343,7 +343,7 @@ public class DirectMessageService {
 
         DirectMessageReaction.DirectMessageReactionId id =
                 new DirectMessageReaction.DirectMessageReactionId(messageId, userId, emoji);
-        // Duplicate add (double-click, retry): don't re-send the event — clients
+        // Duplicate add (double-click, retry): don't re-send the event - clients
         // count events, so a duplicate would inflate their counters.
         if (reactionRepository.existsById(id)) {
             return;
@@ -388,7 +388,7 @@ public class DirectMessageService {
         }
     }
 
-    // ── Attachment download ───────────────────────────────────────────────────
+    // -- Attachment download ---------------------------------------------------
 
     public ResponseEntity<?> getAttachmentResource(UUID messageId, UUID requesterId) {
         DirectMessage message = messageRepository.findById(messageId).orElse(null);
@@ -422,7 +422,7 @@ public class DirectMessageService {
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // -- Helpers ---------------------------------------------------------------
 
     public DmReceivedPayload toPayload(DirectMessage message, List<DirectMessageAttachment> attachments) {
         DmReceivedPayload.DmReceivedPayloadBuilder builder = DmReceivedPayload.builder()

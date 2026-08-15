@@ -126,7 +126,7 @@ public class PermissionProxyController {
         return result.isSuccess() ? ResponseEntity.noContent().build() : toResponseEntity(result);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // -- Helpers ---------------------------------------------------------------
 
     private UUID resolveInstallationId(UUID serverId) {
         return serverRepository.findById(serverId).map(Server::getInstallationId).orElse(null);

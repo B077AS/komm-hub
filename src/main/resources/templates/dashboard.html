@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <!-- Beta keys — visible to SUPER_ADMIN only -->
+        <!-- Beta keys - visible to SUPER_ADMIN only -->
         <div id="beta-admin" class="profile-card" style="display:none; margin-top:20px; flex-direction:column; align-items:stretch;">
             <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
                 <div>
@@ -56,7 +56,7 @@
             <div id="beta-keys-list" style="margin-top:14px; display:flex; flex-direction:column; gap:6px;"></div>
         </div>
 
-        <!-- Badges — visible to SUPER_ADMIN only -->
+        <!-- Badges - visible to SUPER_ADMIN only -->
         <div id="badge-admin" class="profile-card" style="display:none; margin-top:20px; flex-direction:column; align-items:stretch;">
             <div>
                 <h2 style="margin:0; font-size:18px;"><i class="mdi mdi-seal"></i> Badges</h2>
@@ -131,7 +131,7 @@
         }
     }
 
-    // ── Beta keys (SUPER_ADMIN) ──────────────────────────────────────────────
+    // -- Beta keys (SUPER_ADMIN) ----------------------------------------------
 
     const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
@@ -179,7 +179,7 @@
         const list = document.getElementById('beta-keys-list');
         list.innerHTML = '';
         if (!keys.length) {
-            list.innerHTML = '<div style="color:var(--fg-subtle); font-size:13px;">No keys yet — generate some to invite people.</div>';
+            list.innerHTML = '<div style="color:var(--fg-subtle); font-size:13px;">No keys yet - generate some to invite people.</div>';
             return;
         }
         for (const k of keys) {
@@ -217,7 +217,7 @@
         }
     }
 
-    // ── Badges (SUPER_ADMIN) ─────────────────────────────────────────────────
+    // -- Badges (SUPER_ADMIN) -------------------------------------------------
 
     let iconCatalog = null;          // [{n: "mdi2a-account", c: "F0002"}, ...]
     let selectedIcon = { n: 'mdi2a-account', c: 'F0004' };
@@ -254,9 +254,9 @@
 
             const meta = document.createElement('span');
             meta.style.cssText = 'flex:1; color:var(--fg-subtle); font-size:12.5px;';
-            meta.textContent = (b.type === 'SYSTEM' ? 'system · ' : '')
+            meta.textContent = (b.type === 'SYSTEM' ? 'system - ' : '')
                 + (b.userCount != null ? b.userCount + ' user' + (b.userCount === 1 ? '' : 's') : '')
-                + (b.description ? ' · ' + b.description : '');
+                + (b.description ? ' - ' + b.description : '');
             row.appendChild(meta);
 
             if (b.type !== 'SYSTEM') {
@@ -266,7 +266,7 @@
                     const tokenSpan = document.createElement('code');
                     tokenSpan.textContent = t.tokenValue;
                     tokenSpan.title = 'uses ' + t.usedCount + '/' + (t.maxUses != null ? t.maxUses : '∞')
-                        + ' · expires ' + (t.expiresAt ? new Date(t.expiresAt).toLocaleString() : 'never');
+                        + ' - expires ' + (t.expiresAt ? new Date(t.expiresAt).toLocaleString() : 'never');
                     tokenSpan.style.cssText = 'font-family:monospace; letter-spacing:.5px; font-size:12px;'
                         + (dead ? 'opacity:.45; text-decoration:line-through;' : '');
                     row.appendChild(tokenSpan);
@@ -348,7 +348,7 @@
         if (resp.ok) loadBadges();
     }
 
-    // ── Icon picker ──────────────────────────────────────────────────────────
+    // -- Icon picker ----------------------------------------------------------
 
     async function toggleIconPicker() {
         const picker = document.getElementById('icon-picker');
@@ -408,7 +408,7 @@
         dot.style.background = STATUS_COLORS[statusKey] || '#6e7681';
         document.getElementById('status-text').textContent = STATUS_LABELS[statusKey] || statusKey;
         if (user.statusMessage) {
-            document.getElementById('status-msg').textContent = '— ' + user.statusMessage;
+            document.getElementById('status-msg').textContent = '- ' + user.statusMessage;
         }
     }
 

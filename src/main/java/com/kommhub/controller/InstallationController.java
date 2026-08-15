@@ -151,7 +151,7 @@ public class InstallationController {
         }
     }
 
-    // ── Access token endpoints ────────────────────────────────────────────────
+    // -- Access token endpoints ------------------------------------------------
 
     @PostMapping("/{installationId}/tokens")
     public ResponseEntity<?> generateToken(@PathVariable UUID installationId) {
@@ -222,7 +222,7 @@ public class InstallationController {
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // -- Helpers ---------------------------------------------------------------
 
     private InstallationSummary toSummary(Installation i, InstallationRole role) {
         return InstallationSummary.builder()

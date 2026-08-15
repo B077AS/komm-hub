@@ -48,7 +48,7 @@ body { display: flex; flex-direction: column; }
 
 #loading { text-align: center; padding: 48px 0; color: var(--fg-subtle); }
 
-/* ── Beta keys (SUPER_ADMIN) ──────────────────────────────────────────────── */
+/* -- Beta keys (SUPER_ADMIN) ------------------------------------------------ */
 .beta-count-input {
     width: 64px;
     height: 38px;
@@ -97,7 +97,7 @@ body { display: flex; flex-direction: column; }
 .beta-key-action:hover { background: var(--bg-input); color: var(--accent-hover); }
 .beta-key-action.danger:hover { background: var(--bg-input); color: var(--danger); }
 
-/* ── Badges (SUPER_ADMIN) ─────────────────────────────────────────────────── */
+/* -- Badges (SUPER_ADMIN) --------------------------------------------------- */
 .mdi-glyph {
     font-family: "Material Design Icons";
     font-size: 18px;
@@ -196,7 +196,7 @@ body { display: flex; flex-direction: column; }
     font-size: 13px;
 }
 
-/* ── Mobile ────────────────────────────────────────────────────────────────── */
+/* -- Mobile ------------------------------------------------------------------ */
 @media (max-width: 640px) {
     .page-content { padding: 20px 16px; }
 

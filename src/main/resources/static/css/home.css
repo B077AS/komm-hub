@@ -1,5 +1,5 @@
 /* ============================================ */
-/* HOME — HERO */
+/* HOME - HERO */
 /* ============================================ */
 
 /* Hero + trust strip together fill the first screen: the hero keeps its
@@ -33,7 +33,7 @@
     gap: 24px;
 }
 
-/* ── Eyebrow: monospace status line instead of a marketing pill ── */
+/* -- Eyebrow: monospace status line instead of a marketing pill -- */
 .hero-eyebrow {
     display: inline-flex;
     align-items: center;
@@ -51,8 +51,8 @@
     letter-spacing: 0;
 }
 
-/* ── Headline: the payoff line is rendered as selected text with a
-      blinking caret — flat translucent purple, no gradients. ── */
+/* -- Headline: the payoff line is rendered as selected text with a
+      blinking caret - flat translucent purple, no gradients. -- */
 .hero-title {
     font-size: 54px;
     font-weight: 800;
@@ -99,7 +99,7 @@
     flex-wrap: wrap;
 }
 
-/* Squarer, flatter buttons in the hero — closer to the client's UI */
+/* Squarer, flatter buttons in the hero - closer to the client's UI */
 .hero-actions .btn {
     border-radius: 9px;
 }
@@ -109,7 +109,7 @@
     border-color: var(--border-strong);
 }
 
-/* ── Platform spec row: datasheet footer instead of pill chips ── */
+/* -- Platform spec row: datasheet footer instead of pill chips -- */
 .hero-spec {
     display: flex;
     align-items: center;
@@ -168,7 +168,7 @@
 }
 
 /* ============================================ */
-/* HOME — APP MOCKUP (mirrors the real client) */
+/* HOME - APP MOCKUP (mirrors the real client) */
 /* ============================================ */
 
 .hero-mockup {
@@ -233,7 +233,7 @@
     flex: 1;
 }
 
-/* ── Sidebar ── */
+/* -- Sidebar -- */
 .mockup-sidebar {
     background: var(--bg-raised);
     border-right: 1px solid var(--border);
@@ -368,7 +368,7 @@
 
 .mockup-user-status i { font-size: 11px; }
 
-/* ── Avatars ── */
+/* -- Avatars -- */
 .mockup-avatar {
     width: 18px;
     height: 18px;
@@ -416,7 +416,7 @@
 .mockup-msg-avatar.a1 { background: linear-gradient(135deg, #ff6b6b, #a33a3a); }
 .mockup-msg-avatar.a2 { background: linear-gradient(135deg, var(--cyan), #1f6a84); }
 
-/* ── Chat column ── */
+/* -- Chat column -- */
 .mockup-chat {
     display: flex;
     flex-direction: column;
@@ -504,7 +504,7 @@
 
 .mockup-reaction.plus { color: var(--fg-subtle); }
 
-/* ── Code block (client-style with header) ── */
+/* -- Code block (client-style with header) -- */
 .mockup-code {
     margin-top: 4px;
     border: 1px solid var(--border-strong);
@@ -561,7 +561,7 @@
 .tok-fn  { color: var(--cyan); }
 .tok-str { color: var(--success); }
 
-/* ── Message input ── */
+/* -- Message input -- */
 .mockup-input {
     display: flex;
     align-items: center;
@@ -581,7 +581,7 @@
 
 .mockup-input i.send { color: var(--accent); }
 
-/* ── Full-width bottom toolbar (mirrors ToolBar.java) ── */
+/* -- Full-width bottom toolbar (mirrors ToolBar.java) -- */
 .mockup-toolbar {
     display: flex;
     align-items: center;
@@ -679,7 +679,7 @@
     color: var(--fg);
 }
 
-/* ── Members panel ── */
+/* -- Members panel -- */
 .mockup-members {
     background: var(--bg-raised);
     border-left: 1px solid var(--border);

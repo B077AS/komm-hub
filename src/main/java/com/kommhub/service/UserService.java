@@ -46,7 +46,7 @@ public class UserService {
         if (dto.getUsername() != null && !dto.getUsername().isBlank()) {
             user.setUsername(dto.getUsername().trim());
         }
-        // Email is intentionally never applied here — users cannot change their own email.
+        // Email is intentionally never applied here - users cannot change their own email.
         if (dto.getStatusMessage() != null) {
             user.setStatusMessage(dto.getStatusMessage().trim());
         }

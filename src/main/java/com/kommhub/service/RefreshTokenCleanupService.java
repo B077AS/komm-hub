@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 /**
- * Sweeps expired refresh tokens. Expired rows are already unusable — the JWT
- * expiry check rejects them before the store is consulted — so this is purely
+ * Sweeps expired refresh tokens. Expired rows are already unusable - the JWT
+ * expiry check rejects them before the store is consulted - so this is purely
  * to keep the table from accumulating rows for users who never return.
  */
 @Slf4j

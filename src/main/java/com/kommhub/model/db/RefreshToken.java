@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Server-side record of an issued refresh token, keyed by its SHA-256 hash —
+ * Server-side record of an issued refresh token, keyed by its SHA-256 hash -
  * the raw token is never stored. A token missing from this table is treated as
  * revoked (or already rotated), which is what makes logout and reuse detection
  * possible with otherwise stateless JWTs.

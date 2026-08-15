@@ -78,7 +78,7 @@ public class InstallationService {
 
         String signedCertPem = jwtUtil.signCsr(req.getCsr(), installation.getInstallationId());
 
-        // Mutate the managed entity — no save() needed inside @Transactional,
+        // Mutate the managed entity - no save() needed inside @Transactional,
         // but explicit save() is fine too
         installation.setCsr(req.getCsr());
         installation.setCertificate(signedCertPem);
@@ -163,7 +163,7 @@ public class InstallationService {
             try (DatagramSocket socket = new DatagramSocket()) {
                 socket.connect(InetAddress.getByName("8.8.8.8"), 80);
                 String outboundIp = socket.getLocalAddress().getHostAddress();
-                log.info("Installation registered from loopback — substituting hub outbound IP: {}", outboundIp);
+                log.info("Installation registered from loopback - substituting hub outbound IP: {}", outboundIp);
                 return outboundIp;
             } catch (Exception e) {
                 log.warn("Could not determine hub outbound IP, keeping loopback address", e);

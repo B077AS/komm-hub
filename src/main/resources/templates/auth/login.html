@@ -65,7 +65,7 @@
             });
             const data = await resp.json();
             if (!resp.ok) { showErr(data.message || 'Invalid credentials.'); document.querySelector('.btn-primary').disabled = false; return; }
-            // The refresh token arrives as an HttpOnly cookie — never store it here
+            // The refresh token arrives as an HttpOnly cookie - never store it here
             sessionStorage.setItem('komm_access_token', data.accessToken);
             sessionStorage.setItem('komm_username', username);
             window.location.href = returnTo;

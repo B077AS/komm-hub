@@ -48,7 +48,7 @@ public class AppSessionsManager extends TextWebSocketHandler {
     private static final String ATTR_LAST_PONG = "lastPong";
 
     // A session that hasn't answered a ping within this window is considered dead
-    // (client crashed / BSOD / network cut — no TCP close ever arrives in those cases).
+    // (client crashed / BSOD / network cut - no TCP close ever arrives in those cases).
     @Value("${app.ws.heartbeat-timeout-ms:90000}")
     private long heartbeatTimeoutMs;
 
@@ -108,16 +108,16 @@ public class AppSessionsManager extends TextWebSocketHandler {
                     userRepository.findById(userId)
                             .ifPresent(this::markOffline);
                 } else {
-                    log.warn("Skipping DB update for user={} — context is shutting down", userId);
+                    log.warn("Skipping DB update for user={} - context is shutting down", userId);
                 }
             }
-            log.info("WebSocket disconnected: {} — {} (wasActive={})", userId, status, wasActive);
+            log.info("WebSocket disconnected: {} - {} (wasActive={})", userId, status, wasActive);
         }
     }
 
     @PreDestroy
     public void onShutdown() {
-        log.info("Shutdown — marking {} user(s) as OFFLINE", appMessageSender.getSessions().size());
+        log.info("Shutdown - marking {} user(s) as OFFLINE", appMessageSender.getSessions().size());
         appMessageSender.getSessions().keySet().forEach(userId ->
                 userRepository.findById(userId).ifPresent(this::markOffline));
         appMessageSender.getSessions().clear();
@@ -157,7 +157,7 @@ public class AppSessionsManager extends TextWebSocketHandler {
                 log.warn("Ping failed for user {} (session {}): {}", userId, session.getId(), e.getMessage());
                 dropSession(userId, session);
             } catch (Exception e) {
-                // e.g. a concurrent text send in progress — connection is alive, retry next sweep
+                // e.g. a concurrent text send in progress - connection is alive, retry next sweep
                 log.debug("Ping skipped for user {}: {}", userId, e.getMessage());
             }
         });
@@ -198,7 +198,7 @@ public class AppSessionsManager extends TextWebSocketHandler {
         }
     }
 
-    // Kept for backward compatibility — delegates to AppMessageSender
+    // Kept for backward compatibility - delegates to AppMessageSender
     public void sendToUser(UUID userId, WsAppMessage message) {
         appMessageSender.sendToUser(userId, message);
     }
@@ -213,7 +213,7 @@ public class AppSessionsManager extends TextWebSocketHandler {
 
     private void markOffline(User user) {
         // Live status always drops to OFFLINE on disconnect, regardless of the
-        // user's chosen status — which stays stored in preferredStatus for next login.
+        // user's chosen status - which stays stored in preferredStatus for next login.
         user.setStatus(User.UserStatus.OFFLINE);
         user.setLastOnline(LocalDateTime.now());
         userRepository.save(user);

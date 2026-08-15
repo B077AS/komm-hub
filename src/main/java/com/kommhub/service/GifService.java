@@ -53,7 +53,7 @@ public class GifService {
         return fetch(uri);
     }
 
-    // ── Private ───────────────────────────────────────────────────────────────
+    // -- Private ---------------------------------------------------------------
 
     private GifPage fetch(URI uri) throws Exception {
         HttpRequest request = HttpRequest.newBuilder(uri).GET().build();
@@ -98,10 +98,10 @@ public class GifService {
      * <p>
      * Rendition strategy:
      * <ul>
-     *   <li>{@code previewUrl}   — {@code sm.gif}  (~220 px wide) for the picker grid</li>
-     *   <li>{@code fullUrl}      — {@code md.gif}  (~640 px wide) for in-chat display</li>
-     *   <li>{@code previewMp4Url} — {@code sm.mp4} for lightweight picker preview</li>
-     *   <li>{@code fullMp4Url}   — {@code md.mp4}  for high-quality chat display</li>
+     *   <li>{@code previewUrl}   - {@code sm.gif}  (~220 px wide) for the picker grid</li>
+     *   <li>{@code fullUrl}      - {@code md.gif}  (~640 px wide) for in-chat display</li>
+     *   <li>{@code previewMp4Url} - {@code sm.mp4} for lightweight picker preview</li>
+     *   <li>{@code fullMp4Url}   - {@code md.mp4}  for high-quality chat display</li>
      *   <li>Width / height taken from {@code md.gif} (the send-in-chat rendition)</li>
      * </ul>
      */
