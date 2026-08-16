@@ -39,6 +39,10 @@ public class SecurityUtil {
             return userDetails.getUser().getUserId();
         }
 
+        if (principal instanceof SessionUser sessionUser) {
+            return sessionUser.getUserId();
+        }
+
         return null;
     }
 }

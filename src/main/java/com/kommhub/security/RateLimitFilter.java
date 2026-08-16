@@ -26,9 +26,10 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Token-bucket rate limiting for {@code /api/**}. Runs after {@link JwtAuthenticationFilter}
- * on the authenticated chain (so the user principal is available) and standalone on the
- * public chain. Authenticated requests are keyed per user; public ones per client IP -
+ * Token-bucket rate limiting for {@code /api/**} and the browser login form ({@code POST /login}).
+ * Runs after {@link JwtAuthenticationFilter} on the authenticated chain (so the user principal
+ * is available) and standalone on the public and web chains.
+ * Authenticated requests are keyed per user; public ones per client IP -
  * which is only correct because {@code server.forward-headers-strategy=framework} makes
  * {@code getRemoteAddr()} return the real client IP behind the reverse proxy.
  *
@@ -72,6 +73,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final List<Rule> RULES = List.of(
             // -- Public, per-IP: strict on abuse-prone + email/CPU/bandwidth-heavy paths --
             new Rule("login",            "POST", "/api/auth/login",               10, 10, Duration.ofMinutes(1)),
+            // The SSR login form must match the API login budget - otherwise it becomes
+            // the unthrottled side door for password brute-forcing.
+            new Rule("login-web",        "POST", "/login",                        10, 10, Duration.ofMinutes(1)),
             new Rule("register",         "POST", "/api/auth/register",             5,  5,  Duration.ofHours(1)),
             new Rule("verify-email",     "POST", "/api/auth/verify-email",         10, 10, Duration.ofMinutes(15)),
             new Rule("resend-verify",    "POST", "/api/auth/resend-verification",  5,  5,  Duration.ofHours(1)),
@@ -99,10 +103,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        // Only guards the API; CORS preflight is never rate limited.
+        // Guards the API and the web login form; CORS preflight is never rate limited.
+        String uri = request.getRequestURI();
         return !enabled
-                || !request.getRequestURI().startsWith("/api/")
-                || "OPTIONS".equalsIgnoreCase(request.getMethod());
+                || "OPTIONS".equalsIgnoreCase(request.getMethod())
+                || !(uri.startsWith("/api/") || uri.equals("/login"));
     }
 
     @Override

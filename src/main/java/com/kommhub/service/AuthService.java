@@ -101,6 +101,15 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Account revocation must also stop refresh - login checks isEnabled via the
+        // DaoAuthenticationProvider, but without this a refresh token held by a disabled
+        // account would keep renewing itself until it expires.
+        if (!user.isEmailVerified()) {
+            refreshTokenRepository.deleteByUserId(userId);
+            log.warn("Refresh rejected for disabled account {} - all refresh tokens revoked", userId);
+            throw new IllegalArgumentException("Account is disabled. Please login again.");
+        }
+
         log.info("Tokens refreshed successfully for user: {}", user.getUsername());
         return buildAuthResponse(user);
     }
@@ -324,6 +333,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
         passwordResetTokenRepository.delete(token);
+        refreshTokenRepository.deleteByUserId(user.getUserId());
 
         log.info("Password reset completed for user: {}", user.getUsername());
     }
