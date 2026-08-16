@@ -1,6 +1,7 @@
 package com.kommhub.security;
 
 import com.google.gson.Gson;
+import com.kommhub.model.dto.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,7 +28,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -114,11 +115,12 @@ public class WebConfig implements WebMvcConfigurer {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
-                            response.getWriter().write(gson.toJson(Map.of(
-                                    "error", "Unauthorized",
-                                    "message", authException.getMessage() == null
-                                            ? "Authentication required" : authException.getMessage(),
-                                    "code", "UNAUTHORIZED")));
+                            response.getWriter().write(gson.toJson(ErrorResponse.builder()
+                                    .status(HttpStatus.UNAUTHORIZED.value())
+                                    .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                                    .message(authException.getMessage() == null
+                                            ? "Authentication required" : authException.getMessage())
+                                    .build()));
                         }));
 
         return http.build();
@@ -143,9 +145,11 @@ public class WebConfig implements WebMvcConfigurer {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
-                            response.getWriter().write(
-                                    "{\"error\":\"Unauthorized\",\"message\":\"Authentication required\",\"code\":\"UNAUTHORIZED\"}"
-                            );
+                            response.getWriter().write(gson.toJson(ErrorResponse.builder()
+                                    .status(HttpStatus.UNAUTHORIZED.value())
+                                    .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                                    .message("Authentication required")
+                                    .build()));
                         }));
 
         return http.build();

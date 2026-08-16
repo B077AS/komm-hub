@@ -13,14 +13,52 @@
 <nav class="navbar">
     <div class="navbar-content">
         <a class="nav-logo" href="/"><img th:src="@{/favicon.svg}" alt="Komm logo"> Komm</a>
-        <div class="nav-links">
-            <a class="nav-link active" href="/dashboard"><i class="mdi mdi-view-dashboard-outline"></i> Dashboard</a>
-            <form method="post" th:action="@{/logout}" style="display:inline;">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                <button type="submit" class="nav-link" style="background:none; border:none; cursor:pointer; font:inherit;"><i class="mdi mdi-logout"></i> Log out</button>
-            </form>
+        <div class="nav-user-menu">
+            <button type="button" class="nav-user-trigger" id="navUserMenuButton"
+                    aria-haspopup="true" aria-expanded="false" aria-controls="navUserDropdownMenu">
+                <span class="nav-user-avatar">
+                    <img th:if="${user.avatar}"
+                         th:src="'data:image/' + ${user.avatarImageFormat ?: 'png'} + ';base64,' + ${user.avatar}"
+                         alt="">
+                    <span th:unless="${user.avatar}"
+                          th:text="${#strings.isEmpty(user.username) ? '?' : #strings.toUpperCase(#strings.substring(user.username,0,1))}"></span>
+                </span>
+                <i class="mdi mdi-chevron-down"></i>
+            </button>
+
+            <div class="nav-user-dropdown" id="navUserDropdownMenu">
+                <div class="nav-user-dropdown-name" th:text="${user.username}">username</div>
+                <div class="nav-user-dropdown-divider"></div>
+                <form method="post" th:action="@{/logout}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="nav-user-dropdown-item">
+                        <i class="mdi mdi-logout"></i> Log out
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const userMenuButton = document.getElementById('navUserMenuButton');
+            const userDropdownMenu = document.getElementById('navUserDropdownMenu');
+            if (!userMenuButton || !userDropdownMenu) return;
+
+            userMenuButton.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const open = userDropdownMenu.classList.toggle('open');
+                userMenuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!userMenuButton.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+                    userDropdownMenu.classList.remove('open');
+                    userMenuButton.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+    </script>
 </nav>
 
 <div class="page-content">

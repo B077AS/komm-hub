@@ -24,10 +24,40 @@
                aria-label="Komm on GitHub">
                 <i class="mdi mdi-github"></i>
             </a>
-            <a th:href="@{/login}" class="btn btn-ghost">Log in</a>
-            <a th:href="@{/download}" class="btn btn-primary">
-                <i class="mdi mdi-download"></i> Download
-            </a>
+
+            <a th:if="${!isAuthenticated}" th:href="@{/login}" class="btn btn-ghost">Log in</a>
+
+            <!-- User menu (shown when logged in) -->
+            <div class="site-user-menu" th:if="${isAuthenticated}">
+                <button type="button" class="site-user-trigger" id="siteUserMenuButton"
+                        aria-haspopup="true" aria-expanded="false" aria-controls="siteUserDropdownMenu">
+                    <span class="site-user-avatar">
+                        <img th:if="${user.avatar}"
+                             th:src="'data:image/' + ${user.avatarImageFormat ?: 'png'} + ';base64,' + ${user.avatar}"
+                             alt="">
+                        <span th:unless="${user.avatar}"
+                              th:text="${#strings.isEmpty(user.username) ? '?' : #strings.toUpperCase(#strings.substring(user.username,0,1))}"></span>
+                    </span>
+                    <i class="mdi mdi-chevron-down"></i>
+                </button>
+
+                <div class="site-user-dropdown" id="siteUserDropdownMenu">
+                    <div class="site-user-dropdown-name" th:text="${user.username}">username</div>
+                    <div class="site-user-dropdown-divider"></div>
+                    <a th:href="@{/dashboard}" class="site-user-dropdown-item">
+                        <i class="mdi mdi-view-dashboard-outline"></i> Dashboard
+                    </a>
+                    <a href="javascript:void(0)" class="site-user-dropdown-item site-user-dropdown-item-danger"
+                       onclick="document.getElementById('siteLogoutForm').submit()">
+                        <i class="mdi mdi-logout"></i> Log out
+                    </a>
+                </div>
+
+                <!-- Logout is a state-changing action - POST + CSRF, not a plain link -->
+                <form id="siteLogoutForm" th:action="@{/logout}" method="post" style="display:none;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                </form>
+            </div>
         </div>
 
         <!-- Mobile menu toggle -->
@@ -57,6 +87,25 @@
                     links.classList.remove('open');
                     toggle.classList.remove('open');
                     toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+
+        (function () {
+            const userMenuButton = document.getElementById('siteUserMenuButton');
+            const userDropdownMenu = document.getElementById('siteUserDropdownMenu');
+            if (!userMenuButton || !userDropdownMenu) return;
+
+            userMenuButton.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const open = userDropdownMenu.classList.toggle('open');
+                userMenuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!userMenuButton.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+                    userDropdownMenu.classList.remove('open');
+                    userMenuButton.setAttribute('aria-expanded', 'false');
                 }
             });
         })();
