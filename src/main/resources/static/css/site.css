@@ -67,9 +67,8 @@
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: var(--navbar-height);
+html, body.site-body {
+    height: 100%;
 }
 
 body.site-body {
@@ -79,12 +78,39 @@ body.site-body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
+/* .site-main is the only scrolling element - the navbar and its own
+   scrollbar sit outside it, so the scrollbar never runs alongside the
+   navbar, only underneath it. */
 .site-main {
     position: relative;
     z-index: 1;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.site-main::-webkit-scrollbar {
+    width: 10px;
+}
+
+.site-main::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.site-main::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 5px;
+}
+
+.site-main::-webkit-scrollbar-thumb:hover {
+    background: var(--fg-subtle);
 }
 
 ::selection {
@@ -405,9 +431,9 @@ i,
 /* ============================================ */
 
 .site-navbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
     background: rgba(13, 14, 18, 0.82);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);

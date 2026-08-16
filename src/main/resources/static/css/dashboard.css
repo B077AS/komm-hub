@@ -1,7 +1,48 @@
-body { display: flex; flex-direction: column; }
+/* Confine scrolling to .page-scroll so the scrollbar sits under the navbar
+   instead of running its full height alongside it (same as the public site). */
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar {
+    position: relative;
+    top: auto;
+    flex-shrink: 0;
+}
+
+/* Full-width scroll container - .page-content below stays a centered,
+   max-width column, so the scrollbar itself sits at the true page edge. */
+.page-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.page-scroll::-webkit-scrollbar {
+    width: 10px;
+}
+
+.page-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.page-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 5px;
+}
+
+.page-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--fg-subtle);
+}
 
 .page-content {
-    flex: 1;
     padding: 32px 24px;
     max-width: 720px;
     margin: 0 auto;
