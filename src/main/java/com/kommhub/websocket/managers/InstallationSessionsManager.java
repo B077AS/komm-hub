@@ -124,7 +124,7 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
     }
 
     /**
-     * Liveness sweep — same rationale as {@link AppSessionsManager#heartbeatSweep()}:
+     * Liveness sweep - same rationale as {@link AppSessionsManager#heartbeatSweep()}:
      * an installation that dies without a TCP close would otherwise stay ONLINE forever.
      */
     @Scheduled(fixedDelayString = "${app.ws.heartbeat-interval-ms:30000}")
@@ -145,7 +145,7 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
                 log.warn("Ping failed for installation {}: {}", installationId, e.getMessage());
                 dropSession(installationId, session);
             } catch (Exception e) {
-                // e.g. a concurrent text send in progress — connection is alive, retry next sweep
+                // e.g. a concurrent text send in progress - connection is alive, retry next sweep
                 log.debug("Ping skipped for installation {}: {}", installationId, e.getMessage());
             }
         });
@@ -160,7 +160,7 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
 
     @PreDestroy
     public void onShutdown() {
-        log.info("Shutdown detected — marking {} connected installation(s) as OFFLINE", installationSessions.size());
+        log.info("Shutdown detected - marking {} connected installation(s) as OFFLINE", installationSessions.size());
         installationSessions.keySet().forEach(this::markOffline);
         installationSessions.clear();
     }
@@ -168,7 +168,7 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
     public void dispatchToInstallation(WsMessageType type, UUID installationId, Object payload) {
         WebSocketSession session = installationSessions.get(installationId);
         if (session == null || !session.isOpen()) {
-            log.warn("Cannot dispatch to installationId={} — session not found or closed", installationId);
+            log.warn("Cannot dispatch to installationId={} - session not found or closed", installationId);
             return;
         }
         try {

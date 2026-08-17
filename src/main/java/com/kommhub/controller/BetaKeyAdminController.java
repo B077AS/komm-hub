@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 /**
- * Beta key management — SUPER_ADMIN only. Used by the client's profile page
+ * Beta key management - SUPER_ADMIN only. Used by the client's profile page
  * to generate and inspect closed-beta registration keys.
  */
 @Slf4j

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * an otherwise-untouched install directory ({@code komm-launcher-windows.jar}),
  * self-describing via its {@code launcher.version} property the same way the
  * client jar is. An AppImage, by contrast, is one opaque read-only-mounted
- * unit — there's no equivalent "just the launcher's code" inside it — so the
+ * unit - there's no equivalent "just the launcher's code" inside it - so the
  * Linux artifact ({@code komm-launcher-linux.AppImage}) is a full standalone
  * AppImage that can't be introspected as a zip. It's verified only against
  * GitHub's own per-asset digest (still a strong integrity guarantee); a
@@ -80,7 +80,7 @@ public class LauncherReleaseSyncService {
         Path linuxAppImage = Paths.get(linuxAppImagePath);
         String windowsVersion = ClientJarInspector.readProperty(windowsJar, propertiesEntry, "launcher.version");
         String linuxVersion = readLinuxVersionSidecar();
-        // Only prime from a matched pair — a lone leftover file from a previous
+        // Only prime from a matched pair - a lone leftover file from a previous
         // partial sync shouldn't be reported as "the" launcher version.
         if (windowsVersion != null && windowsVersion.equals(linuxVersion) && Files.exists(linuxAppImage)) {
             cached.set(new CachedRelease(windowsVersion, ClientJarInspector.sha256(windowsJar),
@@ -170,7 +170,7 @@ public class LauncherReleaseSyncService {
                         + downloadedWindowsVersion + " (expected " + version + ")");
             }
 
-            // Linux: an AppImage can't be introspected as a zip — GitHub's own digest
+            // Linux: an AppImage can't be introspected as a zip - GitHub's own digest
             // cross-check (inside downloadAndHash) is the only verification available.
             String linuxSha256 = fetcher.downloadAndHash(linuxAsset, linuxTmp);
 

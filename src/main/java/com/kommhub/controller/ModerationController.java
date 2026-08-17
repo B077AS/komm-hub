@@ -230,7 +230,7 @@ public class ModerationController {
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // -- Helpers ---------------------------------------------------------------
 
     private UUID resolveInstallationId(UUID serverId) {
         return serverRepository.findById(serverId).map(Server::getInstallationId).orElse(null);

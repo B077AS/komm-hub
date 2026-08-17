@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * asset name and does the jar-specific corruption/version checks.
  *
  * <p>A GitHub hiccup or a release published without its jar asset yet never
- * touches the already-installed jar — sync failures are logged and retried on
+ * touches the already-installed jar - sync failures are logged and retried on
  * the next tick, same "keep serving what works" philosophy as the launcher's
  * own update flow.
  */

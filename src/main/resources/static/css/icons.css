@@ -277,10 +277,6 @@
   content: "\F048B";
 }
 
-.mdi-server-security::before {
-  content: "\F0492";
-}
-
 .mdi-shield-account::before {
   content: "\F088F";
 }

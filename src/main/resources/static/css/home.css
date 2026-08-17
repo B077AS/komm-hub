@@ -1,5 +1,5 @@
 /* ============================================ */
-/* HOME — HERO */
+/* HOME - HERO */
 /* ============================================ */
 
 /* Hero + trust strip together fill the first screen: the hero keeps its
@@ -22,8 +22,8 @@
 
 .hero-content {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-    gap: 44px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+    gap: 76px;
     align-items: center;
 }
 
@@ -33,18 +33,120 @@
     gap: 24px;
 }
 
+/* -- Eyebrow: monospace status line instead of a marketing pill -- */
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+}
+
+.eyebrow-sep {
+    color: var(--accent);
+    letter-spacing: 0;
+}
+
+/* -- Headline: the payoff line is rendered as selected text with a
+      blinking caret - flat translucent purple, no gradients. -- */
 .hero-title {
-    font-size: 56px;
+    font-size: 54px;
     font-weight: 800;
-    line-height: 1.08;
+    line-height: 1.16;
     letter-spacing: -0.02em;
     color: var(--fg);
+}
+
+.hero-line {
+    display: flex;
+    align-items: center;
+}
+
+.hero-mark {
+    background: rgba(149, 128, 255, 0.26);
+    color: var(--fg);
+    padding: 0 0.1em;
+    margin: 0 -0.1em;
+    border-radius: 3px;
+}
+
+.hero-caret {
+    display: inline-block;
+    width: 3px;
+    height: 0.94em;
+    margin-left: 0.09em;
+    background: var(--accent);
+    border-radius: 1px;
+    animation: caretBlink 1.1s linear infinite;
+}
+
+@keyframes caretBlink {
+    0%, 49%   { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-caret { animation: none; }
 }
 
 .hero-actions {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
+}
+
+/* Squarer, flatter buttons in the hero - closer to the client's UI */
+.hero-actions .btn {
+    border-radius: 9px;
+}
+
+.hero-actions .btn-secondary {
+    background: var(--bg-card);
+    border-color: var(--border-strong);
+}
+
+/* -- Platform spec row: datasheet footer instead of pill chips -- */
+.hero-spec {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--fg-muted);
+}
+
+.hero-spec-label {
+    font-size: 10.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+}
+
+.hero-spec-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.hero-spec-item i {
+    font-size: 15px;
+    color: var(--accent);
+}
+
+.hero-spec-item:not(:last-child)::after {
+    content: '';
+    width: 1px;
+    height: 14px;
+    background: var(--border-strong);
+    margin-left: 18px;
 }
 
 @media (max-width: 1024px) {
@@ -66,7 +168,7 @@
 }
 
 /* ============================================ */
-/* HOME — APP MOCKUP (mirrors the real client) */
+/* HOME - APP MOCKUP (mirrors the real client) */
 /* ============================================ */
 
 .hero-mockup {
@@ -131,7 +233,7 @@
     flex: 1;
 }
 
-/* ── Sidebar ── */
+/* -- Sidebar -- */
 .mockup-sidebar {
     background: var(--bg-raised);
     border-right: 1px solid var(--border);
@@ -266,7 +368,7 @@
 
 .mockup-user-status i { font-size: 11px; }
 
-/* ── Avatars ── */
+/* -- Avatars -- */
 .mockup-avatar {
     width: 18px;
     height: 18px;
@@ -314,7 +416,7 @@
 .mockup-msg-avatar.a1 { background: linear-gradient(135deg, #ff6b6b, #a33a3a); }
 .mockup-msg-avatar.a2 { background: linear-gradient(135deg, var(--cyan), #1f6a84); }
 
-/* ── Chat column ── */
+/* -- Chat column -- */
 .mockup-chat {
     display: flex;
     flex-direction: column;
@@ -402,7 +504,7 @@
 
 .mockup-reaction.plus { color: var(--fg-subtle); }
 
-/* ── Code block (client-style with header) ── */
+/* -- Code block (client-style with header) -- */
 .mockup-code {
     margin-top: 4px;
     border: 1px solid var(--border-strong);
@@ -459,7 +561,7 @@
 .tok-fn  { color: var(--cyan); }
 .tok-str { color: var(--success); }
 
-/* ── Message input ── */
+/* -- Message input -- */
 .mockup-input {
     display: flex;
     align-items: center;
@@ -479,7 +581,7 @@
 
 .mockup-input i.send { color: var(--accent); }
 
-/* ── Full-width bottom toolbar (mirrors ToolBar.java) ── */
+/* -- Full-width bottom toolbar (mirrors ToolBar.java) -- */
 .mockup-toolbar {
     display: flex;
     align-items: center;
@@ -577,7 +679,7 @@
     color: var(--fg);
 }
 
-/* ── Members panel ── */
+/* -- Members panel -- */
 .mockup-members {
     background: var(--bg-raised);
     border-left: 1px solid var(--border);

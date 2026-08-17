@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * A badge awarded to a user, either automatically (beta registration) or by
  * redeeming a {@link BadgeToken}. The SUPER_ADMIN badge is never materialized
- * here — it is derived from {@link User.Role} at read time.
+ * here - it is derived from {@link User.Role} at read time.
  */
 @Data
 @Entity

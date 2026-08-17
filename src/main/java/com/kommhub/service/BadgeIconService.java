@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 /**
  * Catalog of valid badge icons, enumerated from the same
- * ikonli-materialdesign2-pack artifact the app client renders with — an icon
+ * ikonli-materialdesign2-pack artifact the app client renders with - an icon
  * code accepted here is guaranteed to resolve on the client. Codepoints are
  * exposed so the web dashboard can render glyphs with the vendored MDI font.
  */

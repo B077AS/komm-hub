@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.kommhub.model.db.User;
 import com.kommhub.repository.UserRepository;
 import com.kommhub.service.PresenceService;
+import com.kommhub.websocket.WsSessionUtil;
 import com.kommhub.websocket.interfaces.AppInboundMessageHandler;
 import com.kommhub.websocket.messages.WsAppMessage;
 import com.kommhub.websocket.messages.WsMessageType;
@@ -18,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -48,7 +48,7 @@ public class AppSessionsManager extends TextWebSocketHandler {
     private static final String ATTR_LAST_PONG = "lastPong";
 
     // A session that hasn't answered a ping within this window is considered dead
-    // (client crashed / BSOD / network cut — no TCP close ever arrives in those cases).
+    // (client crashed / BSOD / network cut - no TCP close ever arrives in those cases).
     @Value("${app.ws.heartbeat-timeout-ms:90000}")
     private long heartbeatTimeoutMs;
 
@@ -60,14 +60,14 @@ public class AppSessionsManager extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        User principal = getUser(session);
-        if (principal == null) {
+        UUID userId = WsSessionUtil.getUserId(session);
+        if (userId == null) {
             log.warn("Unauthenticated WebSocket connection rejected (session {})", session.getId());
             closeQuietly(session);
             return;
         }
 
-        User user = userRepository.findById(principal.getUserId()).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             closeQuietly(session);
             return;
@@ -100,24 +100,24 @@ public class AppSessionsManager extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        User principal = getUser(session);
-        if (principal != null) {
-            boolean wasActive = appMessageSender.unregister(principal.getUserId(), session);
+        UUID userId = WsSessionUtil.getUserId(session);
+        if (userId != null) {
+            boolean wasActive = appMessageSender.unregister(userId, session);
             if (wasActive) {
                 if (applicationContext.isActive()) {
-                    userRepository.findById(principal.getUserId())
+                    userRepository.findById(userId)
                             .ifPresent(this::markOffline);
                 } else {
-                    log.warn("Skipping DB update for user={} — context is shutting down", principal.getUsername());
+                    log.warn("Skipping DB update for user={} - context is shutting down", userId);
                 }
             }
-            log.info("WebSocket disconnected: {} — {} (wasActive={})", principal.getUsername(), status, wasActive);
+            log.info("WebSocket disconnected: {} - {} (wasActive={})", userId, status, wasActive);
         }
     }
 
     @PreDestroy
     public void onShutdown() {
-        log.info("Shutdown — marking {} user(s) as OFFLINE", appMessageSender.getSessions().size());
+        log.info("Shutdown - marking {} user(s) as OFFLINE", appMessageSender.getSessions().size());
         appMessageSender.getSessions().keySet().forEach(userId ->
                 userRepository.findById(userId).ifPresent(this::markOffline));
         appMessageSender.getSessions().clear();
@@ -157,7 +157,7 @@ public class AppSessionsManager extends TextWebSocketHandler {
                 log.warn("Ping failed for user {} (session {}): {}", userId, session.getId(), e.getMessage());
                 dropSession(userId, session);
             } catch (Exception e) {
-                // e.g. a concurrent text send in progress — connection is alive, retry next sweep
+                // e.g. a concurrent text send in progress - connection is alive, retry next sweep
                 log.debug("Ping skipped for user {}: {}", userId, e.getMessage());
             }
         });
@@ -198,7 +198,7 @@ public class AppSessionsManager extends TextWebSocketHandler {
         }
     }
 
-    // Kept for backward compatibility — delegates to AppMessageSender
+    // Kept for backward compatibility - delegates to AppMessageSender
     public void sendToUser(UUID userId, WsAppMessage message) {
         appMessageSender.sendToUser(userId, message);
     }
@@ -213,7 +213,7 @@ public class AppSessionsManager extends TextWebSocketHandler {
 
     private void markOffline(User user) {
         // Live status always drops to OFFLINE on disconnect, regardless of the
-        // user's chosen status — which stays stored in preferredStatus for next login.
+        // user's chosen status - which stays stored in preferredStatus for next login.
         user.setStatus(User.UserStatus.OFFLINE);
         user.setLastOnline(LocalDateTime.now());
         userRepository.save(user);
@@ -227,14 +227,6 @@ public class AppSessionsManager extends TextWebSocketHandler {
         } catch (IOException e) {
             log.warn("Failed to send error to session {}: {}", session.getId(), e.getMessage());
         }
-    }
-
-    private User getUser(WebSocketSession session) {
-        if (session.getPrincipal() instanceof UsernamePasswordAuthenticationToken auth
-                && auth.getPrincipal() instanceof User user) {
-            return user;
-        }
-        return null;
     }
 
     private void closeQuietly(WebSocketSession session) {

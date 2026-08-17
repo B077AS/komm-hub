@@ -1,26 +1,23 @@
 package com.kommhub.security;
 
+import com.google.gson.Gson;
+import com.kommhub.model.dto.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -30,6 +27,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -39,11 +37,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final RateLimitFilter rateLimitFilter;
-    private final CustomUserDetailsService userDetailsService;
+    private final WebSessionUserFilter webSessionUserFilter;
+    private final Gson gson;
+    private final ObjectProvider<WebRememberMeFilter> webRememberMeFilterProvider;
 
-    // Prevent Spring Boot from also auto-registering the rate-limit filter as a
-    // container-level filter — it must run inside the security chains (after auth)
-    // so per-user keying works, not ahead of them where no principal exists yet.
+    @Value("${komm.cors.allowed-origins}")
+    private List<String> corsAllowedOrigins;
+
     @Bean
     public org.springframework.boot.web.servlet.FilterRegistrationBean<RateLimitFilter> rateLimitFilterRegistration() {
         var registration = new org.springframework.boot.web.servlet.FilterRegistrationBean<>(rateLimitFilter);
@@ -52,10 +52,24 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    public org.springframework.boot.web.servlet.FilterRegistrationBean<WebRememberMeFilter> webRememberMeFilterRegistration() {
+        var registration = new org.springframework.boot.web.servlet.FilterRegistrationBean<>(webRememberMeFilterProvider.getObject());
+        registration.setEnabled(false);
+        return registration;
+    }
+
+    @Bean
+    public org.springframework.boot.web.servlet.FilterRegistrationBean<WebSessionUserFilter> webSessionUserFilterRegistration() {
+        var registration = new org.springframework.boot.web.servlet.FilterRegistrationBean<>(webSessionUserFilter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(corsAllowedOrigins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
@@ -101,10 +115,12 @@ public class WebConfig implements WebMvcConfigurer {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
-                            response.getWriter().write(
-                                    "{\"error\":\"Unauthorized\",\"message\":\"" +
-                                            authException.getMessage() + "\",\"code\":\"UNAUTHORIZED\"}"
-                            );
+                            response.getWriter().write(gson.toJson(ErrorResponse.builder()
+                                    .status(HttpStatus.UNAUTHORIZED.value())
+                                    .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                                    .message(authException.getMessage() == null
+                                            ? "Authentication required" : authException.getMessage())
+                                    .build()));
                         }));
 
         return http.build();
@@ -129,9 +145,11 @@ public class WebConfig implements WebMvcConfigurer {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
-                            response.getWriter().write(
-                                    "{\"error\":\"Unauthorized\",\"message\":\"Authentication required\",\"code\":\"UNAUTHORIZED\"}"
-                            );
+                            response.getWriter().write(gson.toJson(ErrorResponse.builder()
+                                    .status(HttpStatus.UNAUTHORIZED.value())
+                                    .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                                    .message("Authentication required")
+                                    .build()));
                         }));
 
         return http.build();
@@ -153,35 +171,45 @@ public class WebConfig implements WebMvcConfigurer {
         return http.build();
     }
 
-    // Web Security Chain - Form login with sessions for browser access
+    // Web Security Chain - session-cookie auth for browser pages (see AuthWebController
+    // for the actual /login and /logout handlers and WebRememberMeFilter below for silent
+    // remember-me re-auth). Everything not explicitly public requires an authenticated
+    // session - there is only the one protected area, /dashboard.
     @Bean
     @Order(4)
     public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/**")
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                // CSRF stays on its defaults: session-backed token repository, with the token
+                // injected into the Thymeleaf forms server-side. No JS ever reads the token,
+                // so there is no reason to expose it in a script-readable cookie.
+                // Without this, Spring Security silently applies its own default LogoutFilter
+                // on POST /logout, which intercepts the request before it ever reaches
+                // AuthWebController.logout() - meaning the remember-me token never gets
+                // revoked server-side and none of our cookies get cleared.
+                .logout(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
                         // Public pages
-                        .requestMatchers("/", "/home").permitAll()
+                        .requestMatchers("/", "/home", "/download").permitAll()
                         .requestMatchers("/login", "/register", "/forgot-password", "/reset-password", "/verify-email").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/logout").permitAll()
                         .requestMatchers("/invite/**").permitAll()
+                        // Static assets - must stay public or the login/home pages can't load their own CSS/JS
+                        .requestMatchers("/css/**", "/js/**", "/fonts/**").permitAll()
+                        .requestMatchers("/favicon.ico", "/favicon.svg", "/logo.png", "/robots.txt", "/sitemap.xml").permitAll()
 
-                        .requestMatchers("/dashboard", "/dashboard/**").permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
+
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(webRememberMeFilterProvider.getObject(), RateLimitFilter.class)
+                .addFilterAfter(webSessionUserFilter, WebRememberMeFilter.class)
 
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.sendRedirect("/login");
                         })
-                )
-
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
-                        .permitAll()
                 );
 
         return http.build();
@@ -197,22 +225,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/fonts/");
         registry.addResourceHandler("/favicon.ico", "/favicon.svg", "/logo.png", "/robots.txt", "/sitemap.xml")
                 .addResourceLocations("classpath:/static/");
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
     }
 }

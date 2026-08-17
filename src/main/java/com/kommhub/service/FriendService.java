@@ -199,7 +199,7 @@ public class FriendService {
         }
     }
 
-    // ── helpers ───────────────────────────────────────────────────────────────
+    // -- helpers ---------------------------------------------------------------
 
     private Friend getOrThrow(UUID friendId) {
         return friendRepository.findById(friendId)

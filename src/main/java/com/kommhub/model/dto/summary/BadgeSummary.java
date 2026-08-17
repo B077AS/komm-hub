@@ -19,9 +19,9 @@ public class BadgeSummary {
     private String code;
     private String name;
     private String description;
-    // Ikonli literal (e.g. "mdi2s-shield-crown") — the client renders it directly
+    // Ikonli literal (e.g. "mdi2s-shield-crown") - the client renders it directly
     private String icon;
-    // Hex codepoint of the icon glyph (e.g. "F04C9") — used by the web dashboard
+    // Hex codepoint of the icon glyph (e.g. "F04C9") - used by the web dashboard
     // to render with the MDI web font; app clients can ignore it
     private String iconCodepoint;
     private String color;

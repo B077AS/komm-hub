@@ -51,7 +51,7 @@ public class ServerDeletionCompleteHandler implements InstallationInboundMessage
         // Authorization: the notifying installation must actually host this server.
         UUID installationId = (UUID) session.getAttributes().get("installationId");
         if (installationId == null || !installationId.equals(server.getInstallationId())) {
-            log.warn("SERVER_DELETION_COMPLETE rejected — installationId={} does not host serverId={}",
+            log.warn("SERVER_DELETION_COMPLETE rejected - installationId={} does not host serverId={}",
                     installationId, serverId);
             return;
         }

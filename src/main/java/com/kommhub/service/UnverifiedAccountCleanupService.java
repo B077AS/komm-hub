@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Deletes accounts that never completed email verification, freeing their
  * username and email for a fresh registration (e.g. after an email typo).
- * The beta key consumed at registration is deleted along with the account —
+ * The beta key consumed at registration is deleted along with the account -
  * abandoned signups don't get to keep an invite.
  */
 @Slf4j

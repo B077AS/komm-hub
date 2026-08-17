@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <footer th:fragment="footer" class="site-footer">
-    <div class="site-footer-content container">
+    <div class="site-footer-content">
         <div class="site-footer-grid">
             <!-- Brand Column -->
             <div class="site-footer-brand">
@@ -48,6 +48,9 @@
                     <a th:href="${site.github.server}" class="site-footer-link" target="_blank" rel="noopener">
                         <i class="mdi mdi-github"></i> Komm Server
                     </a>
+                    <a th:href="${site.github.serverLauncher}" class="site-footer-link" target="_blank" rel="noopener">
+                        <i class="mdi mdi-github"></i> Komm Server Launcher
+                    </a>
                     <a th:href="${site.github.hub}" class="site-footer-link" target="_blank" rel="noopener">
                         <i class="mdi mdi-github"></i> Komm Hub
                     </a>
@@ -60,7 +63,7 @@
             <span class="site-footer-platforms">
                 <i class="mdi mdi-microsoft-windows" title="Windows"></i>
                 <i class="mdi mdi-linux" title="Linux X11 &amp; Wayland"></i>
-                Windows · Linux X11 · Linux Wayland
+                Windows - Linux X11 - Linux Wayland
             </span>
         </div>
     </div>

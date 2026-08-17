@@ -2,7 +2,7 @@ package com.kommhub.model.permissions;
 
 /**
  * Canonical permission names, mirrored from the installation's permission enum. The hub does not evaluate
- * permissions itself — it proxies checks to the installation by name — but using this enum at call sites keeps
+ * permissions itself - it proxies checks to the installation by name - but using this enum at call sites keeps
  * permission references type-safe and refactorable instead of relying on string literals.
  */
 public enum Permission {

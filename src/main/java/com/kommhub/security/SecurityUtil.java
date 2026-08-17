@@ -1,7 +1,6 @@
 package com.kommhub.security;
 
 import com.kommhub.model.db.User;
-import com.kommhub.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,8 +12,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SecurityUtil {
 
-    private final UserRepository userRepository;
-
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -22,11 +19,8 @@ public class SecurityUtil {
             return null;
         }
 
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof User user) {
-            return userRepository.findById(user.getUserId())
-                    .orElse(null);
+        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+            return userDetails.getUser();
         }
 
         return null;
@@ -41,8 +35,12 @@ public class SecurityUtil {
 
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof User user) {
-            return user.getUserId();
+        if (principal instanceof CustomUserDetails userDetails) {
+            return userDetails.getUser().getUserId();
+        }
+
+        if (principal instanceof SessionUser sessionUser) {
+            return sessionUser.getUserId();
         }
 
         return null;

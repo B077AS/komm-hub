@@ -1,9 +1,9 @@
 /* ============================================ */
-/* KOMM PUBLIC SITE — BASE STYLES & DESIGN SYSTEM */
+/* KOMM PUBLIC SITE - BASE STYLES & DESIGN SYSTEM */
 /* ============================================ */
 
 :root {
-    /* Colors — Komm dark theme */
+    /* Colors - Komm dark theme */
     --bg:             #0d0e12;
     --bg-raised:      #14151b;
     --bg-card:        #181920;
@@ -22,6 +22,8 @@
     --cyan:           #30d6e8;
     --success:        #8aff80;
     --success-bg:     rgba(138, 255, 128, 0.12);
+    --warning:        #ffca80;
+    --warning-bg:     rgba(255, 202, 128, 0.07);
     --danger:         #ff9580;
     --danger-bg:      rgba(255, 149, 128, 0.12);
 
@@ -65,9 +67,8 @@
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: var(--navbar-height);
+html, body.site-body {
+    height: 100%;
 }
 
 body.site-body {
@@ -77,12 +78,39 @@ body.site-body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
+/* .site-main is the only scrolling element - the navbar and its own
+   scrollbar sit outside it, so the scrollbar never runs alongside the
+   navbar, only underneath it. */
 .site-main {
     position: relative;
     z-index: 1;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.site-main::-webkit-scrollbar {
+    width: 10px;
+}
+
+.site-main::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.site-main::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 5px;
+}
+
+.site-main::-webkit-scrollbar-thumb:hover {
+    background: var(--fg-subtle);
 }
 
 ::selection {
@@ -94,59 +122,21 @@ body.site-body {
 /* AMBIENT BACKGROUND */
 /* ============================================ */
 
+/* Quiet, static backdrop: a faint dot grid that fades out down the
+   viewport. No blurred glows, no animation. */
 .bg-animation {
     position: fixed;
     inset: 0;
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
-}
-
-.orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(90px);
-    opacity: 0.14;
-    animation: orbFloat 22s infinite ease-in-out;
-}
-
-.orb1 {
-    width: 520px;
-    height: 520px;
-    background: radial-gradient(circle, var(--accent), transparent 70%);
-    top: -220px;
-    left: -180px;
-}
-
-.orb2 {
-    width: 420px;
-    height: 420px;
-    background: radial-gradient(circle, var(--cyan), transparent 70%);
-    top: 45%;
-    right: -170px;
-    opacity: 0.08;
-    animation-delay: -7s;
-    animation-duration: 27s;
-}
-
-.orb3 {
-    width: 620px;
-    height: 620px;
-    background: radial-gradient(circle, var(--accent-hover), transparent 70%);
-    bottom: -280px;
-    left: 28%;
-    animation-delay: -13s;
-    animation-duration: 32s;
-}
-
-@keyframes orbFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33%      { transform: translate(90px, -80px) scale(1.08); }
-    66%      { transform: translate(-60px, 90px) scale(0.94); }
+    background-image: radial-gradient(rgba(148, 149, 155, 0.13) 1px, transparent 1.4px);
+    background-size: 28px 28px;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 78%);
+    mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 78%);
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .orb { animation: none; }
     html { scroll-behavior: auto; }
 }
 
@@ -441,9 +431,9 @@ i,
 /* ============================================ */
 
 .site-navbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
     background: rgba(13, 14, 18, 0.82);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -523,6 +513,127 @@ i,
     color: var(--fg);
 }
 
+/* User menu (authenticated navbar) */
+.site-user-menu {
+    position: relative;
+}
+
+.site-user-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px 5px 5px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--fg-muted);
+    font-family: var(--font-family);
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.site-user-trigger:hover {
+    border-color: var(--border-strong);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.site-user-trigger .mdi-chevron-down {
+    font-size: 16px;
+    transition: transform 0.15s ease;
+}
+
+.site-user-trigger[aria-expanded="true"] .mdi-chevron-down {
+    transform: rotate(180deg);
+}
+
+.site-user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #14151b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.site-user-avatar span {
+    line-height: 1;
+    transform: translateY(-1px);
+}
+
+.site-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.site-user-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 200px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    padding: 6px;
+    display: none;
+    z-index: 200;
+}
+
+.site-user-dropdown.open {
+    display: block;
+}
+
+.site-user-dropdown-name {
+    padding: 8px 10px 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.site-user-dropdown-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 6px 4px;
+}
+
+.site-user-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--fg-muted);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.site-user-dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--fg);
+}
+
+.site-user-dropdown-item-danger {
+    color: var(--danger);
+}
+
+.site-user-dropdown-item-danger:hover {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
 /* Mobile toggle */
 .site-navbar-mobile-toggle {
     display: none;
@@ -568,15 +679,13 @@ i,
 
     .site-navbar-links.open { display: flex; }
 
-    .site-navbar-actions .btn-ghost { display: none; }
-
     .site-navbar-mobile-toggle { display: flex; margin-left: 8px; }
 
     .site-navbar-actions { margin-left: auto; }
 }
 
 @media (max-width: 560px) {
-    .site-navbar-actions .btn-primary { padding: 10px 14px; font-size: 14px; }
+    .site-navbar-actions .btn-ghost { padding: 10px 14px; font-size: 14px; }
     .site-navbar-content { gap: 12px; }
 }
 
@@ -591,6 +700,13 @@ i,
     border-top: 1px solid var(--border);
     padding: 56px 0 32px;
     margin-top: 0;
+}
+
+/* Footer content spans the full page width (no container cap), with
+   padding that scales down smoothly on smaller viewports. */
+.site-footer-content {
+    width: 100%;
+    padding: 0 clamp(20px, 4.5vw, 72px);
 }
 
 .site-footer-grid {
@@ -642,7 +758,7 @@ i,
 .site-footer-link:hover { color: var(--accent-bright); }
 
 .site-footer-bottom {
-    border-top: 1px solid var(--border);
+    position: relative;
     padding-top: 24px;
     display: flex;
     align-items: center;
@@ -651,6 +767,18 @@ i,
     flex-wrap: wrap;
     font-size: 13px;
     color: var(--fg-subtle);
+}
+
+/* Full-bleed divider - .site-footer-content is padded, so a border on this
+   element would stop short of the edges. Break out to the full viewport width. */
+.site-footer-bottom::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    border-top: 1px solid var(--border);
 }
 
 .site-footer-platforms {

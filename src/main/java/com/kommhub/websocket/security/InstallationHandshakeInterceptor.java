@@ -38,20 +38,20 @@ public class InstallationHandshakeInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) {
 
-        // ── 1. Read both headers ──────────────────────────────────────────────
+        // -- 1. Read both headers ----------------------------------------------
         String authHeader = request.getHeaders().getFirst("Authorization");
         String connectToken = request.getHeaders().getFirst("X-Connect-Token");
 
         if (authHeader == null || !authHeader.startsWith("Certificate ")) {
-            log.warn("WS upgrade rejected — missing or malformed Authorization header");
+            log.warn("WS upgrade rejected - missing or malformed Authorization header");
             return false;
         }
         if (connectToken == null || connectToken.isBlank()) {
-            log.warn("WS upgrade rejected — missing X-Connect-Token header");
+            log.warn("WS upgrade rejected - missing X-Connect-Token header");
             return false;
         }
 
-        // ── 2. Decode and parse the presented certificate ─────────────────────
+        // -- 2. Decode and parse the presented certificate ---------------------
         X509Certificate presentedCert;
         try {
             String pem = new String(Base64.getDecoder().decode(authHeader.substring(12).trim()));
@@ -62,60 +62,60 @@ public class InstallationHandshakeInterceptor implements HandshakeInterceptor {
                         .getCertificate((X509CertificateHolder) parser.readObject());
             }
         } catch (Exception e) {
-            log.warn("WS upgrade rejected — could not parse certificate: {}", e.getMessage());
+            log.warn("WS upgrade rejected - could not parse certificate: {}", e.getMessage());
             return false;
         }
 
-        // ── 3. Verify the cert was signed by the hub CA ───────────────────────
+        // -- 3. Verify the cert was signed by the hub CA -----------------------
         try {
             presentedCert.verify(jwtUtil.getCaCertificate().getPublicKey());
         } catch (Exception e) {
-            log.warn("WS upgrade rejected — certificate not signed by hub CA");
+            log.warn("WS upgrade rejected - certificate not signed by hub CA");
             return false;
         }
 
-        // ── 4. Check cert validity period ─────────────────────────────────────
+        // -- 4. Check cert validity period -------------------------------------
         try {
             presentedCert.checkValidity();
         } catch (Exception e) {
-            log.warn("WS upgrade rejected — certificate expired or not yet valid");
+            log.warn("WS upgrade rejected - certificate expired or not yet valid");
             return false;
         }
 
-        // ── 5. Extract installationId from cert CN ────────────────────────────
+        // -- 5. Extract installationId from cert CN ----------------------------
         UUID installationId = extractCn(presentedCert);
         if (installationId == null) {
-            log.warn("WS upgrade rejected — cert CN is not a valid UUID");
+            log.warn("WS upgrade rejected - cert CN is not a valid UUID");
             return false;
         }
 
-        // ── 6. DB check — revocation and status only ──────────────────────────
+        // -- 6. DB check - revocation and status only --------------------------
         Installation installation = installationRepository.findById(installationId).orElse(null);
         if (installation == null) {
-            log.warn("WS upgrade rejected — unknown installationId: {}", installationId);
+            log.warn("WS upgrade rejected - unknown installationId: {}", installationId);
             return false;
         }
         if (installation.getStatus() == Installation.InstallationStatus.NOT_VERIFIED) {
-            log.warn("WS upgrade rejected — installation not verified: {}", installationId);
+            log.warn("WS upgrade rejected - installation not verified: {}", installationId);
             return false;
         }
         if (Boolean.TRUE.equals(installation.getCertificateRevoked())) {
-            log.warn("WS upgrade rejected — certificate revoked: {}", installationId);
+            log.warn("WS upgrade rejected - certificate revoked: {}", installationId);
             return false;
         }
 
-        // ── 7. Verify JWT signed with the installation's private key ──────────
-        // Uses the public key from the presented cert — proves the connecting
+        // -- 7. Verify JWT signed with the installation's private key ----------
+        // Uses the public key from the presented cert - proves the connecting
         // party holds the private key that matches the hub-issued certificate.
         try {
             PublicKey installationPublicKey = presentedCert.getPublicKey();
             jwtUtil.verifyWithKey(connectToken, installationPublicKey);
         } catch (Exception e) {
-            log.warn("WS upgrade rejected — connect token invalid for {}: {}", installationId, e.getMessage());
+            log.warn("WS upgrade rejected - connect token invalid for {}: {}", installationId, e.getMessage());
             return false;
         }
 
-        // ── 8. Stash attributes for the handler ───────────────────────────────
+        // -- 8. Stash attributes for the handler -------------------------------
         attributes.put("installationId", installationId);
         attributes.put("clientIpAddress", extractIpAddress(request));
         attributes.put("tlsEnabled",

@@ -21,19 +21,17 @@
 </head>
 <body class="site-body">
 <!-- Ambient background -->
-<div class="bg-animation" aria-hidden="true">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
-</div>
+<div class="bg-animation" aria-hidden="true"></div>
 
 <nav th:replace="~{fragments/site-navbar :: navbar}"></nav>
 
+<!-- The only scrollable element - keeps the scrollbar confined under the
+     navbar instead of running its full height alongside it. -->
 <main class="site-main">
     <div layout:fragment="content"></div>
-</main>
 
-<footer th:replace="~{fragments/site-footer :: footer}"></footer>
+    <footer th:replace="~{fragments/site-footer :: footer}"></footer>
+</main>
 
 <th:block layout:fragment="scripts"></th:block>
 </body>

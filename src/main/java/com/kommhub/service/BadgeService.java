@@ -32,7 +32,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BadgeService implements ApplicationRunner {
 
-    // Same alphabet as beta keys — no 0/O/1/I, tokens get typed by hand
+    // Same alphabet as beta keys - no 0/O/1/I, tokens get typed by hand
     private static final char[] TOKEN_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".toCharArray();
 
     private final BadgeRepository badgeRepository;
@@ -43,7 +43,7 @@ public class BadgeService implements ApplicationRunner {
     private final BadgeIconService badgeIconService;
     private final SecureRandom secureRandom = new SecureRandom();
 
-    // ── Seeding & automatic awards ──────────────────────────────────────────
+    // -- Seeding & automatic awards ------------------------------------------
 
     /**
      * Seeds the two SYSTEM badges and backfills the beta badge for every
@@ -111,7 +111,7 @@ public class BadgeService implements ApplicationRunner {
         userBadgeRepository.deleteByUserId(userId);
     }
 
-    // ── Reads ───────────────────────────────────────────────────────────────
+    // -- Reads ---------------------------------------------------------------
 
     /**
      * All badges shown on a user's profile: materialized awards plus the
@@ -151,7 +151,7 @@ public class BadgeService implements ApplicationRunner {
                 .toList();
     }
 
-    // ── Token redemption ────────────────────────────────────────────────────
+    // -- Token redemption ----------------------------------------------------
 
     @Transactional
     public BadgeSummary redeem(User user, String rawToken) {
@@ -160,7 +160,7 @@ public class BadgeService implements ApplicationRunner {
         }
         BadgeToken token = badgeTokenRepository.findByTokenValue(rawToken.trim().toUpperCase())
                 .filter(t -> !t.isExpired() && !t.isExhausted())
-                // Uniform message — don't reveal whether a token exists, expired or ran out
+                // Uniform message - don't reveal whether a token exists, expired or ran out
                 .orElseThrow(() -> new IllegalStateException("Invalid or expired token"));
 
         Badge badge = badgeRepository.findById(token.getBadgeId())
@@ -182,7 +182,7 @@ public class BadgeService implements ApplicationRunner {
         return toSummary(badge, awarded.getAwardedAt(), false);
     }
 
-    // ── Admin operations ────────────────────────────────────────────────────
+    // -- Admin operations ----------------------------------------------------
 
     @Transactional
     public BadgeSummary createBadge(BadgeCreateRequest request) {
@@ -218,7 +218,7 @@ public class BadgeService implements ApplicationRunner {
         log.info("Created custom badge {} ({})", badge.getName(), badge.getCode());
 
         // 1 badge = 1 token: the badge's single redemption token is born with
-        // it, using the limits from the create form. Same transaction — an
+        // it, using the limits from the create form. Same transaction - an
         // invalid expiry rolls the badge back too.
         if (request.getExpiresAt() != null && request.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Expiry must be in the future");
@@ -251,7 +251,7 @@ public class BadgeService implements ApplicationRunner {
         log.info("Deleted custom badge {} ({})", badge.getName(), badge.getCode());
     }
 
-    // ── Helpers ─────────────────────────────────────────────────────────────
+    // -- Helpers -------------------------------------------------------------
 
     private String randomToken() {
         StringBuilder sb = new StringBuilder("BADGE");

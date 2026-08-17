@@ -88,18 +88,27 @@ public class AuthService {
         UUID userId = UUID.fromString(claims.get("userId", String.class));
 
         // Rotation: each refresh token is single-use. A token with a valid
-        // signature that is not in the store was either already rotated (reuse —
+        // signature that is not in the store was either already rotated (reuse -
         // possibly stolen) or revoked, so kill every session for this user.
         RefreshToken stored = refreshTokenRepository.findByTokenHash(hashToken(refreshToken)).orElse(null);
         if (stored == null) {
             refreshTokenRepository.deleteByUserId(userId);
-            log.warn("Refresh token reuse detected for user {} — all refresh tokens revoked", userId);
+            log.warn("Refresh token reuse detected for user {} - all refresh tokens revoked", userId);
             throw new IllegalArgumentException("Refresh token is no longer valid. Please login again.");
         }
         refreshTokenRepository.delete(stored);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Account revocation must also stop refresh - login checks isEnabled via the
+        // DaoAuthenticationProvider, but without this a refresh token held by a disabled
+        // account would keep renewing itself until it expires.
+        if (!user.isEmailVerified()) {
+            refreshTokenRepository.deleteByUserId(userId);
+            log.warn("Refresh rejected for disabled account {} - all refresh tokens revoked", userId);
+            throw new IllegalArgumentException("Account is disabled. Please login again.");
+        }
 
         log.info("Tokens refreshed successfully for user: {}", user.getUsername());
         return buildAuthResponse(user);
@@ -117,7 +126,7 @@ public class AuthService {
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
-        // Check email first — if it belongs to an unverified account, resend the code
+        // Check email first - if it belongs to an unverified account, resend the code
         // instead of rejecting, so the user can recover after closing the verification page
         Optional<User> existingByEmail = userRepository.findByEmail(request.getEmail());
         if (existingByEmail.isPresent()) {
@@ -125,7 +134,7 @@ public class AuthService {
             if (existing.isEmailVerified()) {
                 throw new IllegalStateException("Email already in use");
             }
-            // Unverified account — generate a fresh code and resend
+            // Unverified account - generate a fresh code and resend
             String code = generateCode();
             LocalDateTime now = LocalDateTime.now();
             tokenRepository.findByUserId(existing.getUserId()).ifPresentOrElse(token -> {
@@ -153,7 +162,7 @@ public class AuthService {
         }
 
         // Closed beta: a new account requires an unused beta key. The unverified
-        // re-registration path above deliberately skips this — that account
+        // re-registration path above deliberately skips this - that account
         // already consumed a key when it was first created.
         BetaKey betaKey = betaKeyService.isBetaEnabled()
                 ? betaKeyService.validate(request.getBetaKey())
@@ -263,7 +272,7 @@ public class AuthService {
 
     /**
      * Starts the forgot-password flow. Deliberately does not reveal whether the
-     * email belongs to an account — callers always get a generic success message.
+     * email belongs to an account - callers always get a generic success message.
      */
     @Transactional
     public void requestPasswordReset(ForgotPasswordRequest request) {
@@ -324,6 +333,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
         passwordResetTokenRepository.delete(token);
+        refreshTokenRepository.deleteByUserId(user.getUserId());
 
         log.info("Password reset completed for user: {}", user.getUsername());
     }
@@ -332,7 +342,7 @@ public class AuthService {
         return String.format("%06d", secureRandom.nextInt(1_000_000));
     }
 
-    /** 32 random bytes, URL-safe base64 (43 chars) — safe to embed in the emailed link. */
+    /** 32 random bytes, URL-safe base64 (43 chars) - safe to embed in the emailed link. */
     private String generateResetToken() {
         byte[] bytes = new byte[32];
         secureRandom.nextBytes(bytes);

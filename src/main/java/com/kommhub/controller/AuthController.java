@@ -196,7 +196,7 @@ public class AuthController {
         try {
             authService.requestPasswordReset(request);
         } catch (IllegalStateException e) {
-            // Cooldown — safe to surface, it only fires for accounts that exist and asked recently
+            // Cooldown - safe to surface, it only fires for accounts that exist and asked recently
             log.warn("Password reset throttled for {}: {}", email, e.getMessage());
             return ErrorResponse.of(HttpStatus.TOO_MANY_REQUESTS, e.getMessage());
         } catch (Exception e) {

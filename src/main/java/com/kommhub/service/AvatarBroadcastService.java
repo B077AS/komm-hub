@@ -19,8 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Notifies the people who could plausibly have a user's avatar cached — their
- * co-server-members and accepted friends — that the avatar changed, so each
+ * Notifies the people who could plausibly have a user's avatar cached - their
+ * co-server-members and accepted friends - that the avatar changed, so each
  * client can evict its cached copy and refetch lazily on the next render.
  */
 @Slf4j
@@ -45,7 +45,7 @@ public class AvatarBroadcastService {
             }
         }
 
-        // Accepted friends (either direction) — they see the avatar in DMs / friends list
+        // Accepted friends (either direction) - they see the avatar in DMs / friends list
         for (Friend f : friendRepository.findByRequesterAndStatus(user, FriendStatus.ACCEPTED)) {
             recipients.add(f.getAddressee().getUserId());
         }

@@ -1,6 +1,6 @@
 package com.kommhub.websocket.security;
 
-import com.kommhub.model.db.User;
+import com.kommhub.security.CustomUserDetails;
 import com.kommhub.security.JwtUtil;
 import com.kommhub.security.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
@@ -30,29 +30,29 @@ public class AppHandshakeInterceptor implements HandshakeInterceptor {
         try {
             String token = extractToken(request);
             if (token == null) {
-                log.warn("WebSocket handshake rejected — no token");
+                log.warn("WebSocket handshake rejected - no token");
                 return false;
             }
 
             Claims claims = jwtUtil.validateToken(token);
             if (jwtUtil.getTokenType(claims) != JwtUtil.TokenType.ACCESS) {
-                log.warn("WebSocket handshake rejected — not an access token");
+                log.warn("WebSocket handshake rejected - not an access token");
                 return false;
             }
 
             String userId = claims.get("userId", String.class);
-            User user = (User) userDetailsService.loadUserById(UUID.fromString(userId));
+            CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserById(UUID.fromString(userId));
 
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-            // Store in attributes — read by JwtHandshakeHandler.determineUser()
+            // Store in attributes - read by JwtHandshakeHandler.determineUser()
             attributes.put("principal", auth);
 
-            log.debug("WebSocket handshake authenticated: {}", user.getUsername());
+            log.debug("WebSocket handshake authenticated: {}", userDetails.getUsername());
             return true;
 
         } catch (Exception e) {
-            log.warn("WebSocket handshake rejected — {}", e.getMessage());
+            log.warn("WebSocket handshake rejected - {}", e.getMessage());
             return false;
         }
     }
