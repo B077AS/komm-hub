@@ -2,14 +2,14 @@
 /* HOME - HERO */
 /* ============================================ */
 
-/* Hero + trust strip together fill the first screen: the hero keeps its
-   natural size and the trust strip stretches to soak up any leftover
-   space, so its bottom edge lands flush with the fold instead of leaving
-   a dead gap. If the hero alone is already taller than one screen, the
-   group simply grows past min-height and the strip keeps its own size. */
+/* Hero and trust strip both keep their natural size - neither stretches.
+   Any leftover space up to the fold goes into the gap between them
+   (space-between), pinning the trust strip's bottom edge to the fold
+   without growing its own box. */
 .hero-group {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     min-height: calc(100vh - var(--navbar-height));
     min-height: calc(100dvh - var(--navbar-height));
 }
@@ -31,6 +31,11 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+    /* .hero's padding is asymmetric (96px top / 72px bottom), which skews
+       grid-centered content 12px below the true midpoint between the navbar
+       and the trust strip. Nudge back up with a transform so it doesn't
+       affect the grid track's sizing (and thus the hero/trust-strip split). */
+    transform: translateY(-12px);
 }
 
 /* -- Eyebrow: monospace status line instead of a marketing pill -- */
@@ -173,6 +178,11 @@
 
 .hero-mockup {
     perspective: 1400px;
+    /* Same treatment as .hero-text: transform instead of margin so it
+       doesn't affect the grid row's height (and thus the hero/trust-strip
+       split), just nudges it up to the true midpoint between the navbar
+       and the trust strip. */
+    transform: translateY(-12px);
 }
 
 .mockup-window {
@@ -738,7 +748,7 @@
     border-bottom: 1px solid var(--border);
     background: rgba(24, 25, 32, 0.6);
     padding: 22px 0;
-    flex: 1;
+    flex: none;
     display: flex;
     align-items: center;
 }
