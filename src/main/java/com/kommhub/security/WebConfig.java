@@ -87,7 +87,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Order(1)
     public SecurityFilterChain publicSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/api/auth/**", "/api/installations/validate", "/api/invites/*/info", "/api/client/**", "/api/launcher/**")
+                .securityMatcher("/api/auth/**", "/api/installations/validate", "/api/invites/*/info")
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
@@ -106,8 +106,6 @@ public class WebConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/auth/reset-password").permitAll()
                         .requestMatchers("/api/installations/validate").permitAll()
                         .requestMatchers("/api/invites/*/info").permitAll()
-                        .requestMatchers("/api/client/**").permitAll()
-                        .requestMatchers("/api/launcher/**").permitAll()
                         .anyRequest().denyAll()
                 )
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
