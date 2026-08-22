@@ -84,7 +84,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
             new Rule("beta-request",     "POST", "/api/auth/beta-request",         2,  1,  Duration.ofMinutes(5)),
             new Rule("install-validate", "POST", "/api/installations/validate",    5,  5,  Duration.ofMinutes(1)),
             new Rule("invite-info",      "GET",  "/api/invites/*/info",            30, 30, Duration.ofMinutes(1)),
-            new Rule("client-download",  "GET",  "/api/client/download",           5,  5,  Duration.ofHours(1)),
 
             // -- Authenticated, per-user: expensive or spammy --
             new Rule("gifs",             "GET",  "/api/gifs/**",                   60, 60, Duration.ofMinutes(1)),
