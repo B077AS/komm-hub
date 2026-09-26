@@ -261,10 +261,6 @@
   content: "\F0423";
 }
 
-.mdi-rocket-launch::before {
-  content: "\F14DE";
-}
-
 .mdi-seal::before {
   content: "\F047A";
 }

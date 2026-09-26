@@ -52,7 +52,7 @@ body {
 .profile-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 0;
     padding: 28px 24px;
     display: flex;
     align-items: center;
@@ -61,6 +61,7 @@ body {
 }
 
 .profile-info h2 {
+    font-family: var(--font-display);
     font-size: 20px;
     font-weight: 700;
     margin-bottom: 4px;
@@ -97,7 +98,7 @@ body {
     background: var(--bg-input);
     color: var(--fg);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 0;
     font-size: 14px;
     font-family: inherit;
     text-align: center;
@@ -118,7 +119,7 @@ body {
     gap: 10px;
     padding: 8px 12px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 0;
     font-size: 13.5px;
 }
 
@@ -132,7 +133,7 @@ body {
     text-decoration: none;
     font-size: 15px;
     line-height: 1;
-    border-radius: 6px;
+    border-radius: 0;
     transition: background 0.15s ease, color 0.15s ease;
 }
 .beta-key-action:hover { background: var(--bg-input); color: var(--accent-hover); }
@@ -152,7 +153,7 @@ body {
     gap: 10px;
     padding: 8px 12px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 0;
     font-size: 13.5px;
 }
 
@@ -169,7 +170,7 @@ body {
     background: var(--bg-input);
     color: var(--fg);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 0;
     font-size: 14px;
     font-family: inherit;
     flex: 1;
@@ -183,7 +184,7 @@ body {
     background: var(--bg-input);
     color: var(--fg);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -198,7 +199,7 @@ body {
     padding: 4px;
     background: var(--bg-input);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 0;
     cursor: pointer;
 }
 
@@ -206,7 +207,7 @@ body {
     margin-top: 8px;
     padding: 10px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 0;
 }
 
 .icon-grid {
@@ -223,7 +224,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 36px;
-    border-radius: 6px;
+    border-radius: 0;
     color: var(--fg-muted);
     text-decoration: none;
     transition: background 0.1s ease, color 0.1s ease;

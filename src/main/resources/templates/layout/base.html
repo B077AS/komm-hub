@@ -6,20 +6,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title layout:title-pattern="$CONTENT_TITLE - Komm">Komm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+
     <link rel="stylesheet" th:href="@{/css/icons.css}">
     <link rel="stylesheet" th:href="@{/css/base.css}">
     <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
-    <meta name="theme-color" content="#0d0e12">
+    <meta name="theme-color" content="#0a0a0c">
     <th:block layout:fragment="head-extra"></th:block>
 </head>
 <body>
     <!-- Ambient background -->
-    <div class="bg-animation" aria-hidden="true">
-        <div class="orb orb1"></div>
-        <div class="orb orb2"></div>
-        <div class="orb orb3"></div>
-    </div>
+    <div class="bg-animation" aria-hidden="true"></div>
 
     <th:block layout:fragment="body"></th:block>
 </body>
