@@ -845,32 +845,49 @@
 @media (max-width: 1024px) { .security-content { grid-template-columns: 1fr; gap: 44px; } }
 
 /* ============================================================ */
-/* BETA ACCESS                                                    */
+/* CLOSED BETA — a request console, not a contact-form card.      */
+/* Reuses the hero panel's window chrome (icon + title + window   */
+/* controls), so "things that look like a window" reads as a      */
+/* signature device rather than a one-off card style.             */
 /* ============================================================ */
 
-.beta-panel {
-    max-width: 560px;
-    margin: 0 auto;
-    background: var(--bg-card);
-    border: 1px solid var(--border-strong);
-    padding: 30px;
+.beta-gate-section { background: var(--bg-raised); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+.beta-gate {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+    gap: 56px;
+    align-items: center;
 }
 
-.beta-field { margin-bottom: 16px; }
+.beta-gate-text { display: flex; flex-direction: column; gap: 16px; }
 
-.beta-field label {
-    display: block;
+.beta-facts { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+
+.beta-facts span { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 500; color: var(--fg-muted); }
+.beta-facts i { color: var(--success); font-size: 16px; flex-shrink: 0; }
+
+.beta-console { background: var(--bg); border: 1px solid var(--border-strong); }
+
+.beta-console-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.beta-console-field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-family: var(--font-mono);
-    font-size: 11.5px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--fg-subtle);
-    margin-bottom: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
 }
 
-.beta-field input,
-.beta-field textarea {
+.console-prompt { color: var(--accent); font-weight: 700; }
+
+.beta-console-optional { color: var(--fg-subtle); text-transform: none; }
+
+.beta-console-field input,
+.beta-console-field textarea {
     width: 100%;
     padding: 11px 14px;
     background: var(--bg-input);
@@ -881,52 +898,36 @@
     resize: vertical;
 }
 
-.beta-field input:focus,
-.beta-field textarea:focus { outline: none; border-color: var(--accent); }
+.beta-console-field input:focus,
+.beta-console-field textarea:focus { outline: none; border-color: var(--accent); }
+
+.beta-console-note { font-size: 12.5px; color: var(--fg-subtle); text-align: center; }
+
+@media (max-width: 860px) {
+    .beta-gate { grid-template-columns: 1fr; gap: 36px; }
+}
 
 /* ============================================================ */
-/* FAQ                                                             */
+/* FAQ — a terminal log instead of an accordion. Every answer is  */
+/* already visible: no clicking to find out whether a question    */
+/* answers what you came here for.                                */
 /* ============================================================ */
 
-.faq-list { display: flex; flex-direction: column; }
+.faq-terminal { background: var(--bg); border: 1px solid var(--border-strong); }
 
-.faq-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-top: none;
-    overflow: hidden;
-}
+.faq-log { padding: 22px 24px; font-family: var(--font-mono); }
 
-.faq-item:first-child { border-top: 1px solid var(--border); }
-.faq-item[open] { border-color: var(--border-strong); }
+.faq-entry { padding: 16px 0; border-bottom: 1px solid var(--border); }
+.faq-entry:first-child { padding-top: 0; }
 
-.faq-item summary {
-    padding: 17px 20px;
-    font-family: var(--font-display);
-    font-size: 15.5px;
-    font-weight: 600;
-    color: var(--fg);
-    cursor: pointer;
-    list-style: none;
-    position: relative;
-    padding-right: 44px;
-    user-select: none;
-}
+.faq-q { font-size: 14.5px; font-weight: 600; color: var(--fg); display: flex; gap: 10px; }
+.faq-q .console-prompt { flex-shrink: 0; }
 
-.faq-item summary::-webkit-details-marker { display: none; }
+.faq-a { margin-top: 8px; padding-left: 22px; font-size: 13.5px; line-height: 1.7; color: var(--fg-muted); }
+.faq-a a { color: var(--accent-bright); }
 
-.faq-item summary::after {
-    content: '+';
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 20px;
-    font-weight: 400;
-    color: var(--accent);
-    transition: transform 0.2s ease;
-}
+.faq-cursor { display: flex; gap: 10px; padding-top: 16px; font-size: 14.5px; font-weight: 600; color: var(--fg); }
 
-.faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); }
-
-.faq-item p { padding: 0 20px 20px; font-size: 14px; line-height: 1.7; color: var(--fg-muted); }
+@keyframes faqBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.faq-blink { animation: faqBlink 1s step-end infinite; }
+@media (prefers-reduced-motion: reduce) { .faq-blink { animation: none; } }

@@ -621,42 +621,58 @@
         </div>
     </section>
 
-    <!-- --------------- BETA ACCESS --------------- -->
-    <section id="beta-access" class="section">
-        <div class="container-narrow">
-            <div class="section-header centered">
-                <span class="section-kicker">05 / Closed Beta</span>
-                <h2 class="heading-md">Want in? Ask us.</h2>
-                <p class="text-lg">
-                    Komm is in its first public phase: everything is ready to use, but registration on the
-                    official hub requires an invite key while we grow the network carefully. Tell us who you
-                    are and we'll send a key to your inbox.
-                </p>
-            </div>
+    <!-- --------------- CLOSED BETA: A REQUEST CONSOLE, NOT A CONTACT FORM --------------- -->
+    <section id="beta-access" class="beta-gate-section section">
+        <div class="container">
+            <div class="beta-gate">
+                <div class="beta-gate-text">
+                    <span class="section-kicker">05 / Closed Beta</span>
+                    <h2 class="heading-md">Access is invite-only</h2>
+                    <p class="text-lg">
+                        Everything here is ready to use - registration on the official hub just needs a
+                        single-use key while we grow the network carefully. Request one below.
+                    </p>
+                    <div class="beta-facts">
+                        <span><i class="mdi mdi-check-circle"></i> Free, no strings attached</span>
+                        <span><i class="mdi mdi-check-circle"></i> Key delivered by email</span>
+                        <span><i class="mdi mdi-check-circle"></i> One key, one account</span>
+                    </div>
+                </div>
 
-            <div class="beta-panel">
-                <div class="beta-field">
-                    <label for="beta-email">Your email</label>
-                    <input type="email" id="beta-email" placeholder="you@example.com" autocomplete="email">
+                <div class="beta-console">
+                    <div class="panel-head">
+                        <img th:src="@{/favicon.svg}" alt="" class="panel-head-icon">
+                        <span class="panel-head-title">request-access</span>
+                        <span class="panel-head-controls">
+                            <i class="mdi mdi-window-minimize"></i>
+                            <i class="mdi mdi-window-maximize"></i>
+                            <i class="mdi mdi-window-close"></i>
+                        </span>
+                    </div>
+                    <div class="beta-console-body">
+                        <div class="beta-console-field">
+                            <label for="beta-email"><span class="console-prompt">&gt;</span> email</label>
+                            <input type="email" id="beta-email" placeholder="you@example.com" autocomplete="email">
+                        </div>
+                        <div class="beta-console-field">
+                            <label for="beta-message"><span class="console-prompt">&gt;</span> message <span class="beta-console-optional">(optional)</span></label>
+                            <textarea id="beta-message" rows="3" maxlength="2000"
+                                      placeholder="Who you are, what community you'd bring, how you found Komm..."></textarea>
+                        </div>
+                        <button id="beta-submit" class="btn btn-primary" style="width:100%;" onclick="requestBetaAccess()">
+                            <i class="mdi mdi-email-fast-outline"></i> Request a beta key
+                        </button>
+                        <p id="beta-feedback" style="display:none; margin-top:14px; font-size:14px; text-align:center;"></p>
+                        <p class="beta-console-note">
+                            Already have a key? <a th:href="@{/register}" style="color:var(--accent-bright);">Create your account</a>
+                        </p>
+                    </div>
                 </div>
-                <div class="beta-field">
-                    <label for="beta-message">Anything you'd like to add <span style="text-transform:none; font-weight:400; letter-spacing:0;">(optional)</span></label>
-                    <textarea id="beta-message" rows="4" maxlength="2000"
-                              placeholder="Who you are, what community you'd bring, how you found Komm..."></textarea>
-                </div>
-                <button id="beta-submit" class="btn btn-primary btn-lg" style="width:100%;" onclick="requestBetaAccess()">
-                    <i class="mdi mdi-email-fast-outline"></i> Request a beta key
-                </button>
-                <p id="beta-feedback" style="display:none; margin-top:14px; font-size:14px; text-align:center;"></p>
-                <p style="margin-top:18px; font-size:12.5px; color:var(--fg-subtle); text-align:center;">
-                    Already have a key? <a th:href="@{/register}" style="color:var(--accent-bright);">Create your account</a> -
-                    you'll enter it during registration, in the app or right here on the site.
-                </p>
             </div>
         </div>
     </section>
 
-    <!-- --------------- FAQ --------------- -->
+    <!-- --------------- FAQ: A TERMINAL LOG, NOT AN ACCORDION --------------- -->
     <section id="faq" class="faq section">
         <div class="container-narrow">
             <div class="section-header centered">
@@ -664,46 +680,51 @@
                 <h2 class="heading-md">Frequently asked questions</h2>
             </div>
 
-            <div class="faq-list">
-                <details class="faq-item" open>
-                    <summary>Is Komm really free?</summary>
-                    <p>Yes. The client, the launcher, the self-hosted server and the hub are all free to
-                       download and use. There are no ads, no tracking and no paid tiers.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>What does "closed beta" mean?</summary>
-                    <p>Everything you see is ready to use, but new accounts on the official hub currently
-                       require a single-use beta key. We're growing the network deliberately during this
-                       first phase. <a th:href="@{/#beta-access}" style="color:var(--accent-bright);">Request a key</a> and we'll email you one -
-                       once you have it, registration takes a minute.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Which platforms are supported?</summary>
-                    <p>Komm runs on Windows 10/11 and on Linux - both X11 and Wayland sessions are fully
-                       supported, including PipeWire audio and screen capture on Wayland.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Do I have to host my own server?</summary>
-                    <p>No. You can simply download the client, create an account and join communities through
-                       invite links. Hosting is for communities that want full ownership of their data - and
-                       the server launcher installs it as a system service with one installer on Windows or
-                       one script on Linux, so it takes minutes.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Can I run my own hub too?</summary>
-                    <p>Yes - but unlike the server, the hub isn't a one-click affair. It's aimed at developers:
-                       you'll need PostgreSQL, an SMTP account for verification emails and a few settings in a
-                       local properties file. The website you're reading right now ships with the hub as a
-                       showcase - if you run your own network, expect to fork it and make it yours. The
-                       <a th:href="${site.github.hub}" target="_blank" rel="noopener" style="color:var(--accent-bright);">setup guide on GitHub</a>
-                       walks through all of it.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Does Komm update itself?</summary>
-                    <p>Yes. The Komm launcher checks for updates every time you start the app and keeps the
-                       client current automatically - install once and forget about it. It ships as a Windows
-                       installer and a Linux AppImage.</p>
-                </details>
+            <div class="faq-terminal">
+                <div class="panel-head">
+                    <img th:src="@{/favicon.svg}" alt="" class="panel-head-icon">
+                    <span class="panel-head-title">faq.log</span>
+                    <span class="panel-head-controls">
+                        <i class="mdi mdi-window-minimize"></i>
+                        <i class="mdi mdi-window-maximize"></i>
+                        <i class="mdi mdi-window-close"></i>
+                    </span>
+                </div>
+                <div class="faq-log">
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Is Komm really free?</p>
+                        <p class="faq-a">Yes. The client, the launcher, the self-hosted server and the hub are all free to
+                           download and use. There are no ads, no tracking and no paid tiers.</p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Which platforms are supported?</p>
+                        <p class="faq-a">Komm runs on Windows 10/11 and on Linux - both X11 and Wayland sessions are fully
+                           supported, including PipeWire audio and screen capture on Wayland.</p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Do I have to host my own server?</p>
+                        <p class="faq-a">No. You can simply download the client, create an account and join communities through
+                           invite links. Hosting is for communities that want full ownership of their data - and
+                           the server launcher installs it as a system service with one installer on Windows or
+                           one script on Linux, so it takes minutes.</p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Can I run my own hub too?</p>
+                        <p class="faq-a">Yes - but unlike the server, the hub isn't a one-click affair. It's aimed at developers:
+                           you'll need PostgreSQL, an SMTP account for verification emails and a few settings in a
+                           local properties file. The website you're reading right now ships with the hub as a
+                           showcase - if you run your own network, expect to fork it and make it yours. The
+                           <a th:href="${site.github.hub}" target="_blank" rel="noopener" style="color:var(--accent-bright);">setup guide on GitHub</a>
+                           walks through all of it.</p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Does Komm update itself?</p>
+                        <p class="faq-a">Yes. The Komm launcher checks for updates every time you start the app and keeps the
+                           client current automatically - install once and forget about it. It ships as a Windows
+                           installer and a Linux AppImage.</p>
+                    </div>
+                    <p class="faq-cursor"><span class="console-prompt">$</span><span class="faq-blink">_</span></p>
+                </div>
             </div>
         </div>
     </section>
@@ -766,7 +787,7 @@
 
         // Reveal sections as they scroll into view
         (function () {
-            const targets = document.querySelectorAll('.feature-card, .platform-card, .arch-card, .step, .faq-item');
+            const targets = document.querySelectorAll('.feature-card, .platform-card, .arch-card, .step, .faq-entry');
             if (!('IntersectionObserver' in window)) return;
             const observer = new IntersectionObserver(function (entries) {
                 entries.forEach(function (entry) {
