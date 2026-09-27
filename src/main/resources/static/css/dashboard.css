@@ -99,10 +99,13 @@ body {
     color: var(--fg);
 }
 
+/* flex:1 fills the space next to the sidebar; the max-width cap belongs on
+   each panel below (.dash-header / .dash-panel), not here - a capped flex
+   item doesn't center itself in its own leftover space, it just stops
+   growing and sits flush against whatever's before it. */
 .dash-main {
     flex: 1;
     min-width: 0;
-    max-width: 760px;
     display: flex;
     flex-direction: column;
     gap: 28px;
@@ -113,18 +116,87 @@ body {
 
 .dash-error { margin-bottom: 4px; }
 
+/* Mobile menu toggle, sits in the navbar next to the profile trigger - same
+   3-bar/X icon as the public site's .site-navbar-mobile-toggle. Hidden until
+   the sidebar itself goes off-canvas below. */
+.dash-mobile-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.dash-mobile-toggle span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--fg-muted);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.dash-mobile-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.dash-mobile-toggle.open span:nth-child(2) { opacity: 0; }
+.dash-mobile-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Backdrop behind the off-canvas sidebar - inert and invisible until open,
+   same as the public site's .site-navbar-backdrop. */
+.dash-sidebar-backdrop { display: none; }
+
 @media (max-width: 860px) {
-    .dash-layout { flex-direction: column; gap: 24px; }
+    .dash-mobile-toggle { display: flex; position: relative; z-index: 160; }
+
+    /* The sidebar leaves the flex row entirely once it's off-canvas, so
+       .dash-main just needs to be a normal block filling the full width. */
+    .dash-layout { display: block; }
+
+    /* A real sidebar, not a wrapped row of pills: fixed to the viewport,
+       slides in from the right over the content - matching the public
+       site's mobile nav pattern exactly. */
     .dash-sidebar {
-        position: static;
-        width: 100%;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 6px;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(78vw, 300px);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: var(--bg-raised);
+        border-left: 1px solid var(--border-strong);
+        box-shadow: var(--shadow-lg);
+        padding: 76px 0 20px;
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        z-index: 150;
     }
-    .dash-nav-group { display: none; }
-    .dash-nav-link { border-left: none; border-bottom: 2px solid transparent; padding: 8px 12px; }
-    .dash-main { max-width: none; }
+
+    .dash-sidebar.open { transform: translateX(0); }
+
+    .dash-nav-group { display: block; margin: 20px 0 6px; padding: 0 20px; }
+    .dash-nav-group:first-child { margin-top: 0; }
+
+    .dash-nav-link { border-left: none; padding: 12px 20px; }
+
+    .dash-sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+        z-index: 140;
+    }
+
+    .dash-sidebar-backdrop.open { opacity: 1; pointer-events: auto; }
 }
 
 /* -- Profile header ----------------------------------------------------------- */
@@ -171,7 +243,7 @@ body {
     flex-wrap: wrap;
 }
 
-.dash-panel-heading { display: flex; align-items: flex-start; gap: 14px; }
+.dash-panel-heading { display: flex; align-items: center; gap: 14px; }
 
 .dash-panel-icon {
     width: 40px;
@@ -187,21 +259,28 @@ body {
 }
 
 .dash-panel-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--fg); }
-.dash-panel-desc { font-size: 12.5px; color: var(--fg-subtle); margin-top: 3px; }
 
 .dash-panel-action { display: flex; align-items: center; gap: 8px; }
 
 /* Compact button matching the input height, instead of .btn's full width */
 .btn-inline { width: auto; height: 36px; padding: 0 16px; margin-top: 0; font-size: 13.5px; }
 
-.dash-empty { padding: 14px 0; color: var(--fg-subtle); font-size: 13px; }
+/* "Generate a key" (beta-keys) and "New badge" (badges) are each panel's
+   sole header action - never on screen together, since sections swap into
+   the same #dash-content slot rather than stacking. min-width (not width)
+   so neither button ever gets squeezed below its own content's natural
+   size - it only ever grows the shorter one up to match, never shrinks
+   the longer one down. */
+.dash-panel-cta { min-width: 200px; }
+
+.dash-empty { padding: 14px 16px; color: var(--fg-subtle); font-size: 13px; }
 
 /* -- Beta keys: a real table, not a cramped one-line-per-key list -------------- */
 .key-table { border: 1px solid var(--border); }
 
 .key-table-head {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 150px 68px;
+    grid-template-columns: minmax(0, 1fr) minmax(96px, 150px) minmax(56px, 68px);
     gap: 16px;
     padding: 9px 16px;
     background: var(--bg-raised);
@@ -216,7 +295,7 @@ body {
 
 .key-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 150px 68px;
+    grid-template-columns: minmax(0, 1fr) minmax(96px, 150px) minmax(56px, 68px);
     align-items: center;
     gap: 16px;
     padding: 13px 16px;
@@ -232,46 +311,68 @@ body {
 
 .key-status { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--success); }
 .key-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
-.key-status.is-used { font-weight: 500; color: var(--fg-subtle); }
+/* "Used by <username>" is arbitrary-length text squeezed into a narrow
+   column - break it instead of letting it overflow into the next column. */
+.key-status.is-used { font-weight: 500; color: var(--fg-subtle); white-space: normal; word-break: break-word; }
 
 .key-actions { display: flex; align-items: center; gap: 2px; justify-self: end; }
 .key-actions form { display: inline-flex; }
 
-/* -- Row lists (badges) -------------------------------------------------------- */
-.dash-list { display: flex; flex-direction: column; }
-
-.dash-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 10px 16px;
-    padding: 11px 0;
-    border-top: 1px solid var(--border);
-}
-
-.dash-row-main { display: flex; align-items: center; gap: 12px; min-width: 0; flex-wrap: wrap; }
-
-.dash-row-code {
-    font-family: var(--font-mono);
-    font-size: 12.5px;
-    letter-spacing: 0.02em;
-    color: var(--fg);
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    padding: 3px 8px;
-}
-
-.dash-row-code.is-inactive { color: var(--fg-subtle); text-decoration: line-through; opacity: 0.6; }
-
-.dash-row-meta { font-size: 12.5px; color: var(--fg-subtle); }
-
-/* Class name kept as "mdi-glyph" (not dash-row-*) because the icon-picker
+/* Class name kept as "mdi-glyph" (not badge-*) because the icon-picker
    script below generates cells with this exact class at runtime. */
 .mdi-glyph { font-family: "Material Design Icons"; font-size: 18px; line-height: 1; flex-shrink: 0; }
-.dash-row-name { font-weight: 600; font-size: 13.5px; color: var(--fg); }
 
-.dash-row-actions { display: flex; align-items: center; gap: 2px; justify-self: end; }
-.dash-row-actions form { display: inline-flex; }
+/* -- Badges: system and custom are different enough (read-only vs. token +
+      actions) that forcing them into one grid meant every system row left
+      two columns visibly empty. Two short groups instead, and each row is
+      a flex line that only takes the space its own content needs, rather
+      than reserving grid columns not every row uses. -------------------- */
+.badge-group-title {
+    padding: 9px 16px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+}
+
+/* .badge-group-title and .badge-list are meant to read as one seamless
+   bordered block (title bar directly on top of its rows) - they have to be
+   wrapped together in .badge-group, because .dash-panel's own flex `gap`
+   would otherwise insert space between EVERY direct child, including a
+   title and its own list right underneath it. */
+.badge-group { display: flex; flex-direction: column; }
+.badge-list { border: 1px solid var(--border); border-top: none; }
+
+.badge-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s ease;
+}
+
+.badge-item:last-child { border-bottom: none; }
+.badge-item:hover { background: rgba(255, 255, 255, 0.025); }
+
+.badge-glyph { font-size: 20px; flex-shrink: 0; }
+.badge-item-text { flex: 1; min-width: 0; }
+.badge-name { font-weight: 600; font-size: 13.5px; color: var(--fg); }
+.badge-desc { font-size: 12px; color: var(--fg-subtle); margin-top: 1px; }
+
+.badge-count {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-subtle);
+    white-space: nowrap;
+}
+
+.key-code.is-inactive { color: var(--fg-subtle); text-decoration: line-through; opacity: 0.6; }
 
 .dash-row-action {
     display: inline-flex;
@@ -291,26 +392,101 @@ body {
 .dash-row-action:hover { background: var(--bg-input); color: var(--accent-hover); }
 .dash-row-action.danger:hover { background: var(--danger-bg); color: var(--danger); }
 
-/* -- Badge creation form -------------------------------------------------------- */
-.dash-subpanel {
-    margin-top: 4px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
+/* -- Modal: creation lives here instead of crowding the list above --------------
+   Backdrop sits well above every other layer in the app (navbar's own z-index
+   tops out at 100, its dropdown at 200 - but that's scoped to the navbar's own
+   local stacking context, not a real competitor) and covers the full viewport
+   via position:fixed, so the header dims and stops receiving clicks along with
+   everything else the moment the modal opens - it's a real element on top of
+   it, not just a visual overlay. */
+.modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    pointer-events: auto;
 }
 
-.dash-subpanel-title {
+.modal-backdrop.open { display: block; }
+
+/* Header and footer stay put; only the body scrolls - so the footer never
+   drifts away from the content and the header keeps the close button in
+   reach no matter how long the form gets. */
+.modal {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(90vw, 480px);
+    max-height: 85vh;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow-xl);
+    z-index: 1001;
+}
+
+.modal.open { display: flex; }
+
+.modal-head {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-family: var(--font-display);
-    font-size: 14.5px;
-    font-weight: 700;
-    color: var(--fg);
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
 }
 
-.dash-subpanel-title i { color: var(--accent-bright); font-size: 16px; }
+.modal-title { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--fg); }
+.modal-title i { color: var(--accent-bright); font-size: 17px; }
 
-.dash-subpanel-desc { font-size: 12.5px; color: var(--fg-subtle); margin: 3px 0 16px; }
+.modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    color: var(--fg-subtle);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.modal-close:hover { background: rgba(255, 255, 255, 0.06); color: var(--fg); }
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+.modal-body::-webkit-scrollbar { width: 9px; }
+.modal-body::-webkit-scrollbar-track { background: transparent; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--border-strong); }
+.modal-body::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
+
+/* A proper footer, not a button sitting flush against the last field. */
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 20px;
+    background: var(--bg-raised);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.modal-footer .btn { width: auto; }
+
+.dash-subpanel-desc { font-size: 12.5px; color: var(--fg-subtle); margin: 0 0 16px; }
 
 .dash-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .dash-field-wide { grid-column: 1 / -1; }
@@ -364,8 +540,6 @@ body {
     cursor: pointer;
 }
 
-.dash-form-actions { display: flex; align-items: center; justify-content: flex-end; margin-top: 4px; }
-
 .icon-picker {
     margin-top: 4px;
     padding: 12px;
@@ -380,7 +554,14 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
     gap: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
 }
+
+.icon-grid::-webkit-scrollbar { width: 8px; }
+.icon-grid::-webkit-scrollbar-track { background: transparent; }
+.icon-grid::-webkit-scrollbar-thumb { background: var(--border-strong); }
+.icon-grid::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
 
 .icon-cell {
     display: flex;
@@ -396,6 +577,14 @@ body {
 
 .badge-error { margin-top: 8px; color: var(--danger); font-size: 13px; }
 
+/* -- Tablet: sidebar is already off-canvas (see the 860px block above), so
+   .dash-main has the full width to itself - the grid table still fits, it
+   just gets a little tighter breathing room. ------------------------------ */
+@media (max-width: 760px) {
+    .key-table-head,
+    .key-row { gap: 10px; }
+}
+
 /* -- Mobile ------------------------------------------------------------------ */
 @media (max-width: 640px) {
     .page-content { padding: 24px 16px 48px; }
@@ -403,11 +592,43 @@ body {
     .dash-panel { padding: 20px; }
     .dash-panel-head { flex-direction: column; align-items: stretch; }
     .dash-panel-action { justify-content: flex-start; }
-    .dash-row { grid-template-columns: 1fr; }
-    .dash-row-actions { justify-self: start; }
+
+    /* .dash-panel-head's align-items:stretch above only reaches its DIRECT
+       children - it stretches "New badge" (a bare button, a direct child)
+       full-width for free, but "Generate a key" sits one level deeper
+       inside its own <form class="dash-panel-action"> (needed for the CSRF
+       token), which is a separate row-flex context that stretch never
+       reaches into. Without this, the form itself goes full-width while
+       the button inside it stays pinned to its own small size - the two
+       buttons ending up different widths on mobile even though they're
+       identical in the CSS that targets them directly. */
+    .dash-panel-cta { width: 100%; }
+
+    /* The grid table reads as a spreadsheet crammed onto a phone screen -
+       column headers with nothing to line up against once each row wraps.
+       Below this width each key becomes its own card instead: the key on
+       its own full-width line, then status and actions sharing the line
+       underneath (flex + `order`, since actions come after status in the
+       markup but visually belong on the same row, right-aligned). */
     .key-table-head { display: none; }
-    .key-row { grid-template-columns: 1fr; row-gap: 6px; padding: 12px; }
-    .key-actions { justify-self: start; }
+    .key-table { border: none; display: flex; flex-direction: column; gap: 8px; }
+
+    .key-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 10px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .key-row .key-code { flex: 1 1 100%; order: 1; word-break: break-all; }
+    .key-row .key-status { order: 2; }
+    .key-row .key-actions { order: 3; justify-self: initial; margin-left: auto; }
+
+    .badge-item { flex-wrap: wrap; }
+    .badge-item .key-code { flex-basis: 100%; word-break: break-all; }
     .dash-form-grid { grid-template-columns: 1fr; }
     .icon-grid { grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); }
     .icon-cell { height: 42px; }

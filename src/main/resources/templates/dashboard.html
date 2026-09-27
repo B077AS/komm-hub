@@ -38,6 +38,15 @@
                 </form>
             </div>
         </div>
+
+        <!-- Mobile: opens the dashboard section nav as an off-canvas sidebar,
+             same slide-in-from-the-right pattern as the public site's navbar. -->
+        <button type="button" class="dash-mobile-toggle" id="dashMobileToggle" aria-label="Toggle dashboard menu"
+                aria-expanded="false" aria-controls="dashSidebar">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </div>
 
     <script>
@@ -62,13 +71,21 @@
     </script>
 </nav>
 
+<div class="dash-sidebar-backdrop" id="dashSidebarBackdrop"></div>
+
 <div class="page-scroll">
 <div class="page-content">
 <!-- hx-target/hx-swap set once here - every hx-get/hx-post underneath
      (sidebar links, the four admin action forms) inherits them unless it
      overrides its own, so #dash-content is the one thing that ever swaps. -->
 <div class="dash-layout" hx-target="#dash-content" hx-swap="innerHTML">
-    <nav class="dash-sidebar" aria-label="Dashboard sections">
+    <!-- hx-target/hx-swap set again here, not just inherited from .dash-layout
+         above: on mobile this nav gets reparented into .navbar while open (see
+         the JS below), which takes it out of .dash-layout's subtree entirely -
+         htmx would otherwise lose the inherited target and swap each section's
+         markup into the clicked link itself instead of #dash-content. -->
+    <nav class="dash-sidebar" id="dashSidebar" aria-label="Dashboard sections"
+         hx-target="#dash-content" hx-swap="innerHTML">
         <a href="#profile" class="dash-nav-link active" data-section="profile"
            th:attr="hx-get=@{/dashboard/section/profile}, hx-push-url=(@{/dashboard} + '#profile')">
             <i class="mdi mdi-account-outline"></i> Profile
@@ -102,6 +119,76 @@
     // Everything above is server-rendered - the only client-side JS left is UI-local
     // (clipboard copy, the icon picker's live search) or one lazy, session-cookie-
     // authenticated lookup for the large icon catalog. No bearer token anywhere.
+
+    // Off-canvas dashboard sidebar - identical shape to the public site's
+    // mobile nav (toggle + backdrop + Escape + close-on-link-click), just
+    // pointed at .dash-sidebar/.page-scroll instead of .site-navbar-links/
+    // .site-main. This has to live down here rather than next to the toggle
+    // button in the navbar above: that inline <script> runs while the parser
+    // is still inside <nav>, before #dashSidebar (which comes later in the
+    // markup) exists yet, so getElementById would return null and the click
+    // handler would never get attached.
+    (function () {
+        const toggle = document.getElementById('dashMobileToggle');
+        const sidebar = document.getElementById('dashSidebar');
+        const backdrop = document.getElementById('dashSidebarBackdrop');
+        const dashLayout = document.querySelector('.dash-layout');
+        const navbar = document.querySelector('.navbar');
+        if (!toggle || !sidebar) return;
+
+        function setMenuOpen(open) {
+            // .dash-sidebar normally lives inside .page-scroll, which base.css
+            // seals into its own stacking context at z-index:1 (see the
+            // comment there) - so it has to escape .page-scroll to sit above
+            // the navbar while open. Escaping to <body> would only trade one
+            // trap for another: .navbar is itself a positioned element with
+            // its own z-index, so it seals its OWN stacking context too, and
+            // a body-level sidebar can only ever out-rank ".navbar" as a
+            // whole - which buries dashMobileToggle, the only way to close
+            // the thing, underneath it. Reparenting into .navbar instead -
+            // exactly where the public site's off-canvas nav already lives
+            // relative to its own toggle - keeps the sidebar/backdrop and the
+            // toggle compared inside the SAME stacking context, so the
+            // toggle's higher z-index (see dashboard.css) actually keeps it
+            // on top and clickable, while .navbar as a whole still out-ranks
+            // .page-scroll's ordinary content exactly as it always did.
+            if (open) {
+                if (navbar) {
+                    if (sidebar.parentElement !== navbar) navbar.appendChild(sidebar);
+                    if (backdrop && backdrop.parentElement !== navbar) navbar.appendChild(backdrop);
+                }
+            } else if (dashLayout && sidebar.parentElement !== dashLayout) {
+                // Put it back as the flex sidebar column so the desktop
+                // layout still works if the viewport gets resized back up
+                // without a reload.
+                dashLayout.insertBefore(sidebar, dashLayout.firstChild);
+            }
+
+            sidebar.classList.toggle('open', open);
+            toggle.classList.toggle('open', open);
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (backdrop) backdrop.classList.toggle('open', open);
+            const scrollRoot = document.querySelector('.page-scroll');
+            if (scrollRoot) scrollRoot.style.overflow = open ? 'hidden' : '';
+        }
+
+        toggle.addEventListener('click', function () {
+            setMenuOpen(!sidebar.classList.contains('open'));
+        });
+
+        if (backdrop) {
+            backdrop.addEventListener('click', function () { setMenuOpen(false); });
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) setMenuOpen(false);
+        });
+
+        sidebar.addEventListener('click', function (e) {
+            if (e.target.closest('a')) setMenuOpen(false);
+        });
+    })();
+
     let iconCatalog = null;
 
     function glyph(codepointHex) {
@@ -179,6 +266,76 @@
             htmx.ajax('GET', match.getAttribute('hx-get'), { target: '#dash-content', swap: 'innerHTML' });
         }
     })();
+
+    // Badge creation modal - lives inside the badges fragment itself, so these
+    // just look elements up by id at call time rather than binding once, and
+    // work fine however that fragment got onto the page (initial load or an
+    // htmx swap).
+    // The backdrop is a real fixed, full-viewport element with a higher
+    // z-index than the navbar, so it should already sit on top of it and
+    // intercept clicks by itself - but rather than lean on that stacking
+    // argument, the navbar (and the dashboard's own sidebar) get their
+    // pointer-events switched off directly while a modal is open. That way
+    // "unclickable" doesn't depend on z-index math holding up everywhere.
+    function setChromeInert(inert) {
+        const navbar = document.querySelector('.navbar');
+        const sidebar = document.querySelector('.dash-sidebar');
+        if (navbar) navbar.style.pointerEvents = inert ? 'none' : '';
+        if (sidebar) sidebar.style.pointerEvents = inert ? 'none' : '';
+    }
+
+    // .page-scroll (an ancestor of this modal) is forced into position:relative
+    // + z-index:1 by a sitewide rule that just wants ordinary content to sit
+    // above the ambient background - but that seals .page-scroll into its own
+    // stacking context at level 1. No z-index inside it, however high, can
+    // ever out-rank the navbar (z-index:100) from in there - the whole
+    // subtree is capped at 1 when compared against that sibling. The fix is
+    // to reparent the modal to <body> itself so its own z-index (see
+    // dashboard.css - and note base.css's blanket rule explicitly excludes
+    // .modal/.modal-backdrop so it isn't just re-trapped one level up).
+    function openBadgeModal() {
+        const backdrop = document.getElementById('badge-modal-backdrop');
+        const modal = document.getElementById('badge-modal');
+        if (backdrop && backdrop.parentElement !== document.body) document.body.appendChild(backdrop);
+        if (modal && modal.parentElement !== document.body) document.body.appendChild(modal);
+        backdrop?.classList.add('open');
+        modal?.classList.add('open');
+        const scrollRoot = document.querySelector('.page-scroll');
+        if (scrollRoot) scrollRoot.style.overflow = 'hidden';
+        setChromeInert(true);
+    }
+
+    function closeBadgeModal() {
+        document.getElementById('badge-modal-backdrop')?.classList.remove('open');
+        document.getElementById('badge-modal')?.classList.remove('open');
+        const scrollRoot = document.querySelector('.page-scroll');
+        if (scrollRoot) scrollRoot.style.overflow = '';
+        setChromeInert(false);
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeBadgeModal();
+    });
+
+    // A successful (or failed) create-badge submit swaps the whole badges
+    // fragment back in, which silently discards the open modal along with
+    // whatever else was there - the scroll lock and the disabled navbar
+    // above wouldn't know to release on their own since closeBadgeModal()
+    // never actually ran.
+    document.addEventListener('htmx:afterSwap', function () {
+        const scrollRoot = document.querySelector('.page-scroll');
+        if (scrollRoot) scrollRoot.style.overflow = '';
+        setChromeInert(false);
+    });
+
+    // The reparented modal (see openBadgeModal above) lives directly under
+    // <body>, outside #dash-content - so swapping #dash-content's fragment
+    // back in leaves it sitting there, orphaned, while the fresh fragment
+    // brings its own #badge-modal/#badge-modal-backdrop pair with the same
+    // ids. Drop the stale, reparented one before the new one ever lands.
+    document.addEventListener('htmx:beforeSwap', function () {
+        document.querySelectorAll('body > #badge-modal-backdrop, body > #badge-modal').forEach(function (el) { el.remove(); });
+    });
 </script>
 </th:block>
 </html>

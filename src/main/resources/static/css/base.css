@@ -47,7 +47,20 @@ i, [class^="mdi-"], [class*=" mdi-"] {
     vertical-align: middle;
 }
 
-body > *:not(.bg-animation):not(.navbar) {
+/* This is what was actually trapping the badge modal behind the navbar:
+   .page-scroll is a direct child of body, so this rule forces it into
+   position:relative + z-index:1 (just to keep normal content above the
+   ambient background) - but that makes .page-scroll seal its own stacking
+   context at level 1. Anything inside it, no matter what z-index it sets
+   (even 9999), is compared against .navbar as that whole sealed context -
+   and .navbar sits at z-index:100. Anything that needs to sit above the
+   navbar (the badge modal) has to escape .page-scroll entirely (see the JS
+   that reparents it to <body> on open) - which only works if it's also
+   excluded here, otherwise this same rule would just re-trap it at the body
+   level. The dashboard's off-canvas sidebar doesn't need an exclusion of
+   its own: it reparents into .navbar itself (not <body>) when open, so
+   it's never a direct child of body while this rule could apply to it. */
+body > *:not(.bg-animation):not(.navbar):not(.modal-backdrop):not(.modal) {
     position: relative;
     z-index: 1;
 }
