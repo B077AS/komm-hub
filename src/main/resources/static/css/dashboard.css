@@ -30,9 +30,11 @@ body {
 .page-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); }
 .page-scroll::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
 
-/* Matches the public site's .container / .site-navbar-content exactly
-   (1440px, 28px padding) so the logo and the page content share the same
-   left edge instead of each centering independently at a different width. */
+/* Matches the public site's .container (1440px, 28px padding). The navbar
+   above now runs edge-to-edge like the footer, so its logo no longer shares
+   an exact left edge with this at very wide viewports - same tradeoff the
+   public site already makes between its full-width footer and boxed
+   .container sections. */
 .page-content {
     padding: 40px 28px 64px;
     max-width: 1440px;
@@ -180,10 +182,17 @@ body {
 
     .dash-sidebar.open { transform: translateX(0); }
 
-    .dash-nav-group { display: block; margin: 20px 0 6px; padding: 0 20px; }
-    .dash-nav-group:first-child { margin-top: 0; }
+    /* No "Super admin" heading here - off-canvas, it's one flat list of
+       links, same as the public site's mobile nav (which has no grouping
+       concept at all). */
+    .dash-nav-group { display: none; }
 
-    .dash-nav-link { border-left: none; padding: 12px 20px; }
+    /* Matches .site-navbar-link's mobile styling exactly: a bottom hairline
+       between rows instead of the desktop's left accent bar, and no glow
+       fill behind the active item - just the accent-colored bottom border
+       carried over from .dash-nav-link.active below. */
+    .dash-nav-link { border-left: none; padding: 14px 24px; border-bottom: 1px solid var(--border); }
+    .dash-nav-link.active { background: none; }
 
     .dash-sidebar-backdrop {
         display: block;

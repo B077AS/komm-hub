@@ -434,14 +434,20 @@ i, [class^="mdi-"], [class*=" mdi-"] {
     border-bottom: 1px solid var(--border);
 }
 
+/* Edge-to-edge like .site-footer-content, rather than boxed at 1440px like
+   .container - the logo/actions sit in the two flanking 1fr columns (equal
+   width, so they don't have to match each other's size) and the link row
+   drops into the auto-sized middle column, which lands it exactly centered
+   on the full bar rather than merely centered in the leftover space next
+   to the logo. */
 .site-navbar-content {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 0 28px;
+    width: 100%;
+    padding: 0 clamp(20px, 4.5vw, 72px);
     height: var(--navbar-height);
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: 4px;
+    column-gap: 16px;
 }
 
 .site-navbar-logo {
@@ -454,7 +460,7 @@ i, [class^="mdi-"], [class*=" mdi-"] {
     letter-spacing: -0.01em;
     color: var(--fg);
     text-decoration: none;
-    margin-right: 28px;
+    justify-self: start;
 }
 
 .site-navbar-logo-icon { width: 26px; height: 26px; display: block; }
@@ -483,7 +489,7 @@ i, [class^="mdi-"], [class*=" mdi-"] {
 .site-navbar-link.active { color: var(--fg); border-color: var(--accent); }
 
 .site-navbar-actions {
-    margin-left: auto;
+    justify-self: end;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -620,6 +626,12 @@ i, [class^="mdi-"], [class*=" mdi-"] {
 }
 
 @media (max-width: 900px) {
+    /* Below this width the link list peels off into a fixed off-canvas
+       sidebar (see .site-navbar-links below), so there's nothing left to
+       center in the middle column - back to a plain flex row for logo,
+       actions and the mobile toggle. */
+    .site-navbar-content { display: flex; }
+
     .site-navbar-backdrop {
         display: block;
         position: fixed;
@@ -659,8 +671,7 @@ i, [class^="mdi-"], [class*=" mdi-"] {
 
     .site-navbar-link {
         padding: 14px 24px;
-        border-top: 1px solid var(--border);
-        border-bottom: none;
+        border-bottom: 1px solid var(--border);
     }
 
     .site-navbar-link:hover { background: rgba(255, 255, 255, 0.04); border-color: var(--border); }
@@ -671,7 +682,7 @@ i, [class^="mdi-"], [class*=" mdi-"] {
 
 @media (max-width: 560px) {
     .site-navbar-actions .btn-ghost { padding: 10px 12px; font-size: 13.5px; }
-    .site-navbar-content { gap: 8px; padding: 0 18px; }
+    .site-navbar-content { gap: 8px; }
 }
 
 /* ============================================================ */

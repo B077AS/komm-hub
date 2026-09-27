@@ -245,10 +245,11 @@ body > *:not(.bg-animation):not(.navbar):not(.modal-backdrop):not(.modal) {
     border-bottom: 1px solid var(--border);
 }
 
+/* Edge-to-edge like the public site's .site-footer-content, rather than
+   boxed at 1440px like .page-content below it. */
 .navbar-content {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 0 28px;
+    width: 100%;
+    padding: 0 clamp(20px, 4.5vw, 72px);
     height: 64px;
     display: flex;
     align-items: center;
@@ -353,7 +354,7 @@ body > *:not(.bg-animation):not(.navbar):not(.modal-backdrop):not(.modal) {
 .nav-user-dropdown-item:hover { background: var(--danger-bg); }
 
 @media (max-width: 560px) {
-    .navbar-content { padding: 0 18px; gap: 10px; }
+    .navbar-content { gap: 10px; }
     .navbar .nav-logo { font-size: 16px; }
     .navbar .nav-logo img { width: 22px; height: 22px; }
 }
