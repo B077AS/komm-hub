@@ -416,7 +416,9 @@ i, [class^="mdi-"], [class*=" mdi-"] {
 }
 
 /* Scroll reveal */
-.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+/* Content settles downward into place - matching the direction of a
+   scroll heading down the page - instead of rising up from below it. */
+.reveal { opacity: 0; transform: translateY(-18px); transition: opacity 0.5s ease, transform 0.5s ease; }
 .reveal.revealed { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 

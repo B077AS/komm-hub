@@ -554,12 +554,17 @@
 /* FEATURES — bento grid                                          */
 /* ============================================================ */
 
+/* The gap's "background peeking through" is what draws the hairline
+   divider between cards - but a card mid scroll-reveal is opacity:0, so
+   that same peek-through shows for its WHOLE cell, not just the 1px gap.
+   Using the page's own background for it means a not-yet-revealed card
+   blends into the page instead of flashing as a mismatched grey block. */
 .features-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-auto-flow: dense;
     gap: 1px;
-    background: var(--border);
+    background: var(--bg);
     border: 1px solid var(--border);
 }
 
@@ -594,7 +599,7 @@
 /* PLATFORMS                                                      */
 /* ============================================================ */
 
-.platforms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+.platforms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--bg); border: 1px solid var(--border); }
 
 .platform-card {
     background: var(--bg-card);
@@ -713,7 +718,7 @@
 .how-it-works { margin-top: 64px; }
 .how-title { margin-bottom: 32px; }
 
-.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--bg); border: 1px solid var(--border); }
 
 .step { background: var(--bg-card); padding: 22px 20px; }
 

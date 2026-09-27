@@ -103,6 +103,9 @@ body > *:not(.bg-animation):not(.navbar) {
     box-shadow: var(--shadow-lg);
 }
 
+/* Login / register only - plain rectangle, no cut corner. */
+.card-flat { clip-path: none; }
+
 .card h2 { font-family: var(--font-display); }
 
 /* -- Form elements ------------------------------------------------------------ */

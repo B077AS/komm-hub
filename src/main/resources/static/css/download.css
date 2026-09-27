@@ -71,6 +71,12 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    /* #server / #hub anchor here - without this, jumping straight to the
+       card skips the section header (kicker, heading, intro) entirely.
+       The navbar isn't part of the scrolling area (.site-main scrolls
+       below it, not under it), so it needs no separate allowance here -
+       just the height of the header content sitting above the grid. */
+    scroll-margin-top: 230px;
 }
 
 .dl-hosting-card:last-child { border-right: none; }
