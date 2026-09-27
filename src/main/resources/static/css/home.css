@@ -21,10 +21,54 @@
 }
 
 .hero > .container {
+    position: relative;
+    z-index: 1;
     width: 100%;
     container-type: inline-size;
     container-name: hero-row;
 }
+
+/* Falling code, confined to behind the headline in the upper hero only -
+   masked out toward its own bottom edge so it reads as a quiet flicker
+   behind the title, not a screensaver across the whole section. */
+.hero-rain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 55%;
+    overflow: hidden;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 90%);
+    mask-image: linear-gradient(180deg, #000 0%, transparent 90%);
+}
+
+.rain-col {
+    position: absolute;
+    top: -140px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    text-align: center;
+    white-space: pre-line;
+    opacity: 0;
+    animation-name: rainFall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes rainFall {
+    0%   { transform: translateY(0); opacity: 0; }
+    10%  { opacity: 0.24; }
+    32%  { opacity: 0.24; }
+    50%  { opacity: 0; }
+    100% { transform: translateY(360px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { .hero-rain { display: none; } }
 
 .hero-content {
     display: grid;

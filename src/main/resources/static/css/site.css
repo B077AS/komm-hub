@@ -105,8 +105,7 @@ body.site-body {
 }
 
 /* ============================================================ */
-/* AMBIENT BACKGROUND — hairline graph grid + a single slow      */
-/* scanline sweep. No blur, no color blobs.                      */
+/* AMBIENT BACKGROUND — hairline graph grid. No blur, no color blobs. */
 /* ============================================================ */
 
 .bg-animation {
@@ -121,26 +120,6 @@ body.site-body {
     background-size: 64px 64px;
     -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 0%, transparent 72%);
     mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 0%, transparent 72%);
-}
-
-.bg-animation::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 140px;
-    top: -140px;
-    background: linear-gradient(180deg, transparent, rgba(124, 92, 255, 0.06), transparent);
-    animation: scanSweep 14s linear infinite;
-}
-
-@keyframes scanSweep {
-    0%   { transform: translateY(0); }
-    100% { transform: translateY(calc(100vh + 140px)); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .bg-animation::after { animation: none; display: none; }
 }
 
 /* ============================================================ */
