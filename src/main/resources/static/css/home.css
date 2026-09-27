@@ -82,15 +82,21 @@
 
 /* Beta status + supported platforms, as a pair of compact readouts
    (the same badge/chip components used elsewhere) instead of loose
-   paragraphs of text. */
+   paragraphs of text. A single max-content grid column, not a wrapping
+   flex row: sizing the column to the wider of the two rows (the badge
+   line, in practice) lets .hero-platforms below stretch to that same
+   width and spread its three chips out to fill it - see the rule below -
+   instead of the chips staying clustered at their own compact size with
+   dead space trailing behind the badge line above them. */
 .hero-footer {
     max-width: 560px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px 14px;
+    display: grid;
+    grid-template-columns: max-content;
+    row-gap: 10px;
     margin-top: 26px;
 }
+
+.hero-footer .hero-platforms { justify-content: space-between; }
 
 .hero-footer .hero-badge a {
     color: var(--accent-bright);
@@ -135,6 +141,32 @@
 @media (max-width: 560px) {
     .hero { padding: 40px 0 40px; }
     .hero-title { font-size: 32px; }
+
+    /* The platform chips just repeat what the OS already told the visitor
+       by serving them this page on their phone - dropped entirely on
+       mobile rather than stacked, since a phone isn't Windows/X11/Wayland
+       anyway. That leaves .hero-badge as the only row in .hero-footer, so
+       its grid column (sized to max-content on desktop, to match whichever
+       of the two rows was wider) needs to become the full available width
+       instead, or the badge below would only ever be as wide as its own
+       stacked text. */
+    .hero-footer { grid-template-columns: 1fr; }
+    .hero-footer .hero-platforms { display: none; }
+
+    /* A dedicated mobile design, not the desktop pill with a tweak: full
+       width and no accent rail down the side. A colored left border reads
+       fine on a slim inline pill; stacked into a squarer standalone box
+       (the only thing left in .hero-footer once the chips are gone) it
+       just looks like a stray stripe. Plain uniform border instead. */
+    .hero-footer .hero-badge {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        gap: 6px;
+        padding: 14px 16px;
+        border: 1px solid var(--border-strong);
+    }
 }
 
 /* ============================================================ */
@@ -581,7 +613,39 @@
 .feature-card-lg { grid-column: span 2; grid-row: span 2; }
 .feature-card-lg .feature-icon { width: 52px; height: 52px; font-size: 26px; }
 .feature-card-lg .feature-title { font-size: 21px; }
-.feature-card-lg .feature-description { font-size: 15px; max-width: 420px; }
+.feature-card-lg .feature-description { font-size: 15px; }
+
+/* The actual DSP chain behind "Crystal-clear voice" (see the client repo's
+   README, "The audio pipeline") - real stage names, not decoration, and it
+   gives the card's 2-row height something to hold besides one short
+   paragraph floating above empty space. */
+.voice-pipeline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px 5px;
+    margin-top: 22px;
+}
+
+.voice-pipeline-step {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--cyan);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+}
+
+.voice-pipeline-arrow { font-size: 13px; color: var(--fg-subtle); flex-shrink: 0; }
+
+.voice-pipeline-note {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--fg-subtle);
+    margin-top: 12px;
+}
 
 .feature-card-wide { grid-column: span 2; }
 

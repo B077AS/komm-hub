@@ -475,6 +475,13 @@ i, [class^="mdi-"], [class*=" mdi-"] {
 
 .site-navbar-link:hover { color: var(--fg); border-color: var(--border-strong); }
 
+/* Declared after :hover so it wins regardless of hover state, same reasoning
+   as .arch-card.featured winning over .arch-card:hover in home.css - equal
+   specificity, later rule in the cascade takes it. Set by the navbar's own
+   script: a plain path match for "Download", scroll position (via
+   IntersectionObserver) for the in-page section links. */
+.site-navbar-link.active { color: var(--fg); border-color: var(--accent); }
+
 .site-navbar-actions {
     margin-left: auto;
     display: flex;

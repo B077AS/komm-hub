@@ -352,6 +352,22 @@
                         Low-latency WebRTC voice channels with noise suppression, echo cancellation,
                         automatic gain control and voice activity detection built in.
                     </p>
+
+                    <div class="voice-pipeline" aria-label="Audio processing pipeline">
+                        <span class="voice-pipeline-step">AEC3</span>
+                        <i class="mdi mdi-arrow-right voice-pipeline-arrow"></i>
+                        <span class="voice-pipeline-step">RNNoise</span>
+                        <i class="mdi mdi-arrow-right voice-pipeline-arrow"></i>
+                        <span class="voice-pipeline-step">AGC2</span>
+                        <i class="mdi mdi-arrow-right voice-pipeline-arrow"></i>
+                        <span class="voice-pipeline-step">Silero VAD</span>
+                    </div>
+                    <p class="voice-pipeline-note">
+                        Your mic runs this full chain before it ever reaches the network -
+                        RNNoise falls back to WebRTC-NS, and Silero VAD (ONNX Runtime) gates out
+                        keyboard clatter between words. Jitter-buffered on the way back in, so
+                        playback stays smooth even on spiky connections.
+                    </p>
                 </div>
 
                 <div class="feature-card feature-card-wide">
@@ -409,9 +425,9 @@
                 </div>
 
                 <div class="feature-card feature-card-wide">
-                    <div class="feature-icon"><i class="mdi mdi-language-java"></i></div>
-                    <h3 class="feature-title">Built on Java</h3>
-                    <p class="feature-description">Client, server and hub all run on Java 21 - a mature, portable runtime, battle-tested for decades on Windows and Linux alike.</p>
+                    <div class="feature-icon"><i class="mdi mdi-account-multiple-outline"></i></div>
+                    <h3 class="feature-title">Friends &amp; DMs</h3>
+                    <p class="feature-description">Friend requests, direct messages and pokes that follow your account, not any one server - delivered over the hub's WebSocket wherever you are.</p>
                 </div>
             </div>
         </div>

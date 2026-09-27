@@ -133,7 +133,7 @@
     <div class="modal-backdrop" id="badge-modal-backdrop" onclick="closeBadgeModal()"></div>
     <div class="modal" id="badge-modal" role="dialog" aria-modal="true" aria-labelledby="badge-modal-title">
         <div class="modal-head">
-            <span class="modal-title" id="badge-modal-title"><i class="mdi mdi-plus-circle-outline"></i> Create a badge</span>
+            <span class="modal-title" id="badge-modal-title">Create a badge</span>
             <button type="button" class="modal-close" onclick="closeBadgeModal()" aria-label="Close"><i class="mdi mdi-window-close"></i></button>
         </div>
         <form method="post" th:action="@{/dashboard/badges}" th:attr="hx-post=@{/dashboard/badges}">

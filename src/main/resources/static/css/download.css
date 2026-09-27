@@ -81,6 +81,13 @@
 
 .dl-hosting-card:last-child { border-right: none; }
 
+/* Same purple accent as the homepage's featured "Komm Server" piece
+   (.arch-card.featured in home.css) - carried over onto this card too so
+   the two pages read as the same product story rather than one calling
+   the server out as the primary pick and the other treating it identically
+   to Hub. */
+.dl-hosting-card.featured { border-top-color: var(--accent); background: linear-gradient(180deg, var(--accent-glow) 0%, var(--bg-card) 55%); }
+
 .dl-hosting-icon {
     width: 52px;
     height: 52px;
@@ -109,6 +116,22 @@
 
 @media (max-width: 640px) {
     .dl-main { padding: 56px 0 48px; }
+
+    /* Same dedicated mobile treatment as the homepage's hero badge
+       (.hero-footer .hero-badge in home.css): stacked, full width and
+       boxed, instead of the plain inline icon+text+link line this reads
+       as on desktop - which gets cramped once "Request access" has to
+       wrap onto its own line at phone width anyway. */
+    .dl-beta-line {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        gap: 6px;
+        padding: 14px 16px;
+        border: 1px solid var(--border-strong);
+        background: var(--bg-card);
+    }
 }
 
 .dl-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
