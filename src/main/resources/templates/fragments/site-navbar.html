@@ -70,25 +70,41 @@
         </button>
     </div>
 
+    <div class="site-navbar-backdrop" id="siteNavbarBackdrop"></div>
+
     <script>
         (function () {
             const toggle = document.getElementById('mobileMenuToggle');
             const links = document.getElementById('navbarLinks');
-            if (!toggle) return;
+            const backdrop = document.getElementById('siteNavbarBackdrop');
+            const main = document.querySelector('.site-main');
+            if (!toggle || !links) return;
 
-            toggle.addEventListener('click', function () {
-                const open = links.classList.toggle('open');
+            function setMenuOpen(open) {
+                links.classList.toggle('open', open);
                 toggle.classList.toggle('open', open);
                 toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (backdrop) backdrop.classList.toggle('open', open);
+                // The sidebar overlays .site-main rather than displacing it, so that's the
+                // scroll container that needs locking while it's open, not body/html.
+                if (main) main.style.overflow = open ? 'hidden' : '';
+            }
+
+            toggle.addEventListener('click', function () {
+                setMenuOpen(!links.classList.contains('open'));
+            });
+
+            if (backdrop) {
+                backdrop.addEventListener('click', function () { setMenuOpen(false); });
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && links.classList.contains('open')) setMenuOpen(false);
             });
 
             // Close the mobile menu when a link is chosen
             links.addEventListener('click', function (e) {
-                if (e.target.closest('a')) {
-                    links.classList.remove('open');
-                    toggle.classList.remove('open');
-                    toggle.setAttribute('aria-expanded', 'false');
-                }
+                if (e.target.closest('a')) setMenuOpen(false);
             });
         })();
 

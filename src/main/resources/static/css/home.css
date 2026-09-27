@@ -589,11 +589,18 @@
 /* SELF-HOSTING / ARCHITECTURE                                    */
 /* ============================================================ */
 
-.architecture-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+/* Two of these three cards share the "featured" gradient - a divider that's
+   just the grid's background peeking through a 1px gap gets washed out by
+   that gradient near the top, where the tint is strongest on both sides.
+   A real border painted on each card sits on top of its own background
+   instead of showing through it, so it stays visible regardless. */
+.architecture-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--border-strong); }
 
 .arch-card {
     position: relative;
     background: var(--bg-card);
+    border-top: 2px solid var(--border-strong);
+    border-right: 1px solid var(--border-strong);
     padding: 30px 26px;
     display: flex;
     flex-direction: column;
@@ -601,8 +608,15 @@
     transition: background 0.2s ease;
 }
 
+.arch-card:last-child { border-right: none; }
+
 .arch-card:hover { background: var(--bg-card-hover); }
-.arch-card.featured { background: linear-gradient(180deg, var(--accent-glow) 0%, var(--bg-card) 55%); }
+.arch-card.featured { border-top-color: var(--accent); background: linear-gradient(180deg, var(--accent-glow) 0%, var(--bg-card) 55%); }
+
+/* .featured and :hover carry equal specificity, and .featured is declared
+   later, so it always won regardless of hover state - only the plain (Hub)
+   card ever showed a hover. This is more specific than either alone. */
+.arch-card.featured:hover { background: linear-gradient(180deg, var(--accent-glow) 0%, var(--bg-card-hover) 55%); }
 
 .arch-index {
     font-family: var(--font-mono);
@@ -637,10 +651,19 @@
     text-decoration: none;
 }
 
-.arch-link i { font-size: 15px; transition: transform 0.2s ease; }
-.arch-link:hover i { transform: translateX(4px); }
+/* Stretches this link's hit area over the whole card (which is already
+   position:relative) instead of just its own text, so the entire block is
+   clickable through a single, real anchor - no nested <a> tags needed. */
+.arch-link::after { content: ''; position: absolute; inset: 0; }
 
-@media (max-width: 900px) { .architecture-grid { grid-template-columns: 1fr; } }
+.arch-link i { font-size: 15px; transition: transform 0.2s ease; }
+.arch-card:hover .arch-link i { transform: translateX(4px); }
+
+@media (max-width: 900px) {
+    .architecture-grid { grid-template-columns: 1fr; }
+    .arch-card { border-right: none; border-bottom: 1px solid var(--border-strong); }
+    .arch-card:last-child { border-bottom: none; }
+}
 
 /* -- How it works -- */
 .how-it-works { margin-top: 64px; }
@@ -786,7 +809,6 @@
     margin: 0 auto;
     background: var(--bg-card);
     border: 1px solid var(--border-strong);
-    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
     padding: 30px;
 }
 

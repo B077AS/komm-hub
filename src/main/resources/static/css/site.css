@@ -625,21 +625,59 @@ i, [class^="mdi-"], [class*=" mdi-"] {
 .site-navbar-mobile-toggle.open span:nth-child(2) { opacity: 0; }
 .site-navbar-mobile-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+/* Backdrop behind the sidebar - hidden/inert until it's open, faded in
+   rather than just toggled so the transition reads. */
+.site-navbar-backdrop {
+    display: none;
+}
+
 @media (max-width: 900px) {
-    .site-navbar-links {
-        display: none;
-        position: absolute;
-        top: var(--navbar-height);
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        background: var(--bg-raised);
-        border-bottom: 1px solid var(--border);
-        padding: 8px 28px 16px;
-        gap: 2px;
+    .site-navbar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+        z-index: 90;
     }
-    .site-navbar-links.open { display: flex; }
-    .site-navbar-mobile-toggle { display: flex; margin-left: 8px; }
+
+    .site-navbar-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    /* A real sidebar, not a dropdown panel: fixed to the viewport, slides
+       in from the right over the content instead of pushing the navbar
+       taller. */
+    .site-navbar-links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(78vw, 300px);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: var(--bg-raised);
+        border-left: 1px solid var(--border-strong);
+        box-shadow: var(--shadow-xl);
+        padding: calc(var(--navbar-height) + 12px) 0 20px;
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        z-index: 100;
+    }
+
+    .site-navbar-links.open { transform: translateX(0); }
+
+    .site-navbar-link {
+        padding: 14px 24px;
+        border-top: 1px solid var(--border);
+        border-bottom: none;
+    }
+
+    .site-navbar-link:hover { background: rgba(255, 255, 255, 0.04); border-color: var(--border); }
+
+    .site-navbar-mobile-toggle { display: flex; margin-left: 8px; position: relative; z-index: 110; }
     .site-navbar-actions { margin-left: auto; }
 }
 
