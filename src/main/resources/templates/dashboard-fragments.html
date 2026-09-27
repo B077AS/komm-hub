@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Fragment library only - never rendered as its own page. Each top-level
+     div is fetched independently by DashboardWebController (initial load
+     inserts "profile" directly; the sidebar and the four admin actions
+     swap in whichever fragment they need via htmx, GET or POST). -->
+<body>
+
+<div th:fragment="profile" class="dash-header" id="profile">
+    <div id="user-avatar" class="avatar">
+        <img th:if="${user.avatar}" th:src="'data:image/' + ${user.avatarImageFormat ?: 'png'} + ';base64,' + ${user.avatar}" alt="Avatar">
+        <span th:unless="${user.avatar}" th:text="${#strings.isEmpty(user.username) ? '?' : #strings.toUpperCase(#strings.substring(user.username,0,1))}"></span>
+    </div>
+    <div class="profile-info">
+        <h2 th:text="${user.username}"></h2>
+        <div class="email" th:text="${user.email}"></div>
+        <div class="status-row">
+            <span class="status-dot" th:style="'background:' + ${statusColor}"></span>
+            <span th:text="${statusLabel}"></span>
+            <span th:if="${user.statusMessage}" style="color:var(--fg-subtle);" th:text="'- ' + ${user.statusMessage}"></span>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="beta-keys" class="dash-panel" id="beta-keys">
+    <div class="error-msg dash-error" th:if="${error}" th:text="${error}" style="display:block;"></div>
+
+    <div class="dash-panel-head">
+        <div class="dash-panel-heading">
+            <span class="dash-panel-icon"><i class="mdi mdi-key-chain-variant"></i></span>
+            <div>
+                <div class="dash-panel-title">Beta keys</div>
+                <div class="dash-panel-desc">Single-use invite keys for closed-beta registration.</div>
+            </div>
+        </div>
+        <form th:action="@{/dashboard/beta-keys}" th:attr="hx-post=@{/dashboard/beta-keys}" method="post" class="dash-panel-action">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="count" value="1">
+            <button class="btn btn-primary btn-inline" type="submit">
+                <i class="mdi mdi-plus"></i> Generate a key
+            </button>
+        </form>
+    </div>
+
+    <div th:if="${#lists.isEmpty(betaKeys)}" class="dash-empty">No keys yet - generate one to invite someone.</div>
+
+    <div class="key-table" th:unless="${#lists.isEmpty(betaKeys)}">
+        <div class="key-table-head">
+            <span>Key</span>
+            <span>Status</span>
+            <span></span>
+        </div>
+        <div class="key-row" th:each="k : ${betaKeys}" th:classappend="${k.used} ? ' is-used' : ''">
+            <code class="key-code" th:text="${k.keyValue}"></code>
+
+            <span class="key-status" th:if="${!k.used}">
+                <span class="key-status-dot"></span> Available
+            </span>
+            <span class="key-status is-used" th:if="${k.used}"
+                  th:text="'Used by ' + ${#strings.defaultString(k.usedByUsername,'unknown')}"></span>
+
+            <div class="key-actions" th:unless="${k.used}">
+                <a href="#" class="dash-row-action" title="Copy key" th:attr="data-copy=${k.keyValue}" onclick="copyToClipboard(this); return false;"><i class="mdi mdi-content-copy"></i></a>
+                <form method="post" th:action="@{'/dashboard/beta-keys/' + ${k.betaKeyId} + '/delete'}"
+                      th:attr="hx-post=@{'/dashboard/beta-keys/' + ${k.betaKeyId} + '/delete'}"
+                      hx-confirm="Delete this beta key?">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="dash-row-action danger" title="Delete key"><i class="mdi mdi-trash-can-outline"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="badges" class="dash-panel" id="badges">
+    <div class="error-msg dash-error" th:if="${error}" th:text="${error}" style="display:block;"></div>
+
+    <div class="dash-panel-head">
+        <div class="dash-panel-heading">
+            <span class="dash-panel-icon"><i class="mdi mdi-seal"></i></span>
+            <div>
+                <div class="dash-panel-title">Badges</div>
+                <div class="dash-panel-desc">System badges are awarded automatically; each custom badge has a single redeemable token.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dash-list">
+        <div class="dash-row" th:each="b : ${badges}">
+            <div class="dash-row-main">
+                <span class="mdi-glyph" th:if="${b.iconCodepoint}" th:utext="'&#x' + ${b.iconCodepoint} + ';'" th:style="${b.color != null} ? ('color:' + ${b.color}) : ''"></span>
+                <span class="dash-row-name" th:text="${b.name}"></span>
+                <span class="dash-row-meta"
+                      th:text="${(b.type.name() == 'SYSTEM' ? 'system - ' : '')
+                                + (b.userCount != null ? b.userCount + (b.userCount == 1 ? ' user' : ' users') : '')
+                                + (b.description != null ? ' - ' + b.description : '')}"></span>
+                <code th:if="${b.type.name() != 'SYSTEM' and b.token}" class="dash-row-code" th:text="${b.token.tokenValue}"
+                      th:title="'uses ' + ${b.token.usedCount} + '/' + (${b.token.maxUses} ?: '&#8734;') + ' - expires ' + (${b.token.expiresAt} ?: 'never')"
+                      th:classappend="${b.token.expired or b.token.exhausted} ? ' is-inactive' : ''"></code>
+            </div>
+            <div class="dash-row-actions" th:if="${b.type.name() != 'SYSTEM'}">
+                <a th:if="${b.token != null and !b.token.expired and !b.token.exhausted}" href="#" class="dash-row-action" title="Copy token" th:attr="data-copy=${b.token.tokenValue}" onclick="copyToClipboard(this); return false;"><i class="mdi mdi-content-copy"></i></a>
+                <form method="post" th:action="@{'/dashboard/badges/' + ${b.badgeId} + '/delete'}"
+                      th:attr="hx-post=@{'/dashboard/badges/' + ${b.badgeId} + '/delete'}, hx-confirm=|Delete badge '${b.name}'? It will disappear from every profile that has it.|">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="dash-row-action danger" title="Delete badge (removes it from all profiles)"><i class="mdi mdi-trash-can-outline"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create badge -->
+    <div class="dash-subpanel">
+        <div class="dash-subpanel-title"><i class="mdi mdi-plus-circle-outline"></i> Create a badge</div>
+        <p class="dash-subpanel-desc">Pick an icon and color, then share the generated token so users can add it to their profile.</p>
+
+        <form method="post" th:action="@{/dashboard/badges}" th:attr="hx-post=@{/dashboard/badges}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="icon" id="badge-icon-input" value="mdi2a-account">
+
+            <div class="dash-form-grid">
+                <div class="dash-field dash-field-wide">
+                    <label>Badge</label>
+                    <div class="dash-field-row">
+                        <button type="button" class="badge-icon-btn" id="badge-icon-btn" onclick="toggleIconPicker()" title="Choose icon">
+                            <span id="badge-icon-preview" class="mdi-glyph">&#xF0004;</span>
+                        </button>
+                        <input type="text" name="name" class="badge-input" placeholder="Badge name" maxlength="50" required>
+                        <input type="color" name="color" class="badge-color-input" value="#58A6FF" title="Badge color">
+                    </div>
+                </div>
+
+                <div class="dash-field dash-field-wide">
+                    <label>Description <span style="text-transform:none; font-weight:400;">(optional)</span></label>
+                    <input type="text" name="description" class="badge-input" placeholder="Shown next to the badge">
+                </div>
+
+                <div class="dash-field">
+                    <label>Token max uses</label>
+                    <input type="number" name="maxUses" class="badge-input" placeholder="&#8734;" min="1">
+                </div>
+
+                <div class="dash-field">
+                    <label>Expires</label>
+                    <input type="date" name="expiresAt" class="badge-input">
+                </div>
+            </div>
+
+            <div class="dash-form-actions">
+                <button class="btn btn-primary btn-inline" type="submit">
+                    <i class="mdi mdi-plus"></i> Create
+                </button>
+            </div>
+
+            <div id="icon-picker" class="icon-picker" style="display:none;">
+                <input type="text" id="icon-search" class="badge-input" placeholder="Search icons..." oninput="filterIcons()">
+                <div id="icon-grid" class="icon-grid"></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

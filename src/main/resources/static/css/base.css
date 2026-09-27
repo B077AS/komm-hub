@@ -233,7 +233,7 @@ body > *:not(.bg-animation):not(.navbar) {
 }
 
 .navbar-content {
-    max-width: 1360px;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 0 28px;
     height: 64px;

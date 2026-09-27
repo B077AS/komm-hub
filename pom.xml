@@ -207,6 +207,16 @@
 							<arguments>run copy-fonts</arguments>
 						</configuration>
 					</execution>
+					<execution>
+						<id>copy htmx</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run copy-htmx</arguments>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
