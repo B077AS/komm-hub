@@ -327,8 +327,14 @@
     position: relative;
 }
 
-.mockup-avatar.a1 { background: linear-gradient(135deg, #ff6b6b, #a33a3a); }
-.mockup-avatar.a2 { background: linear-gradient(135deg, var(--cyan), #1f6a84); }
+/* Neither reuses an existing semantic color - #ff6b6b is --danger (an admin
+   avatar shouldn't read as an error state), --success green would sit right
+   next to the online-status dot below and blend into it, and --cyan reads
+   too bright/neon at this size. A muted clay against a deeper, calmer blue
+   instead - distinct from each other and from the purple used everywhere
+   else, without either one shouting. */
+.mockup-avatar.a1 { background: #c07a52; }
+.mockup-avatar.a2 { background: #3f7ab0; }
 
 .mockup-avatar.status::after {
     content: '';
@@ -356,8 +362,8 @@
     margin-top: 2px;
 }
 
-.mockup-msg-avatar.a1 { background: linear-gradient(135deg, #ff6b6b, #a33a3a); }
-.mockup-msg-avatar.a2 { background: linear-gradient(135deg, var(--cyan), #1f6a84); }
+.mockup-msg-avatar.a1 { background: #c07a52; }
+.mockup-msg-avatar.a2 { background: #3f7ab0; }
 
 /* -- Chat column -- */
 .mockup-chat { display: flex; flex-direction: column; min-width: 0; }
@@ -632,7 +638,7 @@
     font-size: 11.5px;
     font-weight: 600;
     letter-spacing: 0.03em;
-    color: var(--cyan);
+    color: var(--accent-bright);
     background: var(--bg-raised);
     border: 1px solid var(--border);
     padding: 5px 10px;
@@ -953,8 +959,6 @@
 
 .console-prompt { color: var(--accent); font-weight: 700; }
 
-.beta-console-optional { color: var(--fg-subtle); text-transform: none; }
-
 .beta-console-field input,
 .beta-console-field textarea {
     width: 100%;
@@ -981,6 +985,11 @@
 /* already visible: no clicking to find out whether a question    */
 /* answers what you came here for.                                */
 /* ============================================================ */
+
+/* Centered on its own above the terminal log below, not leading into a
+   line of text the dash would otherwise point into - same reasoning as
+   .dl-hosting-kicker::before in download.css. */
+.faq .section-kicker::before { display: none; }
 
 .faq-terminal { background: var(--bg); border: 1px solid var(--border-strong); }
 

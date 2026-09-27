@@ -337,7 +337,7 @@
     <section id="features" class="features section">
         <div class="container">
             <div class="section-header">
-                <span class="section-kicker">01 / Features</span>
+                <span class="section-kicker">Features</span>
                 <h2 class="heading-md">Everything your community needs</h2>
                 <p class="text-lg">
                     Built from the ground up for low-latency voice and a fast, keyboard-friendly desktop experience.
@@ -437,7 +437,7 @@
     <section id="platforms" class="platforms section">
         <div class="container">
             <div class="section-header">
-                <span class="section-kicker">02 / Platforms</span>
+                <span class="section-kicker">Platforms</span>
                 <h2 class="heading-md">Windows and Linux, done properly</h2>
                 <p class="text-lg">
                     One download, every desktop. Komm treats Linux as a first-class platform -
@@ -480,8 +480,8 @@
     <section id="self-hosting" class="architecture section">
         <div class="container">
             <div class="section-header">
-                <span class="section-kicker">03 / Self-Hosting</span>
-                <h2 class="heading-md">Three pieces. You choose how many to run.</h2>
+                <span class="section-kicker">Self-Hosting</span>
+                <h2 class="heading-md">Three components. You choose how many to run.</h2>
                 <p class="text-lg">
                     Komm is built around a simple idea: your community's messages and voice traffic
                     belong on hardware you control.
@@ -490,7 +490,7 @@
 
             <div class="architecture-grid">
                 <div class="arch-card featured">
-                    <span class="arch-index">PIECE 01 / THE APP</span>
+                    <span class="arch-index">COMPONENT 01 / THE APP</span>
                     <div class="arch-icon"><i class="mdi mdi-laptop"></i></div>
                     <h3 class="feature-title">Komm Client</h3>
                     <p class="feature-description">
@@ -501,7 +501,7 @@
                 </div>
 
                 <div class="arch-card featured">
-                    <span class="arch-index">PIECE 02 / YOUR COMMUNITY</span>
+                    <span class="arch-index">COMPONENT 02 / YOUR COMMUNITY</span>
                     <div class="arch-icon"><i class="mdi mdi-server"></i></div>
                     <h3 class="feature-title">Komm Server</h3>
                     <p class="feature-description">
@@ -513,7 +513,7 @@
                 </div>
 
                 <div class="arch-card">
-                    <span class="arch-index" style="color:var(--fg-subtle);">PIECE 03 / FOR TINKERERS</span>
+                    <span class="arch-index" style="color:var(--fg-subtle);">COMPONENT 03 / FOR TINKERERS</span>
                     <div class="arch-icon"><i class="mdi mdi-hub"></i></div>
                     <h3 class="feature-title">Komm Hub</h3>
                     <p class="feature-description">
@@ -558,7 +558,7 @@
     <section id="security" class="security section">
         <div class="container">
             <div class="section-header">
-                <span class="section-kicker">04 / Security</span>
+                <span class="section-kicker">Security</span>
             </div>
 
             <div class="security-content">
@@ -616,7 +616,7 @@
                             <span class="chain-node-role">Desktop app</span>
                         </div>
                         <div class="chain-link">
-                            <span class="chain-link-label"><i class="mdi mdi-lock"></i> TLS &middot; 60s ticket</span>
+                            <span class="chain-link-label"><i class="mdi mdi-lock"></i> TLS</span>
                         </div>
                         <div class="chain-node featured">
                             <span class="chain-node-icon"><i class="mdi mdi-server"></i></span>
@@ -642,7 +642,7 @@
         <div class="container">
             <div class="beta-gate">
                 <div class="beta-gate-text">
-                    <span class="section-kicker">05 / Closed Beta</span>
+                    <span class="section-kicker">Closed Beta</span>
                     <h2 class="heading-md">Access is invite-only</h2>
                     <p class="text-lg">
                         Everything here is ready to use - registration on the official hub just needs a
@@ -671,8 +671,8 @@
                             <input type="email" id="beta-email" placeholder="you@example.com" autocomplete="email">
                         </div>
                         <div class="beta-console-field">
-                            <label for="beta-message"><span class="console-prompt">&gt;</span> message <span class="beta-console-optional">(optional)</span></label>
-                            <textarea id="beta-message" rows="3" maxlength="2000"
+                            <label for="beta-message"><span class="console-prompt">&gt;</span> message</label>
+                            <textarea id="beta-message" rows="3" maxlength="2000" required
                                       placeholder="Who you are, what community you'd bring, how you found Komm..."></textarea>
                         </div>
                         <button id="beta-submit" class="btn btn-primary" style="width:100%;" onclick="requestBetaAccess()">
@@ -692,7 +692,7 @@
     <section id="faq" class="faq section">
         <div class="container-narrow">
             <div class="section-header centered">
-                <span class="section-kicker">06 / FAQ</span>
+                <span class="section-kicker">FAQ</span>
                 <h2 class="heading-md">Frequently asked questions</h2>
             </div>
 
@@ -778,6 +778,10 @@
 
             if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
                 show('Please enter a valid email address.', false);
+                return;
+            }
+            if (!message) {
+                show('Please enter a message.', false);
                 return;
             }
 
