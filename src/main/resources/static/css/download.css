@@ -1,224 +1,227 @@
-/* ============================================ */
-/* DOWNLOAD - HERO */
-/* ============================================ */
+/* ============================================================ */
+/* DOWNLOAD                                                        */
+/* ============================================================ */
 
-/* Client, server and hub each get their own full-viewport hero section
-   (badge, title, description, buttons, notes flowing in one centered
-   block), mirroring the homepage's hero. A scroll hint at the bottom of
-   each links down to the next. */
-.dl-hero {
-    padding: 120px 0 100px;
-    text-align: center;
-    position: relative;
-    box-sizing: border-box;
-    min-height: calc(100vh - var(--navbar-height));
-    min-height: calc(100dvh - var(--navbar-height));
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
+/* Three near-identical wide sections in a row, each a lone narrow text
+   column, read as monotonous and empty regardless of how that column is
+   split up. The actual fix is structural: one focused, centered download
+   moment for the 80% case (the client), then Server and Hub - which are
+   really one decision ("host it yourself or don't") - presented together
+   as a comparison, not as two more repeats of the same hero. */
+.dl-main { padding: 88px 0 64px; text-align: center; }
 
-.dl-hero-server {
-    border-top: 1px solid var(--border);
-}
-
-.dl-hero-content {
+.dl-main-content {
+    max-width: 640px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 26px;
-    max-width: 760px;
-    margin: 0 auto;
-    width: 100%;
-}
-
-.dl-hero-content .dl-note {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.dl-hero .hero-platforms,
-.dl-hero .dl-buttons,
-.dl-hero .dl-meta,
-.dl-hero .dl-reqs {
-    justify-content: center;
-}
-
-.dl-hero .dl-note,
-.dl-hero .dl-steps {
-    text-align: left;
-}
-
-/* Scroll cue pinned to the bottom of a hero, hinting at the section below */
-.dl-scroll-hint {
-    position: absolute;
-    left: 50%;
-    bottom: 28px;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    color: var(--fg-subtle);
-    font-size: 12.5px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.dl-scroll-hint:hover {
-    color: var(--accent-bright);
-}
-
-.dl-scroll-hint i {
-    font-size: 20px;
-    animation: dlScrollBounce 1.6s ease-in-out infinite;
-}
-
-@keyframes dlScrollBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .dl-scroll-hint i { animation: none; }
-}
-
-@media (max-width: 560px) {
-    .dl-hero { padding: 96px 0 72px; }
-    .dl-scroll-hint { display: none; }
-}
-
-.dl-buttons {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-}
-
-.dl-meta {
-    display: flex;
     gap: 22px;
-    flex-wrap: wrap;
 }
 
-.dl-meta span {
-    display: inline-flex;
+.dl-main .hero-platforms,
+.dl-main .dl-buttons { justify-content: center; }
+
+/* A plain status readout instead of the bordered .hero-badge card used
+   elsewhere - a quiet line of text, not another boxed element stacked
+   above a heading that's about to introduce a whole page of boxes. */
+.dl-release-tag {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+}
+
+/* Two short facts, side by side rather than three stacked lines - the
+   third (Wayland & X11) just repeated the platform chips above it. */
+.dl-main .dl-meta { flex-direction: row; flex-wrap: wrap; justify-content: center; column-gap: 22px; }
+
+/* Beta note as a closing line under the checklist, not a separate
+   bordered card competing with it for attention. */
+.dl-beta-line {
+    display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     font-size: 13.5px;
-    font-weight: 600;
     color: var(--fg-muted);
 }
 
-.dl-meta i {
-    color: var(--success);
-    font-size: 17px;
+.dl-beta-line i { color: var(--accent); font-size: 16px; }
+
+/* -- Self-hosting comparison -- */
+.dl-hosting { border-top: 1px solid var(--border); background: var(--bg-raised); }
+
+/* No leading dash on this kicker - it's centered on its own above the
+   grid, not leading into a line of text the dash would otherwise point into. */
+.dl-hosting-kicker::before { display: none; }
+
+.dl-hosting-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid var(--border-strong);
 }
+
+.dl-hosting-card {
+    background: var(--bg-card);
+    border-top: 2px solid var(--border-strong);
+    border-right: 1px solid var(--border-strong);
+    padding: 34px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* #server / #hub anchor here - without this, jumping straight to the
+       card skips the section header (kicker, heading, intro) entirely.
+       The navbar isn't part of the scrolling area (.site-main scrolls
+       below it, not under it), so it needs no separate allowance here -
+       just the height of the header content sitting above the grid. */
+    scroll-margin-top: 230px;
+}
+
+.dl-hosting-card:last-child { border-right: none; }
+
+/* Same purple accent as the homepage's featured "Komm Server" piece
+   (.arch-card.featured in home.css) - carried over onto this card too so
+   the two pages read as the same product story rather than one calling
+   the server out as the primary pick and the other treating it identically
+   to Hub. */
+.dl-hosting-card.featured { border-top-color: var(--accent); background: linear-gradient(180deg, var(--accent-glow) 0%, var(--bg-card) 55%); }
+
+.dl-hosting-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    font-size: 25px;
+    color: var(--accent-bright);
+}
+
+.dl-hosting-card h3 { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--fg); }
+.dl-hosting-card > p { font-size: 14px; line-height: 1.65; color: var(--fg-muted); }
+
+/* Pushes the buttons - and the note that follows them - down to the
+   card's bottom edge, so they line up across both cards regardless of
+   how long the steps/requirements content above happens to run. */
+.dl-hosting-card .dl-buttons { margin-top: auto; }
+
+@media (max-width: 860px) {
+    .dl-hosting-grid { grid-template-columns: 1fr; }
+    .dl-hosting-card { border-right: none; border-bottom: 1px solid var(--border-strong); }
+    .dl-hosting-card:last-child { border-bottom: none; }
+}
+
+@media (max-width: 640px) {
+    .dl-main { padding: 56px 0 48px; }
+
+    /* Same dedicated mobile treatment as the homepage's hero badge
+       (.hero-footer .hero-badge in home.css): stacked, full width and
+       boxed, instead of the plain inline icon+text+link line this reads
+       as on desktop - which gets cramped once "Request access" has to
+       wrap onto its own line at phone width anyway. */
+    .dl-beta-line {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        gap: 6px;
+        padding: 14px 16px;
+        border: 1px solid var(--border-strong);
+        background: var(--bg-card);
+    }
+}
+
+.dl-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.dl-meta { display: flex; flex-direction: column; gap: 12px; }
+
+.dl-meta span { display: inline-flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 500; color: var(--fg-muted); }
+.dl-meta i { color: var(--success); font-size: 16px; flex-shrink: 0; }
 
 .dl-note {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    padding: 14px 18px;
-    background: var(--accent-glow);
-    border: 1px solid rgba(149, 128, 255, 0.3);
-    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
     font-size: 13.5px;
     line-height: 1.6;
     color: var(--fg-muted);
 }
 
-.dl-note i {
-    font-size: 19px;
-    color: var(--accent-bright);
-    flex-shrink: 0;
-    margin-top: 2px;
-}
+.dl-note i { font-size: 18px; color: var(--accent-bright); flex-shrink: 0; margin-top: 2px; }
 
-/* Inline code inside steps and notes */
-.dl-hero code {
+.dl-main code,
+.dl-hosting-card code {
     font-family: var(--font-mono);
     font-size: 12px;
     color: var(--fg);
     background: var(--bg-raised);
     border: 1px solid var(--border);
-    border-radius: 5px;
     padding: 1px 6px;
     white-space: nowrap;
 }
 
-/* Numbered steps inside the server hero */
-.dl-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+.dl-steps { display: flex; flex-direction: column; gap: 0; }
 
 .dl-step {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.6;
     color: var(--fg-muted);
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
 }
+
+.dl-step:last-child { border-bottom: none; padding-bottom: 0; }
 
 .dl-step-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    width: 22px;
+    height: 22px;
     background: var(--accent-glow);
-    border: 1px solid rgba(149, 128, 255, 0.4);
+    border: 1px solid var(--accent-dim);
     color: var(--accent-bright);
-    font-size: 12px;
-    font-weight: 800;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
     flex-shrink: 0;
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
-/* Requirement chips inside the hub hero */
-.dl-reqs {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
+.dl-reqs { display: flex; flex-direction: column; gap: 12px; }
 
 .dl-req {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 7px;
-    padding: 7px 14px;
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: 999px;
+    gap: 10px;
     font-size: 12.5px;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--fg-muted);
+    font-family: var(--font-mono);
 }
 
-.dl-req i {
-    color: var(--accent);
-    font-size: 15px;
-}
+.dl-req i { color: var(--accent); font-size: 16px; flex-shrink: 0; }
 
-.dl-inline-link {
-    color: var(--accent-bright);
-    font-weight: 600;
-    text-decoration: none;
-}
-
+.dl-inline-link { color: var(--accent-bright); font-weight: 600; text-decoration: none; }
 .dl-inline-link:hover { text-decoration: underline; }
 
-/* ============================================ */
-/* DOWNLOAD - SOURCE / TRUST */
-/* ============================================ */
+/* ============================================================ */
+/* SOURCE / TRUST                                                  */
+/* ============================================================ */
 
 .dl-source {
     border-top: 1px solid var(--border);
-    margin-top: 24px;
+    background: var(--bg-raised);
 }
 
 .dl-source-content {
@@ -227,14 +230,11 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    padding-top: 24px;
-    padding-bottom: 24px;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
-.dl-source-icon {
-    font-size: 44px;
-    color: var(--fg-muted);
-}
+.dl-source-icon { font-size: 38px; color: var(--fg-muted); }
 
 .dl-source-links {
     display: flex;
@@ -242,7 +242,8 @@
     gap: 12px;
     flex-wrap: wrap;
     justify-content: center;
-    font-size: 15px;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
 }
 
 .dl-source-sep { color: var(--fg-subtle); }

@@ -43,25 +43,74 @@ public class DashboardWebController {
         return "dashboard";
     }
 
+    // -- Section fragments - the sidebar swaps these into #dash-content via htmx
+    //    instead of navigating; the profile one also backs the first paint of
+    //    the full page (see dashboard.html). --
+
+    @GetMapping("/dashboard/section/profile")
+    public String profileSection(Model model) {
+        User user = securityUtil.getCurrentUser();
+        model.addAttribute("user", userService.toDto(user));
+        model.addAttribute("statusColor", statusColor(user.getStatus()));
+        model.addAttribute("statusLabel", statusLabel(user.getStatus()));
+        return "dashboard-fragments :: profile";
+    }
+
+    @GetMapping("/dashboard/section/beta-keys")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public String betaKeysSection(Model model) {
+        model.addAttribute("betaKeys", betaKeyService.listKeys());
+        return "dashboard-fragments :: beta-keys";
+    }
+
+    @GetMapping("/dashboard/section/badges")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public String badgesSection(Model model) {
+        model.addAttribute("badges", badgeService.listBadgesForAdmin());
+        return "dashboard-fragments :: badges";
+    }
+
+    // -- Admin actions - each returns the section fragment it belongs to when
+    //    called via htmx (keeping the visitor on that section), and falls back
+    //    to the old full-page redirect for a plain, JS-less form submit. --
+
     @PostMapping("/dashboard/beta-keys")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public String generateBetaKeys(@RequestParam(defaultValue = "1") int count, RedirectAttributes redirectAttributes) {
+    public String generateBetaKeys(@RequestParam(defaultValue = "1") int count,
+                                    @RequestHeader(value = "HX-Request", required = false) String hxRequest,
+                                    Model model, RedirectAttributes redirectAttributes) {
+        String error = null;
         try {
             betaKeyService.generateKeys(count);
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            error = e.getMessage();
         }
+        if (hxRequest != null) {
+            if (error != null) model.addAttribute("error", error);
+            model.addAttribute("betaKeys", betaKeyService.listKeys());
+            return "dashboard-fragments :: beta-keys";
+        }
+        if (error != null) redirectAttributes.addFlashAttribute("error", error);
         return "redirect:/dashboard";
     }
 
     @PostMapping("/dashboard/beta-keys/{id}/delete")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public String deleteBetaKey(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
+    public String deleteBetaKey(@PathVariable UUID id,
+                                 @RequestHeader(value = "HX-Request", required = false) String hxRequest,
+                                 Model model, RedirectAttributes redirectAttributes) {
+        String error = null;
         try {
             betaKeyService.deleteKey(id);
         } catch (IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            error = e.getMessage();
         }
+        if (hxRequest != null) {
+            if (error != null) model.addAttribute("error", error);
+            model.addAttribute("betaKeys", betaKeyService.listKeys());
+            return "dashboard-fragments :: beta-keys";
+        }
+        if (error != null) redirectAttributes.addFlashAttribute("error", error);
         return "redirect:/dashboard";
     }
 
@@ -73,7 +122,9 @@ public class DashboardWebController {
                                @RequestParam String color,
                                @RequestParam(required = false) Integer maxUses,
                                @RequestParam(required = false) String expiresAt,
-                               RedirectAttributes redirectAttributes) {
+                               @RequestHeader(value = "HX-Request", required = false) String hxRequest,
+                               Model model, RedirectAttributes redirectAttributes) {
+        String error = null;
         try {
             badgeService.createBadge(BadgeCreateRequest.builder()
                     .name(name)
@@ -86,19 +137,34 @@ public class DashboardWebController {
                             : null)
                     .build());
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            error = e.getMessage();
         }
+        if (hxRequest != null) {
+            if (error != null) model.addAttribute("error", error);
+            model.addAttribute("badges", badgeService.listBadgesForAdmin());
+            return "dashboard-fragments :: badges";
+        }
+        if (error != null) redirectAttributes.addFlashAttribute("error", error);
         return "redirect:/dashboard";
     }
 
     @PostMapping("/dashboard/badges/{id}/delete")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
-    public String deleteBadge(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
+    public String deleteBadge(@PathVariable UUID id,
+                               @RequestHeader(value = "HX-Request", required = false) String hxRequest,
+                               Model model, RedirectAttributes redirectAttributes) {
+        String error = null;
         try {
             badgeService.deleteBadge(id);
         } catch (IllegalStateException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            error = e.getMessage();
         }
+        if (hxRequest != null) {
+            if (error != null) model.addAttribute("error", error);
+            model.addAttribute("badges", badgeService.listBadgesForAdmin());
+            return "dashboard-fragments :: badges";
+        }
+        if (error != null) redirectAttributes.addFlashAttribute("error", error);
         return "redirect:/dashboard";
     }
 

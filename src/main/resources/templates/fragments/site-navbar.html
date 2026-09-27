@@ -16,6 +16,7 @@
             <a th:href="@{/#self-hosting}" class="site-navbar-link">Self-Hosting</a>
             <a th:href="@{/#security}" class="site-navbar-link">Security</a>
             <a th:href="@{/#faq}" class="site-navbar-link">FAQ</a>
+            <a th:href="@{/download}" class="site-navbar-link">Download</a>
         </div>
 
         <!-- Actions -->
@@ -69,25 +70,108 @@
         </button>
     </div>
 
+    <div class="site-navbar-backdrop" id="siteNavbarBackdrop"></div>
+
     <script>
         (function () {
             const toggle = document.getElementById('mobileMenuToggle');
             const links = document.getElementById('navbarLinks');
-            if (!toggle) return;
+            const backdrop = document.getElementById('siteNavbarBackdrop');
+            const main = document.querySelector('.site-main');
+            if (!toggle || !links) return;
 
-            toggle.addEventListener('click', function () {
-                const open = links.classList.toggle('open');
+            function setMenuOpen(open) {
+                links.classList.toggle('open', open);
                 toggle.classList.toggle('open', open);
                 toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (backdrop) backdrop.classList.toggle('open', open);
+                // The sidebar overlays .site-main rather than displacing it, so that's the
+                // scroll container that needs locking while it's open, not body/html.
+                if (main) main.style.overflow = open ? 'hidden' : '';
+            }
+
+            toggle.addEventListener('click', function () {
+                setMenuOpen(!links.classList.contains('open'));
+            });
+
+            if (backdrop) {
+                backdrop.addEventListener('click', function () { setMenuOpen(false); });
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && links.classList.contains('open')) setMenuOpen(false);
             });
 
             // Close the mobile menu when a link is chosen
             links.addEventListener('click', function (e) {
-                if (e.target.closest('a')) {
-                    links.classList.remove('open');
-                    toggle.classList.remove('open');
-                    toggle.setAttribute('aria-expanded', 'false');
-                }
+                if (e.target.closest('a')) setMenuOpen(false);
+            });
+        })();
+
+        (function () {
+            // "Download" is a real separate page - just compare paths. The
+            // other links are #hash anchors into sections that only exist
+            // on the homepage, so they're handled below instead, by
+            // tracking scroll position rather than a fixed comparison.
+            //
+            // The section lookup has to wait for DOMContentLoaded: this
+            // script runs the instant the parser reaches it, which is while
+            // it's still inside <nav> at the very top of the page - long
+            // before <section id="features"> and the rest, much further
+            // down the same document, have been parsed into the DOM. Doing
+            // the getElementById calls right away found nothing every time,
+            // silently, since a page without those sections (e.g. /download)
+            // legitimately has none either - the exact same trap the
+            // dashboard's off-canvas sidebar script has a comment about.
+            const links = document.querySelectorAll('.site-navbar-link');
+            links.forEach(function (link) {
+                const url = new URL(link.href);
+                if (!url.hash && url.pathname === location.pathname) link.classList.add('active');
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const sectionLinks = Array.from(links).filter(function (link) { return new URL(link.href).hash; });
+                const sections = sectionLinks
+                    .map(function (link) { return { link: link, el: document.getElementById(new URL(link.href).hash.slice(1)) }; })
+                    .filter(function (entry) { return entry.el; });
+
+                // Empty on any page that doesn't have these sections (e.g.
+                // /download) - nothing left to observe, so just stop there.
+                if (!sections.length) return;
+
+                // Counts a section "current" as soon as its top edge crosses
+                // into the upper 30% of the viewport, and it stays current
+                // until the NEXT section's top does the same - a wide,
+                // forgiving band (not a thin slice partway down the screen)
+                // so this fires reliably regardless of section height or
+                // how fast the visitor scrolls.
+                const observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        const match = sections.find(function (s) { return s.el === entry.target; });
+                        if (!match) return;
+
+                        if (entry.isIntersecting) {
+                            sectionLinks.forEach(function (l) { l.classList.remove('active'); });
+                            match.link.classList.add('active');
+                            return;
+                        }
+
+                        // Only the first section's exit needs handling here - every
+                        // other section's exit is already covered by the one below
+                        // it entering (scrolling down) or the one above it re-entering
+                        // (scrolling up). But #features has nothing above it, so when
+                        // IT exits back out through the top (boundingClientRect.top > 0
+                        // means it's now below the viewport's own top edge, i.e. we've
+                        // scrolled back up past it to the hero), nothing else fires to
+                        // clear the state - it would otherwise stay stuck "active"
+                        // forever once you'd scrolled down even once.
+                        if (match === sections[0] && entry.boundingClientRect.top > 0) {
+                            sectionLinks.forEach(function (l) { l.classList.remove('active'); });
+                        }
+                    });
+                }, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+
+                sections.forEach(function (s) { observer.observe(s.el); });
             });
         })();
 

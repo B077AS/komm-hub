@@ -1,240 +1,234 @@
-/* ============================================ */
-/* HOME - HERO */
-/* ============================================ */
+/* ============================================================ */
+/* HOME — HERO                                                    */
+/* ============================================================ */
 
-/* Hero and trust strip both keep their natural size - neither stretches.
-   Any leftover space up to the fold goes into the gap between them
-   (space-between), pinning the trust strip's bottom edge to the fold
-   without growing its own box. */
+/* The trust strip keeps its natural size and sits pinned to the bottom of
+   the first fold; the hero fills all remaining space and centers its
+   content within it, instead of just top-aligning under the navbar. */
 .hero-group {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     min-height: calc(100vh - var(--navbar-height));
     min-height: calc(100dvh - var(--navbar-height));
 }
 
 .hero {
-    padding: 96px 0 72px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 40px 0;
     position: relative;
-    overflow: hidden;
 }
+
+.hero > .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    container-type: inline-size;
+    container-name: hero-row;
+}
+
+/* Falling code, confined to behind the headline in the upper hero only -
+   masked out toward its own bottom edge so it reads as a quiet flicker
+   behind the title, not a screensaver across the whole section. */
+.hero-rain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 55%;
+    overflow: hidden;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 90%);
+    mask-image: linear-gradient(180deg, #000 0%, transparent 90%);
+}
+
+.rain-col {
+    position: absolute;
+    top: -140px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    text-align: center;
+    white-space: pre-line;
+    opacity: 0;
+    animation-name: rainFall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes rainFall {
+    0%   { transform: translateY(0); opacity: 0; }
+    10%  { opacity: 0.24; }
+    32%  { opacity: 0.24; }
+    50%  { opacity: 0; }
+    100% { transform: translateY(360px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) { .hero-rain { display: none; } }
 
 .hero-content {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
-    gap: 76px;
+    grid-template-columns: minmax(0, 560px) minmax(0, 720px);
+    justify-content: space-between;
+    gap: 40px;
     align-items: center;
 }
 
-.hero-text {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    /* .hero's padding is asymmetric (96px top / 72px bottom), which skews
-       grid-centered content 12px below the true midpoint between the navbar
-       and the trust strip. Nudge back up with a transform so it doesn't
-       affect the grid track's sizing (and thus the hero/trust-strip split). */
-    transform: translateY(-12px);
+.hero-primary { display: flex; flex-direction: column; gap: 22px; }
+
+/* Beta status + supported platforms, as a pair of compact readouts
+   (the same badge/chip components used elsewhere) instead of loose
+   paragraphs of text. A single max-content grid column, not a wrapping
+   flex row: sizing the column to the wider of the two rows (the badge
+   line, in practice) lets .hero-platforms below stretch to that same
+   width and spread its three chips out to fill it - see the rule below -
+   instead of the chips staying clustered at their own compact size with
+   dead space trailing behind the badge line above them. */
+.hero-footer {
+    max-width: 560px;
+    display: grid;
+    grid-template-columns: max-content;
+    row-gap: 10px;
+    margin-top: 26px;
 }
 
-/* -- Eyebrow: monospace status line instead of a marketing pill -- */
+.hero-footer .hero-platforms { justify-content: space-between; }
+
+.hero-footer .hero-badge a {
+    color: var(--accent-bright);
+    text-decoration: none;
+    font-weight: 700;
+    margin-left: 2px;
+}
+
+.hero-footer .hero-badge a:hover { text-decoration: underline; }
+
 .hero-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     font-family: var(--font-mono);
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 500;
-    letter-spacing: 2.5px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--fg-muted);
 }
 
-.eyebrow-sep {
-    color: var(--accent);
-    letter-spacing: 0;
-}
-
-/* -- Headline: the payoff line is rendered as selected text with a
-      blinking caret - flat translucent purple, no gradients. -- */
 .hero-title {
-    font-size: 54px;
-    font-weight: 800;
-    line-height: 1.16;
-    letter-spacing: -0.02em;
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
     color: var(--fg);
 }
 
-.hero-line {
-    display: flex;
-    align-items: center;
+.hero-title em {
+    font-style: normal;
+    color: var(--accent-bright);
+    border-bottom: 3px solid var(--accent-dim);
 }
 
-.hero-mark {
-    background: rgba(149, 128, 255, 0.26);
-    color: var(--fg);
-    padding: 0 0.1em;
-    margin: 0 -0.1em;
-    border-radius: 3px;
-}
+.hero-desc { font-size: 16.5px; line-height: 1.65; color: var(--fg-muted); max-width: 520px; }
 
-.hero-caret {
-    display: inline-block;
-    width: 3px;
-    height: 0.94em;
-    margin-left: 0.09em;
-    background: var(--accent);
-    border-radius: 1px;
-    animation: caretBlink 1.1s linear infinite;
-}
-
-@keyframes caretBlink {
-    0%, 49%   { opacity: 1; }
-    50%, 100% { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .hero-caret { animation: none; }
-}
-
-.hero-actions {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-}
-
-/* Squarer, flatter buttons in the hero - closer to the client's UI */
-.hero-actions .btn {
-    border-radius: 9px;
-}
-
-.hero-actions .btn-secondary {
-    background: var(--bg-card);
-    border-color: var(--border-strong);
-}
-
-/* -- Platform spec row: datasheet footer instead of pill chips -- */
-.hero-spec {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px 18px;
-    padding-top: 18px;
-    border-top: 1px solid var(--border);
-    font-family: var(--font-mono);
-    font-size: 12.5px;
-    color: var(--fg-muted);
-}
-
-.hero-spec-label {
-    font-size: 10.5px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--fg-subtle);
-}
-
-.hero-spec-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    white-space: nowrap;
-}
-
-.hero-spec-item i {
-    font-size: 15px;
-    color: var(--accent);
-}
-
-.hero-spec-item:not(:last-child)::after {
-    content: '';
-    width: 1px;
-    height: 14px;
-    background: var(--border-strong);
-    margin-left: 18px;
-}
-
-@media (max-width: 1024px) {
-    .hero-content {
-        grid-template-columns: 1fr;
-        gap: 48px;
-    }
-
-    .hero-title { font-size: 42px; }
-}
-
-@media (max-width: 768px) {
-    .hero-mockup { display: none; }
-}
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
 @media (max-width: 560px) {
-    .hero { padding: 56px 0 48px; }
-    .hero-title { font-size: 34px; }
+    .hero { padding: 40px 0 40px; }
+    .hero-title { font-size: 32px; }
+
+    /* The platform chips just repeat what the OS already told the visitor
+       by serving them this page on their phone - dropped entirely on
+       mobile rather than stacked, since a phone isn't Windows/X11/Wayland
+       anyway. That leaves .hero-badge as the only row in .hero-footer, so
+       its grid column (sized to max-content on desktop, to match whichever
+       of the two rows was wider) needs to become the full available width
+       instead, or the badge below would only ever be as wide as its own
+       stacked text. */
+    .hero-footer { grid-template-columns: 1fr; }
+    .hero-footer .hero-platforms { display: none; }
+
+    /* A dedicated mobile design, not the desktop pill with a tweak: full
+       width and no accent rail down the side. A colored left border reads
+       fine on a slim inline pill; stacked into a squarer standalone box
+       (the only thing left in .hero-footer once the chips are gone) it
+       just looks like a stray stripe. Plain uniform border instead. */
+    .hero-footer .hero-badge {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        gap: 6px;
+        padding: 14px 16px;
+        border: 1px solid var(--border-strong);
+    }
 }
 
-/* ============================================ */
-/* HOME - APP MOCKUP (mirrors the real client) */
-/* ============================================ */
+/* ============================================================ */
+/* HERO PANEL — accurate, to-scale reproduction of the real       */
+/* client UI (sidebar, chat, members, toolbar), framed flat -     */
+/* no floating window, no 3D tilt.                                */
+/* ============================================================ */
 
-.hero-mockup {
-    perspective: 1400px;
-    /* Same treatment as .hero-text: transform instead of margin so it
-       doesn't affect the grid row's height (and thus the hero/trust-strip
-       split), just nudges it up to the true midpoint between the navbar
-       and the trust strip. */
-    transform: translateY(-12px);
-}
-
-.mockup-window {
+.hero-panel {
     background: var(--bg);
     border: 1px solid var(--border-strong);
-    border-radius: 12px;
-    box-shadow: var(--shadow-xl);
-    overflow: hidden;
-    transform: rotateY(-4deg) rotateX(1.5deg) translateZ(0);
-    transition: transform 0.4s ease;
-    font-size: 12px;
     display: flex;
     flex-direction: column;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    will-change: transform;
+    font-size: 12px;
+    width: 100%;
+    max-width: 720px;
 }
 
-.hero-mockup:hover .mockup-window {
-    transform: rotateY(0deg) rotateX(0deg) translateZ(0);
-}
-
-/* Windows titlebar */
-.mockup-titlebar {
+/* Titlebar: app icon + name on the left, real window controls on the
+   right - everything below is an accurate, to-scale reproduction of the
+   real client UI, not a stylized reinterpretation. */
+.panel-head {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 7px 12px;
+    height: 34px;
+    flex-shrink: 0;
+    padding: 0 6px 0 14px;
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border);
-}
-
-.mockup-app-ico {
-    width: 14px;
-    height: 14px;
-    display: block;
-}
-
-.mockup-title {
+    font-family: var(--font-mono);
     font-size: 11px;
-    font-weight: 600;
-    color: var(--fg-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
 }
 
-.mockup-win-controls {
-    margin-left: auto;
+.panel-head-icon { width: 14px; height: 14px; display: block; flex-shrink: 0; }
+.panel-head-title { color: var(--fg-muted); font-weight: 500; }
+
+/* Windows/KDE-style window controls, right-aligned */
+.panel-head-controls {
     display: inline-flex;
     align-items: center;
-    gap: 16px;
+    gap: 2px;
+    margin-left: auto;
+}
+
+.panel-head-controls i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 22px;
     font-size: 13px;
     color: var(--fg-subtle);
 }
+
+.panel-head-controls .mdi-window-close:hover { background: var(--accent); color: #0a0a0c; }
+
+.panel-head-controls .mdi-window-minimize:hover,
+.panel-head-controls .mdi-window-maximize:hover { background: var(--border-strong); color: var(--fg); }
 
 .mockup-body {
     display: grid;
@@ -265,32 +259,18 @@
 }
 
 .mockup-server-header .mockup-home-ico,
-.mockup-server-header .mockup-menu-ico {
-    font-size: 13px;
-    color: var(--fg-muted);
-}
+.mockup-server-header .mockup-menu-ico { font-size: 13px; color: var(--fg-muted); }
 
-.mockup-server-header .mockup-server-name {
-    font-size: 12.5px;
-    font-weight: 700;
-    color: var(--fg);
-    margin-right: auto;
-}
+.mockup-server-header .mockup-server-name { font-size: 12.5px; font-weight: 700; color: var(--fg); margin-right: auto; }
 
-.mockup-sidebar-content {
-    padding: 10px 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 0;
-}
+.mockup-sidebar-content { padding: 10px 8px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 
-/* Channel cards (bordered, like the client) */
+/* Channel cards - bordered, matching the real client's UI exactly */
 .mockup-voice-card,
 .mockup-text-card {
     background: var(--bg-card);
     border: 1px solid var(--border-strong);
-    border-radius: 9px;
+    border-radius: 5px;
     padding: 7px 8px;
 }
 
@@ -304,44 +284,15 @@
 }
 
 .mockup-channel-row i,
-.mockup-text-card > i {
-    font-size: 13px;
-    color: var(--fg-muted);
-    flex-shrink: 0;
-}
+.mockup-text-card > i { font-size: 13px; color: var(--fg-muted); flex-shrink: 0; }
 
-.mockup-channel-name {
-    font-size: 11.5px;
-    font-weight: 700;
-    color: var(--fg);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+.mockup-channel-name { font-size: 11.5px; font-weight: 700; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.mockup-chan-tag {
-    font-size: 9px;
-    color: var(--fg-subtle);
-    border-left: 1px solid var(--border-strong);
-    padding-left: 6px;
-    flex-shrink: 0;
-}
+.mockup-chan-tag { font-size: 9px; color: var(--fg-subtle); border-left: 1px solid var(--border-strong); padding-left: 6px; flex-shrink: 0; }
 
-.mockup-hangup {
-    margin-left: auto;
-    color: var(--fg-muted);
-    font-size: 13px;
-}
+.mockup-hangup { margin-left: auto; color: var(--fg-muted); font-size: 13px; }
 
-.mockup-voice-user {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 4px 2px 2px 10px;
-    color: var(--fg-muted);
-    font-size: 11px;
-    margin-top: 4px;
-}
+.mockup-voice-user { display: flex; align-items: center; gap: 7px; padding: 4px 2px 2px 10px; color: var(--fg-muted); font-size: 11px; margin-top: 4px; }
 
 .mockup-voice-user.speaking .mockup-avatar::before {
     content: '';
@@ -356,26 +307,9 @@
 
 .mockup-stream-ico { color: var(--fg-muted); font-size: 12px; margin-left: auto; }
 
-.mockup-user-meta {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.25;
-}
-
-.mockup-user-name {
-    font-size: 11.5px;
-    font-weight: 700;
-    color: var(--fg);
-}
-
-.mockup-user-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    font-size: 9.5px;
-    color: var(--fg-subtle);
-}
-
+.mockup-user-meta { display: flex; flex-direction: column; line-height: 1.25; }
+.mockup-user-name { font-size: 11.5px; font-weight: 700; color: var(--fg); }
+.mockup-user-status { display: inline-flex; align-items: center; gap: 2px; font-size: 9.5px; color: var(--fg-subtle); }
 .mockup-user-status i { font-size: 11px; }
 
 /* -- Avatars -- */
@@ -393,8 +327,14 @@
     position: relative;
 }
 
-.mockup-avatar.a1 { background: linear-gradient(135deg, #ff6b6b, #a33a3a); }
-.mockup-avatar.a2 { background: linear-gradient(135deg, var(--cyan), #1f6a84); }
+/* Neither reuses an existing semantic color - #ff6b6b is --danger (an admin
+   avatar shouldn't read as an error state), --success green would sit right
+   next to the online-status dot below and blend into it, and --cyan reads
+   too bright/neon at this size. A muted clay against a deeper, calmer blue
+   instead - distinct from each other and from the purple used everywhere
+   else, without either one shouting. */
+.mockup-avatar.a1 { background: #c07a52; }
+.mockup-avatar.a2 { background: #3f7ab0; }
 
 .mockup-avatar.status::after {
     content: '';
@@ -408,7 +348,6 @@
     border: 2px solid var(--bg-raised);
 }
 
-/* Message avatars */
 .mockup-msg-avatar {
     width: 26px;
     height: 26px;
@@ -423,15 +362,11 @@
     margin-top: 2px;
 }
 
-.mockup-msg-avatar.a1 { background: linear-gradient(135deg, #ff6b6b, #a33a3a); }
-.mockup-msg-avatar.a2 { background: linear-gradient(135deg, var(--cyan), #1f6a84); }
+.mockup-msg-avatar.a1 { background: #c07a52; }
+.mockup-msg-avatar.a2 { background: #3f7ab0; }
 
 /* -- Chat column -- */
-.mockup-chat {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
+.mockup-chat { display: flex; flex-direction: column; min-width: 0; }
 
 .mockup-chat-header {
     display: flex;
@@ -445,62 +380,17 @@
 }
 
 .mockup-chat-header > i { font-size: 14px; color: var(--fg-muted); }
+.mockup-members-toggle { margin-left: auto; color: var(--fg-muted); font-size: 14px; }
 
-.mockup-members-toggle {
-    margin-left: auto;
-    color: var(--fg-muted);
-    font-size: 14px;
-}
-
-.mockup-messages {
-    display: flex;
-    flex-direction: column;
-    gap: 13px;
-    padding: 12px;
-    flex: 1;
-    min-width: 0;
-}
-
-.mockup-msg {
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-    min-width: 0;
-}
-
+.mockup-messages { display: flex; flex-direction: column; gap: 13px; padding: 12px; flex: 1; min-width: 0; }
+.mockup-msg { display: flex; gap: 8px; align-items: flex-start; min-width: 0; }
 .mockup-msg-grow { flex: 1; min-width: 0; }
+.mockup-msg-author { font-weight: 700; color: var(--accent-bright); font-size: 11.5px; }
+.mockup-msg-time { font-weight: 500; color: var(--fg-subtle); font-size: 9.5px; margin-left: 5px; }
+.mockup-msg-edited { font-size: 9px; color: var(--fg-subtle); margin-left: 3px; }
+.mockup-msg-text { color: var(--fg-muted); font-size: 12px; margin-top: 1px; }
 
-.mockup-msg-author {
-    font-weight: 700;
-    color: var(--accent-bright);
-    font-size: 11.5px;
-}
-
-.mockup-msg-time {
-    font-weight: 500;
-    color: var(--fg-subtle);
-    font-size: 9.5px;
-    margin-left: 5px;
-}
-
-.mockup-msg-edited {
-    font-size: 9px;
-    color: var(--fg-subtle);
-    margin-left: 3px;
-}
-
-.mockup-msg-text {
-    color: var(--fg-muted);
-    font-size: 12px;
-    margin-top: 1px;
-}
-
-.mockup-reactions {
-    display: flex;
-    gap: 5px;
-    margin-top: 5px;
-}
-
+.mockup-reactions { display: flex; gap: 5px; margin-top: 5px; }
 .mockup-reaction {
     display: inline-flex;
     align-items: center;
@@ -511,65 +401,48 @@
     font-size: 10px;
     color: var(--fg-muted);
 }
-
 .mockup-reaction.plus { color: var(--fg-subtle); }
 
-/* -- Code block (client-style with header) -- */
-.mockup-code {
-    margin-top: 4px;
-    border: 1px solid var(--border-strong);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.mockup-code-header {
+/* -- File attachment chip (mirrors AttachmentDisplayBuilder's file chip
+      in the real client: icon, name + type/size, download button) -- */
+.mockup-attachment {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 5px 9px;
+    gap: 9px;
+    margin-top: 6px;
+    padding: 7px 10px;
+    max-width: 260px;
     background: var(--bg-card);
-    border-bottom: 1px solid var(--border);
-    font-size: 9.5px;
-    color: var(--fg-muted);
+    border: 1px solid var(--border-strong);
+    border-radius: 5px;
 }
 
-.mockup-code-header i { font-size: 11px; color: var(--fg-subtle); }
+.mockup-attachment-icon { font-size: 18px; color: var(--accent-bright); flex-shrink: 0; }
 
-.mockup-code-lang { font-weight: 700; color: var(--fg); font-size: 10px; }
+.mockup-attachment-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
 
-.mockup-code-lines { margin-left: auto; color: var(--fg-subtle); }
+.mockup-attachment-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--fg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-.mockup-code-more {
+.mockup-attachment-meta { font-size: 9.5px; color: var(--fg-subtle); }
+
+.mockup-attachment-dl {
+    font-size: 14px;
+    color: var(--fg-muted);
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
     display: inline-flex;
     align-items: center;
-    gap: 2px;
-    color: var(--fg-subtle);
+    justify-content: center;
+    border-radius: 50%;
 }
-
-.mockup-code-body {
-    background: #0b0c10;
-    padding: 7px 10px;
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    line-height: 1.65;
-    color: var(--fg-muted);
-    overflow: hidden;
-}
-
-.mockup-code-body code { display: block; white-space: nowrap; }
-
-.mockup-code-body .ln {
-    display: inline-block;
-    width: 12px;
-    margin-right: 10px;
-    text-align: right;
-    color: var(--fg-subtle);
-    user-select: none;
-}
-
-.tok-kw  { color: #ff79c6; }
-.tok-fn  { color: var(--cyan); }
-.tok-str { color: var(--success); }
 
 /* -- Message input -- */
 .mockup-input {
@@ -580,18 +453,16 @@
     padding: 8px 12px;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 9px;
+    border-radius: 5px;
     font-size: 11px;
     color: var(--fg-subtle);
 }
 
 .mockup-input-ph { margin-right: auto; }
-
 .mockup-input i { font-size: 14px; color: var(--fg-muted); }
-
 .mockup-input i.send { color: var(--accent); }
 
-/* -- Full-width bottom toolbar (mirrors ToolBar.java) -- */
+/* -- Full-width bottom toolbar (mirrors the client's ToolBar) -- */
 .mockup-toolbar {
     display: flex;
     align-items: center;
@@ -599,29 +470,14 @@
     padding: 7px 12px;
     background: var(--bg-raised);
     border-top: 1px solid var(--border);
+    flex-shrink: 0;
 }
 
-/* Left: user panel */
-.mockup-toolbar-user {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-    min-width: 0;
-}
+.mockup-toolbar-user { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
 
-.mockup-avatar.xl {
-    width: 30px;
-    height: 30px;
-    font-size: 13px;
-}
+.mockup-avatar.xl { width: 30px; height: 30px; font-size: 13px; }
+.mockup-avatar.xl.status::after { width: 8px; height: 8px; }
 
-.mockup-avatar.xl.status::after {
-    width: 8px;
-    height: 8px;
-}
-
-/* Center: rounded island with icon pods split by dividers */
 .mockup-toolbar-island {
     display: flex;
     align-items: center;
@@ -634,69 +490,22 @@
 }
 
 .mockup-toolbar-island i.dim { opacity: 0.35; }
+.mockup-island-sep { width: 1px; height: 16px; background: var(--border-strong); }
+.mockup-selector { display: inline-flex; align-items: center; gap: 1px; }
+.mockup-selector .sm { font-size: 10px; color: var(--fg-subtle); }
 
-.mockup-island-sep {
-    width: 1px;
-    height: 16px;
-    background: var(--border-strong);
-}
-
-.mockup-selector {
-    display: inline-flex;
-    align-items: center;
-    gap: 1px;
-}
-
-.mockup-selector .sm {
-    font-size: 10px;
-    color: var(--fg-subtle);
-}
-
-/* Right: signal bars + ping + settings */
-.mockup-toolbar-right {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    flex: 1;
-    justify-content: flex-end;
-}
-
-.mockup-signal {
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 2px;
-}
-
-.mockup-signal span {
-    width: 3px;
-    border-radius: 1.5px;
-    background: #43b581;
-}
-
+.mockup-toolbar-right { display: flex; align-items: center; gap: 7px; flex: 1; justify-content: flex-end; }
+.mockup-signal { display: inline-flex; align-items: flex-end; gap: 2px; }
+.mockup-signal span { width: 3px; border-radius: 1.5px; background: #43b581; }
 .mockup-signal span:nth-child(1) { height: 6px; }
 .mockup-signal span:nth-child(2) { height: 9px; }
 .mockup-signal span:nth-child(3) { height: 12px; }
 .mockup-signal span:nth-child(4) { height: 15px; }
-
-.mockup-ping-label {
-    font-size: 10px;
-    font-weight: 600;
-    color: #43b581;
-}
-
-.mockup-toolbar-right > i {
-    font-size: 15px;
-    color: var(--fg);
-}
+.mockup-ping-label { font-size: 10px; font-weight: 600; color: #43b581; }
+.mockup-toolbar-right > i { font-size: 15px; color: var(--fg); }
 
 /* -- Members panel -- */
-.mockup-members {
-    background: var(--bg-raised);
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
+.mockup-members { background: var(--bg-raised); border-left: 1px solid var(--border); display: flex; flex-direction: column; min-width: 0; }
 
 .mockup-search {
     display: flex;
@@ -714,214 +523,239 @@
 
 .mockup-search i { margin-left: auto; font-size: 12px; flex-shrink: 0; color: var(--fg-muted); }
 
-.mockup-members-content {
-    padding: 10px 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 0;
+.mockup-members-content { padding: 10px 8px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.mockup-online-label { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--fg-subtle); }
+.mockup-member { display: flex; align-items: center; gap: 7px; padding: 3px 2px; font-size: 10.5px; color: var(--fg-muted); }
+
+@media (max-width: 640px) {
+    .mockup-body { grid-template-columns: 132px 1fr; }
+    .mockup-members { display: none; }
 }
 
-.mockup-online-label {
-    font-size: 8.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--fg-subtle);
+/* The panel's own column (720px max) drops below 600px once the row has
+   less than ~1200px to work with (560px text + 40px gap + 600px panel).
+   Below that it's dropped entirely - never shown shrunk or stacked - and
+   the text block expands to fill the row, centered. This is keyed to the
+   hero row's own rendered width (a container query), not the viewport, so
+   it holds regardless of what's making that width shrink - zoom included.
+   (Placed after .hero-panel's own base rule so it actually wins the
+   cascade - an identical selector earlier in the file loses to a later
+   one of equal specificity, container query or not.) */
+@container hero-row (max-width: 1199px) {
+    .hero-panel { display: none; }
+    .hero-content { grid-template-columns: 1fr; justify-content: start; }
+    .hero-primary { align-items: center; text-align: center; max-width: 640px; margin: 0 auto; }
+    .hero-actions { justify-content: center; }
+    .hero-footer { max-width: 640px; justify-content: center; margin: 26px auto 0; }
 }
 
-.mockup-member {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 3px 2px;
-    font-size: 10.5px;
-    color: var(--fg-muted);
-}
-
-/* ============================================ */
-/* TRUST STRIP */
-/* ============================================ */
+/* ============================================================ */
+/* TRUST STRIP                                                    */
+/* ============================================================ */
 
 .trust-strip {
+    flex-shrink: 0;
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
-    background: rgba(24, 25, 32, 0.6);
+    background: var(--bg-raised);
     padding: 22px 0;
-    flex: none;
-    display: flex;
-    align-items: center;
 }
 
-.trust-strip-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-}
+.trust-strip-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
 
 .trust-item {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    font-size: 13.5px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--fg-muted);
-    text-align: center;
+    padding: 0 20px;
+    border-left: 1px solid var(--border);
 }
 
-.trust-item i {
-    font-size: 20px;
-    color: var(--accent);
-    flex-shrink: 0;
-}
+.trust-item:first-child { border-left: none; padding-left: 0; }
+.trust-item i { font-size: 17px; color: var(--accent); flex-shrink: 0; }
 
 @media (max-width: 900px) {
-    .trust-strip-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .trust-item { justify-content: flex-start; text-align: left; }
+    .trust-strip-grid { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+    .trust-item:nth-child(3) { border-left: none; padding-left: 0; }
 }
 
-/* ============================================ */
-/* FEATURES */
-/* ============================================ */
+@media (max-width: 560px) {
+    .trust-strip-grid { grid-template-columns: 1fr; }
+    .trust-item { border-left: none; padding-left: 0; }
+}
 
+/* ============================================================ */
+/* FEATURES — bento grid                                          */
+/* ============================================================ */
+
+/* The gap's "background peeking through" is what draws the hairline
+   divider between cards - but a card mid scroll-reveal is opacity:0, so
+   that same peek-through shows for its WHOLE cell, not just the 1px gap.
+   Using the page's own background for it means a not-yet-revealed card
+   blends into the page instead of flashing as a mismatched grey block. */
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-flow: dense;
+    gap: 1px;
+    background: var(--bg);
+    border: 1px solid var(--border);
 }
+
+.features-grid .feature-card {
+    border: none;
+    border-top: none;
+    background: var(--bg-card);
+    display: flex;
+    flex-direction: column;
+}
+
+.features-grid .feature-card:hover { background: var(--bg-card-hover); }
+
+.feature-card-lg { grid-column: span 2; grid-row: span 2; }
+.feature-card-lg .feature-icon { width: 52px; height: 52px; font-size: 26px; }
+.feature-card-lg .feature-title { font-size: 21px; }
+.feature-card-lg .feature-description { font-size: 15px; }
+
+/* The actual DSP chain behind "Crystal-clear voice" (see the client repo's
+   README, "The audio pipeline") - real stage names, not decoration, and it
+   gives the card's 2-row height something to hold besides one short
+   paragraph floating above empty space. */
+.voice-pipeline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px 5px;
+    margin-top: 22px;
+}
+
+.voice-pipeline-step {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--accent-bright);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+}
+
+.voice-pipeline-arrow { font-size: 13px; color: var(--fg-subtle); flex-shrink: 0; }
+
+.voice-pipeline-note {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--fg-subtle);
+    margin-top: 12px;
+}
+
+.feature-card-wide { grid-column: span 2; }
 
 @media (max-width: 1024px) {
     .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .feature-card-lg, .feature-card-wide { grid-column: span 2; grid-row: auto; }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 620px) {
     .features-grid { grid-template-columns: 1fr; }
+    .feature-card-lg, .feature-card-wide { grid-column: span 1; }
 }
 
-/* ============================================ */
-/* PLATFORMS */
-/* ============================================ */
+/* ============================================================ */
+/* PLATFORMS                                                      */
+/* ============================================================ */
 
-.platforms {
-    background:
-        radial-gradient(ellipse at 50% 0%, rgba(149, 128, 255, 0.07) 0%, transparent 55%);
-}
-
-.platforms-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-}
+.platforms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--bg); border: 1px solid var(--border); }
 
 .platform-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 32px 28px;
-    text-align: center;
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    padding: 30px 26px;
+    transition: background 0.2s ease;
 }
 
-.platform-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(149, 128, 255, 0.45);
-    box-shadow: var(--shadow-md);
-}
+.platform-card:hover { background: var(--bg-card-hover); }
 
-.platform-icon {
-    display: inline-flex;
+.platform-card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+
+.platform-icon-box {
+    width: 46px;
+    height: 46px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    font-size: 44px;
+    font-size: 22px;
     color: var(--accent-bright);
-    margin-bottom: 16px;
+    flex-shrink: 0;
 }
 
-.platform-tag {
+.platform-code {
+    font-family: var(--font-mono);
     font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     color: var(--cyan);
-    background: rgba(48, 214, 232, 0.12);
-    border: 1px solid rgba(48, 214, 232, 0.35);
-    padding: 4px 10px;
-    border-radius: 999px;
 }
 
-@media (max-width: 900px) {
-    .platforms-grid { grid-template-columns: 1fr; }
-}
+@media (max-width: 900px) { .platforms-grid { grid-template-columns: 1fr; } }
 
-/* ============================================ */
-/* ARCHITECTURE / SELF-HOSTING */
-/* ============================================ */
+/* ============================================================ */
+/* SELF-HOSTING / ARCHITECTURE                                    */
+/* ============================================================ */
 
-.architecture-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-}
+/* Two of these three cards share the "featured" gradient - a divider that's
+   just the grid's background peeking through a 1px gap gets washed out by
+   that gradient near the top, where the tint is strongest on both sides.
+   A real border painted on each card sits on top of its own background
+   instead of showing through it, so it stays visible regardless. */
+.architecture-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--border-strong); }
 
 .arch-card {
     position: relative;
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 32px 28px;
+    border-top: 2px solid var(--border-strong);
+    border-right: 1px solid var(--border-strong);
+    padding: 30px 26px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    transition: background 0.2s ease;
 }
 
-.arch-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-    border-color: rgba(149, 128, 255, 0.45);
-}
+.arch-card:last-child { border-right: none; }
 
-.arch-card.featured {
-    border-color: rgba(149, 128, 255, 0.4);
-    background: linear-gradient(180deg, rgba(149, 128, 255, 0.07) 0%, var(--bg-card) 45%);
-}
+.arch-card:hover { background: var(--bg-card-hover); }
+.arch-card.featured { border-top-color: var(--accent); background: linear-gradient(180deg, var(--accent-glow) 0%, var(--bg-card) 55%); }
 
-.arch-badge {
-    position: absolute;
-    top: -12px;
-    left: 26px;
-    padding: 4px 14px;
-    background: var(--accent);
-    color: #14151b;
+/* .featured and :hover carry equal specificity, and .featured is declared
+   later, so it always won regardless of hover state - only the plain (Hub)
+   card ever showed a hover. This is more specific than either alone. */
+.arch-card.featured:hover { background: linear-gradient(180deg, var(--accent-glow) 0%, var(--bg-card-hover) 55%); }
+
+.arch-index {
+    font-family: var(--font-mono);
     font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-radius: 999px;
-}
-
-.arch-badge.subtle {
-    background: var(--bg-card-hover);
-    color: var(--fg-muted);
-    border: 1px solid var(--border-strong);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--accent-bright);
 }
 
 .arch-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(149, 128, 255, 0.2), rgba(48, 214, 232, 0.12));
-    border: 1px solid rgba(149, 128, 255, 0.3);
+    width: 50px;
+    height: 50px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+    font-size: 24px;
     color: var(--accent-bright);
-    margin: 10px 0 14px;
+    margin: 8px 0 10px;
 }
 
 .arch-link {
@@ -930,262 +764,248 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
     color: var(--accent-bright);
     text-decoration: none;
 }
 
-.arch-link i { transition: transform 0.2s ease; }
-.arch-link:hover i { transform: translateX(4px); }
+/* Stretches this link's hit area over the whole card (which is already
+   position:relative) instead of just its own text, so the entire block is
+   clickable through a single, real anchor - no nested <a> tags needed. */
+.arch-link::after { content: ''; position: absolute; inset: 0; }
+
+.arch-link i { font-size: 15px; transition: transform 0.2s ease; }
+.arch-card:hover .arch-link i { transform: translateX(4px); }
 
 @media (max-width: 900px) {
-    .architecture-grid { grid-template-columns: 1fr; gap: 28px; }
+    .architecture-grid { grid-template-columns: 1fr; }
+    .arch-card { border-right: none; border-bottom: 1px solid var(--border-strong); }
+    .arch-card:last-child { border-bottom: none; }
 }
 
-/* How it works */
-.how-it-works {
-    margin-top: 72px;
-}
+/* -- How it works -- */
+.how-it-works { margin-top: 64px; }
+.how-title { margin-bottom: 32px; }
 
-.how-title {
-    text-align: center;
-    margin-bottom: 40px;
-}
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--bg); border: 1px solid var(--border); }
 
-.steps-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-
-.step {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 24px 22px;
-}
+.step { background: var(--bg-card); padding: 22px 20px; }
 
 .step-number {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
+    width: 26px;
+    height: 26px;
     background: var(--accent-glow);
-    border: 1px solid rgba(149, 128, 255, 0.4);
+    border: 1px solid var(--accent-dim);
     color: var(--accent-bright);
-    font-weight: 800;
-    font-size: 15px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 12px;
     margin-bottom: 14px;
 }
 
-.step-title {
-    font-size: 15.5px;
-    font-weight: 700;
-    color: var(--fg);
-    margin-bottom: 6px;
-}
+.step-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--fg); margin-bottom: 6px; }
+.step-text { font-size: 13px; line-height: 1.6; color: var(--fg-muted); }
 
-.step-text {
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--fg-muted);
-}
+@media (max-width: 1024px) { .steps-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .steps-grid { grid-template-columns: 1fr; } }
 
-@media (max-width: 1024px) {
-    .steps-grid { grid-template-columns: repeat(2, 1fr); }
-}
+/* ============================================================ */
+/* SECURITY                                                        */
+/* ============================================================ */
 
-@media (max-width: 560px) {
-    .steps-grid { grid-template-columns: 1fr; }
-}
+.security-content { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 60px; align-items: start; }
 
-/* ============================================ */
-/* SECURITY */
-/* ============================================ */
+.security-text { display: flex; flex-direction: column; gap: 16px; }
 
-.security {
-    background:
-        radial-gradient(ellipse at 100% 50%, rgba(48, 214, 232, 0.05) 0%, transparent 55%);
-}
-
-.security-content {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    gap: 64px;
-    align-items: center;
-}
-
-.security-text {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.security-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    margin-top: 12px;
-}
+.security-list { list-style: none; display: flex; flex-direction: column; gap: 0; margin-top: 8px; border-top: 1px solid var(--border); }
 
 .security-list li {
     display: flex;
     gap: 16px;
     align-items: flex-start;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
 }
 
 .security-list li > i {
-    font-size: 24px;
+    font-size: 19px;
     color: var(--accent-bright);
-    background: var(--accent-glow);
-    border: 1px solid rgba(149, 128, 255, 0.3);
-    border-radius: 12px;
-    padding: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    padding: 9px;
     flex-shrink: 0;
 }
 
-.security-list strong {
-    display: block;
-    font-size: 15.5px;
-    color: var(--fg);
-    margin-bottom: 2px;
-}
+.security-list strong { display: block; font-family: var(--font-display); font-size: 15px; color: var(--fg); margin-bottom: 3px; }
+.security-list span { font-size: 13.5px; line-height: 1.6; color: var(--fg-muted); }
 
-.security-list span {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--fg-muted);
-}
-
-/* Diagram */
-.security-diagram {
+/* -- Trust chain: the client/server/hub cubes stacked one over the other,
+      joined by a vertical line with the protocol label sitting on it. -- */
+.trust-chain {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0;
-    padding: 32px;
+}
+
+.chain-node {
+    width: 100%;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 26px 20px;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
+    border-top: 2px solid var(--border-strong);
 }
 
-.diagram-node {
+.chain-node.featured {
+    border-top-color: var(--accent);
+    background: linear-gradient(180deg, var(--accent-glow), var(--bg-card) 65%);
+}
+
+.chain-node-icon {
+    width: 56px;
+    height: 56px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 20px 36px;
+    justify-content: center;
     background: var(--bg-raised);
     border: 1px solid var(--border-strong);
-    border-radius: var(--radius-lg);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--fg);
-    width: 100%;
-    max-width: 260px;
-}
-
-.diagram-node i {
-    font-size: 30px;
+    font-size: 28px;
     color: var(--accent-bright);
 }
 
-.diagram-node.server {
-    border-color: rgba(149, 128, 255, 0.5);
-}
+.chain-node.featured .chain-node-icon { border-color: var(--accent-dim); }
 
-.diagram-link {
+.chain-node-name { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--fg); }
+.chain-node-role { font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-subtle); }
+
+.chain-link {
     position: relative;
     width: 2px;
-    height: 58px;
-    background: linear-gradient(180deg, var(--accent), var(--cyan));
-    opacity: 0.7;
+    height: 64px;
+    background: var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.diagram-label {
+.chain-link-label {
     position: absolute;
-    left: 16px;
+    left: 50%;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     white-space: nowrap;
-    font-size: 12px;
-    font-weight: 700;
+    padding: 6px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
     color: var(--fg-muted);
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    padding: 4px 12px;
-    border-radius: 999px;
 }
 
-.diagram-label i { color: var(--success); font-size: 14px; }
+.chain-link-label i { color: var(--success); font-size: 12px; }
 
-@media (max-width: 1024px) {
-    .security-content { grid-template-columns: 1fr; gap: 48px; }
+@media (max-width: 1024px) { .security-content { grid-template-columns: 1fr; gap: 44px; } }
+
+/* ============================================================ */
+/* CLOSED BETA — a request console, not a contact-form card.      */
+/* Reuses the hero panel's window chrome (icon + title + window   */
+/* controls), so "things that look like a window" reads as a      */
+/* signature device rather than a one-off card style.             */
+/* ============================================================ */
+
+.beta-gate-section { background: var(--bg-raised); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+.beta-gate {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+    gap: 56px;
+    align-items: center;
 }
 
-/* ============================================ */
-/* FAQ */
-/* ============================================ */
+.beta-gate-text { display: flex; flex-direction: column; gap: 16px; }
 
-.faq-list {
+.beta-facts { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+
+.beta-facts span { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 500; color: var(--fg-muted); }
+.beta-facts i { color: var(--success); font-size: 16px; flex-shrink: 0; }
+
+.beta-console { background: var(--bg); border: 1px solid var(--border-strong); }
+
+.beta-console-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.beta-console-field label {
     display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.faq-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    transition: border-color 0.2s ease;
-}
-
-.faq-item[open] {
-    border-color: rgba(149, 128, 255, 0.4);
-}
-
-.faq-item summary {
-    padding: 18px 22px;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--fg);
-    cursor: pointer;
-    list-style: none;
-    position: relative;
-    padding-right: 48px;
-    user-select: none;
-}
-
-.faq-item summary::-webkit-details-marker { display: none; }
-
-.faq-item summary::after {
-    content: '+';
-    position: absolute;
-    right: 22px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 22px;
-    font-weight: 400;
-    color: var(--accent);
-    transition: transform 0.2s ease;
-}
-
-.faq-item[open] summary::after {
-    transform: translateY(-50%) rotate(45deg);
-}
-
-.faq-item p {
-    padding: 0 22px 20px;
-    font-size: 14.5px;
-    line-height: 1.7;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
     color: var(--fg-muted);
+    margin-bottom: 8px;
 }
+
+.console-prompt { color: var(--accent); font-weight: 700; }
+
+.beta-console-field input,
+.beta-console-field textarea {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--bg-input);
+    color: var(--fg);
+    border: 1px solid var(--border-strong);
+    font-size: 14px;
+    font-family: var(--font-family);
+    resize: vertical;
+}
+
+.beta-console-field input:focus,
+.beta-console-field textarea:focus { outline: none; border-color: var(--accent); }
+
+.beta-console-note { font-size: 12.5px; color: var(--fg-subtle); text-align: center; }
+
+@media (max-width: 860px) {
+    .beta-gate { grid-template-columns: 1fr; gap: 36px; }
+}
+
+/* ============================================================ */
+/* FAQ — a terminal log instead of an accordion. Every answer is  */
+/* already visible: no clicking to find out whether a question    */
+/* answers what you came here for.                                */
+/* ============================================================ */
+
+/* Centered on its own above the terminal log below, not leading into a
+   line of text the dash would otherwise point into - same reasoning as
+   .dl-hosting-kicker::before in download.css. */
+.faq .section-kicker::before { display: none; }
+
+.faq-terminal { background: var(--bg); border: 1px solid var(--border-strong); }
+
+.faq-log { padding: 22px 24px; font-family: var(--font-mono); }
+
+.faq-entry { padding: 16px 0; border-bottom: 1px solid var(--border); }
+.faq-entry:first-child { padding-top: 0; }
+
+.faq-q { font-size: 14.5px; font-weight: 600; color: var(--fg); display: flex; gap: 10px; }
+.faq-q .console-prompt { flex-shrink: 0; }
+
+.faq-a { margin-top: 8px; padding-left: 22px; font-size: 13.5px; line-height: 1.7; color: var(--fg-muted); }
+.faq-a a { color: var(--accent-bright); }
+
+.faq-cursor { display: flex; gap: 10px; padding-top: 16px; font-size: 14.5px; font-weight: 600; color: var(--fg); }
+
+@keyframes faqBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.faq-blink { animation: faqBlink 1s step-end infinite; }
+@media (prefers-reduced-motion: reduce) { .faq-blink { animation: none; } }

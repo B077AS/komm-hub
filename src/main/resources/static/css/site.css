@@ -1,46 +1,51 @@
-/* ============================================ */
-/* KOMM PUBLIC SITE - BASE STYLES & DESIGN SYSTEM */
-/* ============================================ */
+/* ============================================================ */
+/* KOMM — PUBLIC SITE DESIGN SYSTEM                              */
+/* "Signal Panel": a control-room / spec-sheet aesthetic.        */
+/* Sharp edges, hairline grids, mono readouts. No soft blur,     */
+/* no gradient text, no floating glass cards.                    */
+/* ============================================================ */
 
 :root {
-    /* Colors - Komm dark theme */
-    --bg:             #0d0e12;
-    --bg-raised:      #14151b;
-    --bg-card:        #181920;
-    --bg-card-hover:  #1e1f29;
-    --bg-input:       #1c1c1e;
-    --border:         #262733;
-    --border-strong:  #3a3a45;
-    --fg:             #f8f8f2;
-    --fg-muted:       #bfbfc3;
-    --fg-subtle:      #7e7f86;
-    --accent:         #9580ff;
-    --accent-hover:   #7f6dd9;
-    --accent-bright:  #b8a4ff;
-    --accent-dim:     #52468c;
-    --accent-glow:    rgba(149, 128, 255, 0.14);
-    --cyan:           #30d6e8;
-    --success:        #8aff80;
-    --success-bg:     rgba(138, 255, 128, 0.12);
-    --warning:        #ffca80;
-    --warning-bg:     rgba(255, 202, 128, 0.07);
-    --danger:         #ff9580;
-    --danger-bg:      rgba(255, 149, 128, 0.12);
+    --bg:             #0a0a0c;
+    --bg-raised:      #111113;
+    --bg-card:        #15151a;
+    --bg-card-hover:  #1b1b21;
+    --bg-input:       #0d0d0f;
+    --border:         #232228;
+    --border-strong:  #38373f;
+    --fg:             #f3f2f6;
+    --fg-muted:       #a6a4ae;
+    --fg-subtle:      #6b6a73;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 10px -1px rgba(0, 0, 0, 0.45);
-    --shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.55);
-    --shadow-xl: 0 24px 60px -10px rgba(0, 0, 0, 0.65);
-    --shadow-glow: 0 0 40px rgba(149, 128, 255, 0.18);
+    --accent:         #7c5cff;
+    --accent-hover:   #6a48f2;
+    --accent-bright:  #b0a0ff;
+    --accent-dim:     #2c2359;
+    --accent-glow:    rgba(124, 92, 255, 0.16);
 
-    /* Border Radius */
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
+    --cyan:           #3ee6b8;
+    --success:        #56e39f;
+    --success-bg:     rgba(86, 227, 159, 0.12);
+    --warning:         #ffb84d;
+    --warning-bg:      rgba(255, 184, 77, 0.08);
+    --danger:         #ff6b6b;
+    --danger-bg:      rgba(255, 107, 107, 0.12);
 
-    /* Spacing */
+    /* -- Shadows: kept minimal, no colored blur blooms -- */
+    --shadow-sm: 0 1px 0 0 rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 6px 16px -4px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 16px 36px -8px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 28px 64px -12px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 0 0 1px rgba(124, 92, 255, 0.35);
+
+    /* -- Radius: mostly flat. Panels get a clipped corner instead. -- */
+    --radius-sm: 2px;
+    --radius-md: 3px;
+    --radius-lg: 4px;
+    --radius-xl: 6px;
+    --cut: 14px; /* corner-notch size for .panel-cut */
+
+    /* -- Spacing -- */
     --spacing-xs: 8px;
     --spacing-sm: 12px;
     --spacing-md: 16px;
@@ -49,27 +54,22 @@
     --spacing-2xl: 48px;
     --spacing-3xl: 80px;
 
-    /* Typography */
-    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
-    --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', Consolas, monospace;
+    /* -- Typography -- */
+    --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+    --font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono:    'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', Consolas, monospace;
 
-    /* Layout */
-    --navbar-height: 68px;
+    /* -- Layout -- */
+    --navbar-height: 64px;
 }
 
-/* ============================================ */
-/* RESET & BASE */
-/* ============================================ */
+/* ============================================================ */
+/* RESET & BASE                                                  */
+/* ============================================================ */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-html, body.site-body {
-    height: 100%;
-}
+html, body.site-body { height: 100%; }
 
 body.site-body {
     font-family: var(--font-family);
@@ -83,9 +83,6 @@ body.site-body {
     flex-direction: column;
 }
 
-/* .site-main is the only scrolling element - the navbar and its own
-   scrollbar sit outside it, so the scrollbar never runs alongside the
-   navbar, only underneath it. */
 .site-main {
     position: relative;
     z-index: 1;
@@ -96,245 +93,260 @@ body.site-body {
     scroll-behavior: smooth;
 }
 
-.site-main::-webkit-scrollbar {
-    width: 10px;
+.site-main::-webkit-scrollbar { width: 9px; }
+.site-main::-webkit-scrollbar-track { background: transparent; }
+.site-main::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 0; }
+.site-main::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
+
+::selection { background: var(--accent-dim); color: var(--fg); }
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
 }
 
-.site-main::-webkit-scrollbar-track {
-    background: transparent;
-}
+/* ============================================================ */
+/* AMBIENT BACKGROUND — hairline graph grid. No blur, no color blobs. */
+/* ============================================================ */
 
-.site-main::-webkit-scrollbar-thumb {
-    background: var(--border-strong);
-    border-radius: 5px;
-}
-
-.site-main::-webkit-scrollbar-thumb:hover {
-    background: var(--fg-subtle);
-}
-
-::selection {
-    background: var(--accent-dim);
-    color: var(--fg);
-}
-
-/* ============================================ */
-/* AMBIENT BACKGROUND */
-/* ============================================ */
-
-/* Quiet, static backdrop: a faint dot grid that fades out down the
-   viewport. No blurred glows, no animation. */
 .bg-animation {
     position: fixed;
     inset: 0;
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
-    background-image: radial-gradient(rgba(148, 149, 155, 0.13) 1px, transparent 1.4px);
-    background-size: 28px 28px;
-    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 78%);
-    mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 78%);
+    background-image:
+        linear-gradient(rgba(124, 92, 255, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124, 92, 255, 0.055) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 0%, transparent 72%);
+    mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 0%, transparent 72%);
 }
 
-@media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-}
-
-/* ============================================ */
-/* TYPOGRAPHY */
-/* ============================================ */
+/* ============================================================ */
+/* TYPOGRAPHY                                                    */
+/* ============================================================ */
 
 .heading-xl {
-    font-size: 58px;
-    font-weight: 800;
-    line-height: 1.08;
-    letter-spacing: -0.02em;
-    color: var(--fg);
-}
-
-.heading-lg {
-    font-size: 48px;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.015em;
-    color: var(--fg);
-}
-
-.heading-md {
-    font-size: 36px;
+    font-family: var(--font-display);
+    font-size: 56px;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.05;
     letter-spacing: -0.01em;
     color: var(--fg);
 }
 
+.heading-lg {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+}
+
+.heading-md {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.18;
+    letter-spacing: -0.005em;
+    color: var(--fg);
+}
+
 .heading-sm {
-    font-size: 24px;
+    font-family: var(--font-display);
+    font-size: 22px;
     font-weight: 700;
     line-height: 1.3;
     color: var(--fg);
 }
 
-.text-lg { font-size: 19px; line-height: 1.65; color: var(--fg-muted); }
-.text-md { font-size: 16px; line-height: 1.65; color: var(--fg-muted); }
-.text-sm { font-size: 14px; line-height: 1.5;  color: var(--fg-subtle); }
+.text-lg { font-size: 18px; line-height: 1.65; color: var(--fg-muted); }
+.text-md { font-size: 15.5px; line-height: 1.65; color: var(--fg-muted); }
+.text-sm { font-size: 13.5px; line-height: 1.5; color: var(--fg-subtle); }
 
-.text-accent { color: var(--accent); }
+.text-accent { color: var(--accent-bright); }
 
+/* No gradient text — a flat accent color with a thin baseline rule instead */
 .text-gradient {
-    background: linear-gradient(120deg, var(--accent-bright) 0%, var(--accent) 45%, var(--cyan) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--accent-bright);
 }
 
-/* ============================================ */
-/* BUTTONS */
-/* ============================================ */
+/* Monospace label — the system's recurring "readout" device */
+.mono-tag {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+}
+
+/* ============================================================ */
+/* PANELS — the shared surface language. Flat fill, hairline     */
+/* border, one corner clipped. This replaces "rounded card".     */
+/* ============================================================ */
+
+.panel {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+}
+
+.panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 var(--cut) var(--cut) 0;
+    border-color: transparent var(--border) transparent transparent;
+    transition: border-color 0.2s ease;
+}
+
+.panel:hover::before { border-color: transparent var(--border-strong) transparent transparent; }
+
+/* ============================================================ */
+/* BUTTONS — notched corners, solid fills, no pill shapes.       */
+/* ============================================================ */
 
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 12px 24px;
-    font-size: 15px;
+    gap: 9px;
+    padding: 12px 22px;
+    font-family: var(--font-display);
+    font-size: 14.5px;
     font-weight: 600;
-    border-radius: var(--radius-md);
+    letter-spacing: 0.01em;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
     text-decoration: none;
     white-space: nowrap;
-    font-family: var(--font-family);
+    clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
 }
+
+.btn:active { transform: translateY(1px); }
 
 .btn-primary {
     background: var(--accent);
-    color: #14151b;
-    box-shadow: var(--shadow-sm);
+    color: #0a0a0c;
 }
+.btn-primary:hover { background: var(--accent-bright); }
 
-.btn-primary:hover {
-    background: var(--accent-bright);
-    box-shadow: var(--shadow-md);
-}
-
+/* The notched corners get clipped along with everything else, so a plain
+   `border` loses its stroke on the diagonal - instead, the element's own
+   background acts as the "border" color at full size, and an inset pseudo-
+   element (its own smaller notch) sits on top as the fill, leaving a 1px
+   ring visible all the way around, corners included. */
 .btn-secondary {
-    background: rgba(149, 128, 255, 0.08);
+    position: relative;
+    z-index: 0;
+    background: var(--border-strong);
     color: var(--fg);
-    border: 1px solid var(--border-strong);
 }
 
-.btn-secondary:hover {
-    border-color: var(--accent);
-    color: var(--accent-bright);
-    background: var(--accent-glow);
+.btn-secondary::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 1px;
+    background: var(--bg-card);
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    transition: background 0.15s ease;
 }
+
+.btn-secondary:hover { background: var(--accent); color: var(--accent-bright); }
 
 .btn-ghost {
     background: transparent;
     color: var(--fg-muted);
+    clip-path: none;
 }
+.btn-ghost:hover { color: var(--fg); background: rgba(255, 255, 255, 0.05); }
 
-.btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--fg);
-}
+.btn-lg { padding: 15px 30px; font-size: 15.5px; }
+.btn-sm { padding: 8px 15px; font-size: 13px; }
 
-.btn-lg {
-    padding: 16px 32px;
-    font-size: 16px;
-    border-radius: var(--radius-lg);
-}
-
-.btn-sm {
-    padding: 8px 16px;
-    font-size: 14px;
-}
-
-i,
-[class^="mdi-"],
-[class*=" mdi-"] {
+i, [class^="mdi-"], [class*=" mdi-"] {
     display: inline-flex;
     align-items: center;
     line-height: 1;
     vertical-align: middle;
 }
 
-/* ============================================ */
-/* LAYOUT UTILITIES */
-/* ============================================ */
+/* ============================================================ */
+/* LAYOUT UTILITIES                                              */
+/* ============================================================ */
 
-.container {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 0 24px;
-}
-
-.container-narrow {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 24px;
-}
+.container { max-width: 1440px; margin: 0 auto; padding: 0 28px; }
+.container-narrow { max-width: 760px; margin: 0 auto; padding: 0 28px; }
 
 .section {
     padding: var(--spacing-3xl) 0;
     position: relative;
     box-sizing: border-box;
-    min-height: calc(100vh - var(--navbar-height));
-    min-height: calc(100dvh - var(--navbar-height));
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
-.section > .container,
-.section > .container-narrow {
-    width: 100%;
-}
-
-.section-compact {
-    padding: var(--spacing-2xl) 0;
-    position: relative;
-}
+.section-compact { padding: var(--spacing-2xl) 0; position: relative; }
 
 .section-header {
-    text-align: center;
-    max-width: 720px;
-    margin: 0 auto 56px;
+    max-width: 640px;
+    margin: 0 0 48px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    align-items: center;
+    gap: 12px;
 }
+
+.section-header.centered { text-align: center; align-items: center; margin-left: auto; margin-right: auto; }
 
 .section-kicker {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 700;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--accent);
+    letter-spacing: 0.18em;
+    color: var(--accent-bright);
 }
 
-/* ============================================ */
-/* SHARED MARKETING COMPONENTS */
-/* ============================================ */
+.section-kicker::before {
+    content: '';
+    width: 18px;
+    height: 1px;
+    background: var(--accent);
+}
+
+/* Numbered section index, e.g. "02 /" — used across headers */
+.section-index {
+    font-family: var(--font-mono);
+    color: var(--fg-subtle);
+}
+
+/* ============================================================ */
+/* SHARED MARKETING COMPONENTS                                   */
+/* ============================================================ */
 
 .hero-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
-    background: var(--accent-glow);
-    border: 1px solid rgba(149, 128, 255, 0.3);
-    color: var(--accent-bright);
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 7px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-left: 2px solid var(--accent);
+    color: var(--fg-muted);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
     width: fit-content;
 }
 
@@ -344,179 +356,162 @@ i,
     color: var(--fg-muted);
 }
 
-.hero-platforms {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
+.hero-platforms { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .platform-chip {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    padding: 7px 14px;
+    padding: 7px 13px;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 999px;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
     color: var(--fg-muted);
+    font-family: var(--font-mono);
 }
 
-.platform-chip i {
-    color: var(--accent);
-    font-size: 16px;
-}
+.platform-chip i { color: var(--accent); font-size: 15px; }
 
 /* Feature cards (shared by home + download) */
 .feature-card {
+    position: relative;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 28px;
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    border-top: 2px solid var(--border-strong);
+    padding: 26px;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .feature-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(149, 128, 255, 0.45);
-    box-shadow: var(--shadow-md);
+    border-top-color: var(--accent);
+    background: var(--bg-card-hover);
 }
 
 .feature-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgba(149, 128, 255, 0.2), rgba(48, 214, 232, 0.12));
-    border: 1px solid rgba(149, 128, 255, 0.3);
+    width: 44px;
+    height: 44px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
+    font-size: 22px;
     color: var(--accent-bright);
     margin-bottom: 18px;
 }
 
 .feature-title {
-    font-size: 18px;
+    font-family: var(--font-display);
+    font-size: 17px;
     font-weight: 700;
     color: var(--fg);
     margin-bottom: 8px;
 }
 
 .feature-description {
-    font-size: 15px;
+    font-size: 14.5px;
     line-height: 1.65;
     color: var(--fg-muted);
 }
 
 /* Scroll reveal */
-.reveal {
-    opacity: 0;
-    transform: translateY(22px);
-    transition: opacity 0.55s ease, transform 0.55s ease;
-}
+/* Content settles downward into place - matching the direction of a
+   scroll heading down the page - instead of rising up from below it. */
+.reveal { opacity: 0; transform: translateY(-18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal.revealed { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 
-.reveal.revealed {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .reveal { opacity: 1; transform: none; transition: none; }
-}
-
-/* ============================================ */
-/* NAVBAR */
-/* ============================================ */
+/* ============================================================ */
+/* NAVBAR — solid bar, tab-style links, no blur/glass.            */
+/* ============================================================ */
 
 .site-navbar {
     position: relative;
     z-index: 10;
     flex-shrink: 0;
-    background: rgba(13, 14, 18, 0.82);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    background: var(--bg-raised);
     border-bottom: 1px solid var(--border);
 }
 
+/* Edge-to-edge like .site-footer-content, rather than boxed at 1440px like
+   .container - the logo/actions sit in the two flanking 1fr columns (equal
+   width, so they don't have to match each other's size) and the link row
+   drops into the auto-sized middle column, which lands it exactly centered
+   on the full bar rather than merely centered in the leftover space next
+   to the logo. */
 .site-navbar-content {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 0 24px;
-    height: 68px;
-    display: flex;
+    width: 100%;
+    padding: 0 clamp(20px, 4.5vw, 72px);
+    height: var(--navbar-height);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: 32px;
+    column-gap: 16px;
 }
 
 .site-navbar-logo {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
     color: var(--fg);
     text-decoration: none;
+    justify-self: start;
 }
 
-.site-navbar-logo-icon {
-    width: 30px;
-    height: 30px;
-    display: block;
-}
+.site-navbar-logo-icon { width: 26px; height: 26px; display: block; }
 
-.site-navbar-links {
-    display: flex;
-    gap: 6px;
-    margin-left: 12px;
-}
+.site-navbar-links { display: flex; gap: 2px; }
 
 .site-navbar-link {
-    font-size: 14px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
     font-weight: 500;
-    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+    color: var(--fg-subtle);
     text-decoration: none;
-    padding: 8px 12px;
-    border-radius: var(--radius-sm);
-    transition: background 0.15s, color 0.15s;
+    padding: 9px 13px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
 }
 
-.site-navbar-link:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--fg);
-}
+.site-navbar-link:hover { color: var(--fg); border-color: var(--border-strong); }
+
+/* Declared after :hover so it wins regardless of hover state, same reasoning
+   as .arch-card.featured winning over .arch-card:hover in home.css - equal
+   specificity, later rule in the cascade takes it. Set by the navbar's own
+   script: a plain path match for "Download", scroll position (via
+   IntersectionObserver) for the in-page section links. */
+.site-navbar-link.active { color: var(--fg); border-color: var(--accent); }
 
 .site-navbar-actions {
-    margin-left: auto;
+    justify-self: end;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .site-navbar-github {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: var(--radius-sm);
-    color: var(--fg-muted);
-    font-size: 22px;
+    width: 36px;
+    height: 36px;
+    color: var(--fg-subtle);
+    font-size: 20px;
     text-decoration: none;
-    transition: background 0.15s, color 0.15s;
+    border: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
 }
 
-.site-navbar-github:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--fg);
-}
+.site-navbar-github:hover { color: var(--fg); border-color: var(--border); }
 
 /* User menu (authenticated navbar) */
-.site-user-menu {
-    position: relative;
-}
+.site-user-menu { position: relative; }
 
 .site-user-trigger {
     display: flex;
@@ -525,71 +520,49 @@ i,
     padding: 5px 10px 5px 5px;
     background: transparent;
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
     cursor: pointer;
     color: var(--fg-muted);
     font-family: var(--font-family);
     transition: border-color 0.15s, background 0.15s;
 }
 
-.site-user-trigger:hover {
-    border-color: var(--border-strong);
-    background: rgba(255, 255, 255, 0.05);
-}
+.site-user-trigger:hover { border-color: var(--border-strong); background: rgba(255, 255, 255, 0.04); }
 
-.site-user-trigger .mdi-chevron-down {
-    font-size: 16px;
-    transition: transform 0.15s ease;
-}
-
-.site-user-trigger[aria-expanded="true"] .mdi-chevron-down {
-    transform: rotate(180deg);
-}
+.site-user-trigger .mdi-chevron-down { font-size: 16px; transition: transform 0.15s ease; }
+.site-user-trigger[aria-expanded="true"] .mdi-chevron-down { transform: rotate(180deg); }
 
 .site-user-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
+    width: 28px;
+    height: 28px;
     background: var(--accent);
-    color: #14151b;
+    color: #0a0a0c;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12.5px;
     line-height: 1;
     overflow: hidden;
     flex-shrink: 0;
 }
 
-.site-user-avatar span {
-    line-height: 1;
-    transform: translateY(-1px);
-}
-
-.site-user-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.site-user-avatar span { line-height: 1; transform: translateY(-1px); }
+.site-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 .site-user-dropdown {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 6px);
     right: 0;
     min-width: 200px;
     background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-strong);
     box-shadow: var(--shadow-xl);
-    padding: 6px;
+    padding: 5px;
     display: none;
     z-index: 200;
 }
 
-.site-user-dropdown.open {
-    display: block;
-}
+.site-user-dropdown.open { display: block; }
 
 .site-user-dropdown-name {
     padding: 8px 10px 4px;
@@ -601,38 +574,23 @@ i,
     text-overflow: ellipsis;
 }
 
-.site-user-dropdown-divider {
-    height: 1px;
-    background: var(--border);
-    margin: 6px 4px;
-}
+.site-user-dropdown-divider { height: 1px; background: var(--border); margin: 6px 4px; }
 
 .site-user-dropdown-item {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 9px 10px;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--fg-muted);
     text-decoration: none;
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
 }
 
-.site-user-dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--fg);
-}
-
-.site-user-dropdown-item-danger {
-    color: var(--danger);
-}
-
-.site-user-dropdown-item-danger:hover {
-    background: var(--danger-bg);
-    color: var(--danger);
-}
+.site-user-dropdown-item:hover { background: rgba(255, 255, 255, 0.05); color: var(--fg); }
+.site-user-dropdown-item-danger { color: var(--danger); }
+.site-user-dropdown-item-danger:hover { background: var(--danger-bg); color: var(--danger); }
 
 /* Mobile toggle */
 .site-navbar-mobile-toggle {
@@ -640,12 +598,11 @@ i,
     flex-direction: column;
     justify-content: center;
     gap: 5px;
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     padding: 10px;
     background: transparent;
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
     cursor: pointer;
     margin-left: auto;
 }
@@ -655,7 +612,6 @@ i,
     height: 2px;
     width: 100%;
     background: var(--fg-muted);
-    border-radius: 2px;
     transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
@@ -663,92 +619,119 @@ i,
 .site-navbar-mobile-toggle.open span:nth-child(2) { opacity: 0; }
 .site-navbar-mobile-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+/* Backdrop behind the sidebar - hidden/inert until it's open, faded in
+   rather than just toggled so the transition reads. */
+.site-navbar-backdrop {
+    display: none;
+}
+
 @media (max-width: 900px) {
-    .site-navbar-links {
-        display: none;
-        position: absolute;
-        top: 68px;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        background: var(--bg-raised);
-        border-bottom: 1px solid var(--border);
-        padding: 12px 24px 18px;
-        gap: 4px;
+    /* Below this width the link list peels off into a fixed off-canvas
+       sidebar (see .site-navbar-links below), so there's nothing left to
+       center in the middle column - back to a plain flex row for logo,
+       actions and the mobile toggle. */
+    .site-navbar-content { display: flex; }
+
+    .site-navbar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+        z-index: 90;
     }
 
-    .site-navbar-links.open { display: flex; }
+    .site-navbar-backdrop.open { opacity: 1; pointer-events: auto; }
 
-    .site-navbar-mobile-toggle { display: flex; margin-left: 8px; }
+    /* A real sidebar, not a dropdown panel: fixed to the viewport, slides
+       in from the right over the content instead of pushing the navbar
+       taller. */
+    .site-navbar-links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(78vw, 300px);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: var(--bg-raised);
+        border-left: 1px solid var(--border-strong);
+        box-shadow: var(--shadow-xl);
+        padding: calc(var(--navbar-height) + 12px) 0 20px;
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        z-index: 100;
+    }
 
+    .site-navbar-links.open { transform: translateX(0); }
+
+    .site-navbar-link {
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .site-navbar-link:hover { background: rgba(255, 255, 255, 0.04); border-color: var(--border); }
+
+    .site-navbar-mobile-toggle { display: flex; margin-left: 8px; position: relative; z-index: 110; }
     .site-navbar-actions { margin-left: auto; }
 }
 
 @media (max-width: 560px) {
-    .site-navbar-actions .btn-ghost { padding: 10px 14px; font-size: 14px; }
-    .site-navbar-content { gap: 12px; }
+    .site-navbar-actions .btn-ghost { padding: 10px 12px; font-size: 13.5px; }
+    .site-navbar-content { gap: 8px; }
 }
 
-/* ============================================ */
-/* FOOTER */
-/* ============================================ */
+/* ============================================================ */
+/* FOOTER                                                         */
+/* ============================================================ */
 
 .site-footer {
     position: relative;
     z-index: 1;
     background: var(--bg-raised);
     border-top: 1px solid var(--border);
-    padding: 56px 0 32px;
-    margin-top: 0;
+    padding: 56px 0 28px;
 }
 
-/* Footer content spans the full page width (no container cap), with
-   padding that scales down smoothly on smaller viewports. */
-.site-footer-content {
-    width: 100%;
-    padding: 0 clamp(20px, 4.5vw, 72px);
-}
+.site-footer-content { width: 100%; padding: 0 clamp(20px, 4.5vw, 72px); }
 
 .site-footer-grid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: 40px;
-    margin-bottom: 44px;
+    margin-bottom: 40px;
 }
 
-.site-footer-brand {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
+.site-footer-brand { display: flex; flex-direction: column; gap: 14px; }
 
 .site-footer-description {
-    font-size: 14px;
+    font-size: 13.5px;
     line-height: 1.65;
     color: var(--fg-subtle);
     max-width: 320px;
 }
 
 .site-footer-section-title {
-    font-size: 13px;
-    font-weight: 700;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.14em;
     color: var(--fg-muted);
     margin-bottom: 16px;
 }
 
-.site-footer-links {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+.site-footer-links { display: flex; flex-direction: column; gap: 10px; }
 
 .site-footer-link {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--fg-subtle);
     text-decoration: none;
     transition: color 0.15s;
@@ -759,18 +742,17 @@ i,
 
 .site-footer-bottom {
     position: relative;
-    padding-top: 24px;
+    padding-top: 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
     flex-wrap: wrap;
-    font-size: 13px;
+    font-family: var(--font-mono);
+    font-size: 12px;
     color: var(--fg-subtle);
 }
 
-/* Full-bleed divider - .site-footer-content is padded, so a border on this
-   element would stop short of the edges. Break out to the full viewport width. */
 .site-footer-bottom::before {
     content: "";
     position: absolute;
@@ -781,84 +763,57 @@ i,
     border-top: 1px solid var(--border);
 }
 
-.site-footer-platforms {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
+.site-footer-platforms { display: inline-flex; align-items: center; gap: 8px; }
+.site-footer-platforms i { font-size: 15px; color: var(--accent); }
 
-.site-footer-platforms i {
-    font-size: 16px;
-    color: var(--accent);
-}
+@media (max-width: 900px) { .site-footer-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .site-footer-grid { grid-template-columns: 1fr; gap: 30px; } }
 
-@media (max-width: 900px) {
-    .site-footer-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media (max-width: 560px) {
-    .site-footer-grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
-    }
-}
-
-/* ============================================ */
-/* CTA (shared) */
-/* ============================================ */
+/* ============================================================ */
+/* CTA (shared)                                                   */
+/* ============================================================ */
 
 .cta {
     position: relative;
-    padding: 88px 0;
-    background:
-        radial-gradient(ellipse at 50% 120%, rgba(149, 128, 255, 0.12) 0%, transparent 60%),
-        var(--bg-raised);
+    padding: 84px 0;
+    background: var(--bg-raised);
     border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(135deg, transparent, transparent 26px, rgba(124, 92, 255, 0.035) 26px, rgba(124, 92, 255, 0.035) 27px);
+    pointer-events: none;
 }
 
 .cta-content {
-    max-width: 760px;
+    position: relative;
+    max-width: 720px;
     margin: 0 auto;
     text-align: center;
-    padding: 0 24px;
+    padding: 0 28px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
     align-items: center;
 }
 
-.cta-title {
-    font-size: 42px;
-    font-weight: 800;
-    letter-spacing: -0.015em;
-    color: var(--fg);
-}
+.cta-title { font-family: var(--font-display); font-size: 38px; font-weight: 700; letter-spacing: -0.01em; color: var(--fg); }
+.cta-description { font-size: 17px; line-height: 1.65; color: var(--fg-muted); }
+.cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 6px; }
 
-.cta-description {
-    font-size: 19px;
-    line-height: 1.65;
-    color: var(--fg-muted);
-}
-
-.cta-actions {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 8px;
-}
-
-/* ============================================ */
-/* RESPONSIVE TYPE */
-/* ============================================ */
+/* ============================================================ */
+/* RESPONSIVE TYPE                                                */
+/* ============================================================ */
 
 @media (max-width: 768px) {
-    .heading-xl { font-size: 38px; }
-    .heading-lg { font-size: 34px; }
-    .heading-md { font-size: 28px; }
-    .text-lg    { font-size: 17px; }
-    .cta-title  { font-size: 30px; }
-    .section    { padding: var(--spacing-2xl) 0; }
+    .heading-xl { font-size: 36px; }
+    .heading-lg { font-size: 32px; }
+    .heading-md { font-size: 26px; }
+    .text-lg { font-size: 16.5px; }
+    .cta-title { font-size: 28px; }
+    .section { padding: var(--spacing-2xl) 0; }
 }

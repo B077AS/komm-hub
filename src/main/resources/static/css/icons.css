@@ -17,6 +17,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.mdi-account-multiple-outline::before {
+  content: "\F000F";
+}
+
 .mdi-account-multiple-plus::before {
   content: "\F0010";
 }
@@ -253,16 +257,8 @@
   content: "\F0415";
 }
 
-.mdi-plus-circle-outline::before {
-  content: "\F0419";
-}
-
 .mdi-pound::before {
   content: "\F0423";
-}
-
-.mdi-rocket-launch::before {
-  content: "\F14DE";
 }
 
 .mdi-seal::before {

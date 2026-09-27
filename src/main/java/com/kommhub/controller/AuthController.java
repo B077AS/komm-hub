@@ -170,13 +170,15 @@ public class AuthController {
         if (email.isBlank() || !email.matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
             return ErrorResponse.of(HttpStatus.BAD_REQUEST, "A valid email address is required");
         }
+        if (message.isBlank()) {
+            return ErrorResponse.of(HttpStatus.BAD_REQUEST, "A message is required");
+        }
         if (message.length() > 2000) {
             return ErrorResponse.of(HttpStatus.BAD_REQUEST, "Message must be 2000 characters or fewer");
         }
 
         try {
-            emailService.sendBetaAccessRequest(betaRequestRecipient, email,
-                    message.isBlank() ? "(no message)" : message);
+            emailService.sendBetaAccessRequest(betaRequestRecipient, email, message);
             return SuccessResponse.of("Request sent! We'll get back to you at " + email + ".");
         } catch (Exception e) {
             log.error("Failed to forward beta access request from {}: {}", email, e.getMessage());

@@ -4,10 +4,12 @@
   "description": "Komm hub frontend dependencies",
   "scripts": {
     "purge-icons": "purgecss --css node_modules/@mdi/font/css/materialdesignicons.css --content \"src/main/resources/templates/**/*.html\" --output src/main/resources/static/css/icons.css",
-    "copy-fonts": "node -e \"require('fs').cpSync('node_modules/@mdi/font/fonts', 'src/main/resources/static/fonts', {recursive: true})\""
+    "copy-fonts": "node -e \"require('fs').cpSync('node_modules/@mdi/font/fonts', 'src/main/resources/static/fonts', {recursive: true})\"",
+    "copy-htmx": "node -e \"require('fs').mkdirSync('src/main/resources/static/js', {recursive: true}); require('fs').cpSync('node_modules/htmx.org/dist/htmx.min.js', 'src/main/resources/static/js/htmx.min.js')\""
   },
   "dependencies": {
-    "@mdi/font": "^7.4.47"
+    "@mdi/font": "^7.4.47",
+    "htmx.org": "^1.9.12"
   },
   "devDependencies": {
     "purgecss": "^7.0.2"

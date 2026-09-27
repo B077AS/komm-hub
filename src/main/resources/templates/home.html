@@ -107,19 +107,40 @@
     <!-- --------------- HERO --------------- -->
     <div class="hero-group">
     <section class="hero">
-        <div class="hero-content container">
-            <div class="hero-text">
-                <p class="hero-eyebrow">
-                    self-hosted<span class="eyebrow-sep" aria-hidden="true">/</span>private<span class="eyebrow-sep" aria-hidden="true">/</span>free
-                </p>
+        <div class="hero-rain" aria-hidden="true">
+            <span class="rain-col" style="left:2%; animation-duration:6.5s; animation-delay:0s;">01&#10;F3&#10;A9&#10;1C</span>
+            <span class="rain-col" style="left:7%; animation-duration:5.4s; animation-delay:2.2s;">FF&#10;6D&#10;{ }&#10;02</span>
+            <span class="rain-col" style="left:12%; animation-duration:7.2s; animation-delay:1.4s;">0x&#10;7B&#10;4F&#10;D2</span>
+            <span class="rain-col" style="left:17%; animation-duration:6.0s; animation-delay:3.6s;">10&#10;A4&#10;//&#10;E1</span>
+            <span class="rain-col" style="left:21%; animation-duration:5.8s; animation-delay:2.6s;">{ }&#10;;;&#10;E7&#10;88</span>
+            <span class="rain-col" style="left:26%; animation-duration:7.5s; animation-delay:0.5s;">0x&#10;C2&#10;9F&#10;3D</span>
+            <span class="rain-col" style="left:31%; animation-duration:6.9s; animation-delay:0.7s;">10&#10;CE&#10;03&#10;&lt;/&gt;</span>
+            <span class="rain-col" style="left:36%; animation-duration:5.6s; animation-delay:3.1s;">01&#10;5A&#10;;;&#10;B7</span>
+            <span class="rain-col" style="left:42%; animation-duration:7.6s; animation-delay:3.3s;">FF&#10;01&#10;9A&#10;2D</span>
+            <span class="rain-col" style="left:47%; animation-duration:6.3s; animation-delay:1.7s;">0x&#10;D6&#10;{ }&#10;4C</span>
+            <span class="rain-col" style="left:53%; animation-duration:6.1s; animation-delay:1.9s;">0x&#10;B4&#10;//&#10;6E</span>
+            <span class="rain-col" style="left:58%; animation-duration:7.0s; animation-delay:4.0s;">11&#10;3E&#10;A8&#10;00</span>
+            <span class="rain-col" style="left:63%; animation-duration:7.4s; animation-delay:0.3s;">11&#10;A0&#10;;;&#10;5C</span>
+            <span class="rain-col" style="left:68%; animation-duration:5.9s; animation-delay:2.4s;">0x&#10;7F&#10;&lt;/&gt;&#10;C1</span>
+            <span class="rain-col" style="left:73%; animation-duration:5.9s; animation-delay:2.1s;">00&#10;D9&#10;F1&#10;{ }</span>
+            <span class="rain-col" style="left:78%; animation-duration:6.8s; animation-delay:0.9s;">01&#10;4B&#10;//&#10;9D</span>
+            <span class="rain-col" style="left:83%; animation-duration:6.7s; animation-delay:3.8s;">0x&#10;3A&#10;C7&#10;E2</span>
+            <span class="rain-col" style="left:88%; animation-duration:5.5s; animation-delay:1.2s;">10&#10;F8&#10;;;&#10;6A</span>
+            <span class="rain-col" style="left:92%; animation-duration:7.1s; animation-delay:1.1s;">01&#10;8F&#10;&lt;/&gt;&#10;B6</span>
+            <span class="rain-col" style="left:97%; animation-duration:6.4s; animation-delay:3.5s;">FF&#10;29&#10;A3&#10;0x</span>
+        </div>
+        <div class="container">
+        <div class="hero-content">
+            <div class="hero-primary">
+                <p class="hero-eyebrow">Self-hosted &middot; Private &middot; Free</p>
 
                 <h1 class="hero-title">
-                    <span class="hero-line">Your voice.</span>
-                    <span class="hero-line">Your servers.</span>
-                    <span class="hero-line"><mark class="hero-mark">Your data.</mark><span class="hero-caret" aria-hidden="true"></span></span>
+                    Your voice.<br>
+                    Your servers.<br>
+                    <em>Your data.</em>
                 </h1>
 
-                <p class="hero-description">
+                <p class="hero-desc">
                     Komm is a modern voice, video and text chat platform where every community runs on
                     its own server. Crystal-clear voice channels, HD screen sharing and rich messaging -
                     without handing your conversations to anyone else.
@@ -129,192 +150,185 @@
                     <a th:href="@{/download}" class="btn btn-primary btn-lg">
                         <i class="mdi mdi-download"></i> Download for free
                     </a>
-                    <a th:href="@{/#self-hosting}" class="btn btn-secondary btn-lg">
-                        <i class="mdi mdi-server"></i> How self-hosting works
+                    <a th:href="@{/download#server}" class="btn btn-secondary btn-lg">
+                        <i class="mdi mdi-server"></i> Host your own server
                     </a>
                 </div>
-
-                <p style="margin-top:14px; font-size:14px; color:var(--fg-muted);">
-                    <i class="mdi mdi-flask-outline" style="color:var(--accent);"></i>
-                    Komm is in <strong>closed beta</strong> - registration needs an invite key.
-                    <a th:href="@{/#beta-access}" style="color:var(--accent);">Request access</a>
-                </p>
-
-                <div class="hero-spec" aria-label="Supported platforms">
-                    <span class="hero-spec-label">runs on</span>
-                    <span class="hero-spec-item"><i class="mdi mdi-microsoft-windows"></i> Windows 10/11</span>
-                    <span class="hero-spec-item"><i class="mdi mdi-linux"></i> Linux X11</span>
-                    <span class="hero-spec-item"><i class="mdi mdi-linux"></i> Linux Wayland</span>
-                </div>
             </div>
 
-            <!-- App mockup -->
-            <div class="hero-mockup" aria-hidden="true">
-                <div class="mockup-window">
-                    <div class="mockup-titlebar">
-                        <img th:src="@{/favicon.svg}" alt="" class="mockup-app-ico">
-                        <span class="mockup-title">Komm</span>
-                        <span class="mockup-win-controls">
-                            <i class="mdi mdi-window-minimize"></i>
-                            <i class="mdi mdi-window-maximize"></i>
-                            <i class="mdi mdi-window-close"></i>
+            <!-- Product readout panel - an accurate, to-scale reproduction of the
+                 real Komm client UI, framed flat instead of a floating OS window. -->
+            <div class="hero-panel" aria-hidden="true">
+                <div class="panel-head">
+                    <img th:src="@{/favicon.svg}" alt="" class="panel-head-icon">
+                    <span class="panel-head-title">Komm</span>
+                    <span class="panel-head-controls">
+                        <i class="mdi mdi-window-minimize"></i>
+                        <i class="mdi mdi-window-maximize"></i>
+                        <i class="mdi mdi-window-close"></i>
+                    </span>
+                </div>
+                <div class="mockup-body">
+                    <!-- Sidebar -->
+                    <div class="mockup-sidebar">
+                        <div class="mockup-server-header">
+                            <i class="mdi mdi-home mockup-home-ico"></i>
+                            <span class="mockup-server-name">Server</span>
+                            <i class="mdi mdi-dots-vertical mockup-menu-ico"></i>
+                        </div>
+                        <div class="mockup-sidebar-content">
+                            <div class="mockup-voice-card">
+                                <div class="mockup-channel-row">
+                                    <i class="mdi mdi-microphone"></i>
+                                    <span class="mockup-channel-name">Chatting</span>
+                                    <span class="mockup-chan-tag">voice</span>
+                                    <i class="mdi mdi-phone-hangup mockup-hangup"></i>
+                                </div>
+                                <div class="mockup-voice-user speaking">
+                                    <span class="mockup-avatar a1">A</span> admin
+                                </div>
+                                <div class="mockup-voice-user">
+                                    <span class="mockup-avatar a2">M</span> member
+                                    <i class="mdi mdi-monitor-share mockup-stream-ico"></i>
+                                </div>
+                            </div>
+                            <div class="mockup-text-card">
+                                <i class="mdi mdi-pound"></i>
+                                <span class="mockup-channel-name">General Text</span>
+                                <span class="mockup-chan-tag">text</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat -->
+                    <div class="mockup-chat">
+                        <div class="mockup-chat-header">
+                            <i class="mdi mdi-microphone"></i>
+                            <span class="mockup-channel-name">Chatting</span>
+                            <span class="mockup-chan-tag">voice</span>
+                            <i class="mdi mdi-format-list-bulleted mockup-members-toggle"></i>
+                        </div>
+
+                        <div class="mockup-messages">
+                            <div class="mockup-msg">
+                                <span class="mockup-msg-avatar a2">M</span>
+                                <div>
+                                    <div class="mockup-msg-author">member <span class="mockup-msg-time">12:22</span></div>
+                                    <div class="mockup-msg-text">new build is up, voice latency is insane</div>
+                                    <div class="mockup-reactions">
+                                        <span class="mockup-reaction">&#10084; 1</span>
+                                        <span class="mockup-reaction plus">+</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mockup-msg">
+                                <span class="mockup-msg-avatar a1">A</span>
+                                <div class="mockup-msg-grow">
+                                    <div class="mockup-msg-author">admin <span class="mockup-msg-time">12:23</span></div>
+                                    <div class="mockup-msg-text">full changelog is attached, worth a read</div>
+                                    <div class="mockup-attachment">
+                                        <i class="mdi mdi-paperclip mockup-attachment-icon"></i>
+                                        <div class="mockup-attachment-info">
+                                            <span class="mockup-attachment-name">changelog-v0.9.4.pdf</span>
+                                            <span class="mockup-attachment-meta">PDF &middot; 212 KB</span>
+                                        </div>
+                                        <i class="mdi mdi-download mockup-attachment-dl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mockup-msg">
+                                <span class="mockup-msg-avatar a2">M</span>
+                                <div>
+                                    <div class="mockup-msg-author">member <span class="mockup-msg-time">12:24</span></div>
+                                    <div class="mockup-msg-text">grabbing it now, thanks</div>
+                                    <div class="mockup-reactions">
+                                        <span class="mockup-reaction">&#128077; 2</span>
+                                        <span class="mockup-reaction plus">+</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mockup-input">
+                            <span class="mockup-input-ph">Message #Chatting</span>
+                            <i class="mdi mdi-emoticon-outline"></i>
+                            <i class="mdi mdi-file-gif-box"></i>
+                            <i class="mdi mdi-paperclip"></i>
+                            <i class="mdi mdi-code-braces"></i>
+                            <i class="mdi mdi-send send"></i>
+                        </div>
+                    </div>
+
+                    <!-- Members -->
+                    <div class="mockup-members">
+                        <div class="mockup-search">
+                            Search members
+                            <i class="mdi mdi-magnify"></i>
+                        </div>
+                        <div class="mockup-members-content">
+                            <div class="mockup-online-label">Online - 2</div>
+                            <div class="mockup-member">
+                                <span class="mockup-avatar a1 status">A</span> admin
+                            </div>
+                            <div class="mockup-member">
+                                <span class="mockup-avatar a2 status">M</span> member
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full-width bottom toolbar (mirrors the client's ToolBar) -->
+                <div class="mockup-toolbar">
+                    <div class="mockup-toolbar-user">
+                        <span class="mockup-avatar a1 xl status">A</span>
+                        <span class="mockup-user-meta">
+                            <span class="mockup-user-name">admin</span>
+                            <span class="mockup-user-status">Online <i class="mdi mdi-chevron-down"></i></span>
                         </span>
                     </div>
-                    <div class="mockup-body">
-                        <!-- Sidebar -->
-                        <div class="mockup-sidebar">
-                            <div class="mockup-server-header">
-                                <i class="mdi mdi-home mockup-home-ico"></i>
-                                <span class="mockup-server-name">Server</span>
-                                <i class="mdi mdi-dots-vertical mockup-menu-ico"></i>
-                            </div>
-                            <div class="mockup-sidebar-content">
-                                <div class="mockup-voice-card">
-                                    <div class="mockup-channel-row">
-                                        <i class="mdi mdi-microphone"></i>
-                                        <span class="mockup-channel-name">Chatting</span>
-                                        <span class="mockup-chan-tag">voice</span>
-                                        <i class="mdi mdi-phone-hangup mockup-hangup"></i>
-                                    </div>
-                                    <div class="mockup-voice-user speaking">
-                                        <span class="mockup-avatar a1">A</span> admin
-                                    </div>
-                                    <div class="mockup-voice-user">
-                                        <span class="mockup-avatar a2">M</span> member
-                                        <i class="mdi mdi-monitor-share mockup-stream-ico"></i>
-                                    </div>
-                                </div>
-                                <div class="mockup-text-card">
-                                    <i class="mdi mdi-pound"></i>
-                                    <span class="mockup-channel-name">General Text</span>
-                                    <span class="mockup-chan-tag">text</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Chat -->
-                        <div class="mockup-chat">
-                            <div class="mockup-chat-header">
-                                <i class="mdi mdi-microphone"></i>
-                                <span class="mockup-channel-name">Chatting</span>
-                                <span class="mockup-chan-tag">voice</span>
-                                <i class="mdi mdi-format-list-bulleted mockup-members-toggle"></i>
-                            </div>
-
-                            <div class="mockup-messages">
-                                <div class="mockup-msg">
-                                    <span class="mockup-msg-avatar a2">M</span>
-                                    <div>
-                                        <div class="mockup-msg-author">member <span class="mockup-msg-time">26/06/2026 12:22</span></div>
-                                        <div class="mockup-msg-text">new build is up, voice latency is insane 🔥</div>
-                                        <div class="mockup-reactions">
-                                            <span class="mockup-reaction">❤️ 1</span>
-                                            <span class="mockup-reaction plus">+</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mockup-msg">
-                                    <span class="mockup-msg-avatar a1">A</span>
-                                    <div class="mockup-msg-grow">
-                                        <div class="mockup-msg-author">admin <span class="mockup-msg-time">26/06/2026 12:23</span> <span class="mockup-msg-edited">(Edited)</span></div>
-                                        <div class="mockup-code">
-                                            <div class="mockup-code-header">
-                                                <i class="mdi mdi-code-braces"></i>
-                                                <span class="mockup-code-lang">Java</span>
-                                                <span class="mockup-code-lines">4 lines</span>
-                                                <i class="mdi mdi-content-copy"></i>
-                                                <span class="mockup-code-more">Show more <i class="mdi mdi-chevron-down"></i></span>
-                                            </div>
-                                            <div class="mockup-code-body">
-                                                <code><span class="ln">1</span><span class="tok-kw">package</span> komm.voice;</code>
-                                                <code><span class="ln">2</span></code>
-                                                <code><span class="ln">3</span><span class="tok-kw">import</span> komm.api.<span class="tok-fn">Room</span>;</code>
-                                                <code><span class="ln">4</span>Room room = Komm.<span class="tok-fn">join</span>(<span class="tok-str">"General Voice"</span>);</code>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mockup-input">
-                                <span class="mockup-input-ph">Message #Chatting</span>
-                                <i class="mdi mdi-emoticon-outline"></i>
-                                <i class="mdi mdi-file-gif-box"></i>
-                                <i class="mdi mdi-paperclip"></i>
-                                <i class="mdi mdi-code-braces"></i>
-                                <i class="mdi mdi-send send"></i>
-                            </div>
-                        </div>
-
-                        <!-- Members -->
-                        <div class="mockup-members">
-                            <div class="mockup-search">
-                                Search members
-                                <i class="mdi mdi-magnify"></i>
-                            </div>
-                            <div class="mockup-members-content">
-                                <div class="mockup-online-label">Online - 2</div>
-                                <div class="mockup-member">
-                                    <span class="mockup-avatar a1 status">A</span> admin
-                                </div>
-                                <div class="mockup-member">
-                                    <span class="mockup-avatar a2 status">M</span> member
-                                </div>
-                            </div>
-                        </div>
+                    <div class="mockup-toolbar-island">
+                        <i class="mdi mdi-music dim"></i>
+                        <i class="mdi mdi-music-box-multiple-outline"></i>
+                        <span class="mockup-island-sep"></span>
+                        <span class="mockup-selector"><i class="mdi mdi-microphone"></i><i class="mdi mdi-chevron-up sm"></i></span>
+                        <span class="mockup-selector"><i class="mdi mdi-headphones"></i><i class="mdi mdi-chevron-up sm"></i></span>
+                        <span class="mockup-island-sep"></span>
+                        <i class="mdi mdi-monitor-share"></i>
+                        <i class="mdi mdi-video-outline dim"></i>
                     </div>
-
-                    <!-- Full-width bottom toolbar (mirrors the client's ToolBar) -->
-                    <div class="mockup-toolbar">
-                        <div class="mockup-toolbar-user">
-                            <span class="mockup-avatar a1 xl status">A</span>
-                            <span class="mockup-user-meta">
-                                <span class="mockup-user-name">admin</span>
-                                <span class="mockup-user-status">Online <i class="mdi mdi-chevron-down"></i></span>
-                            </span>
-                        </div>
-                        <div class="mockup-toolbar-island">
-                            <i class="mdi mdi-music dim"></i>
-                            <i class="mdi mdi-music-box-multiple-outline"></i>
-                            <span class="mockup-island-sep"></span>
-                            <span class="mockup-selector"><i class="mdi mdi-microphone"></i><i class="mdi mdi-chevron-up sm"></i></span>
-                            <span class="mockup-selector"><i class="mdi mdi-headphones"></i><i class="mdi mdi-chevron-up sm"></i></span>
-                            <span class="mockup-island-sep"></span>
-                            <i class="mdi mdi-monitor-share"></i>
-                            <i class="mdi mdi-video-outline dim"></i>
-                        </div>
-                        <div class="mockup-toolbar-right">
-                            <span class="mockup-signal">
-                                <span></span><span></span><span></span><span></span>
-                            </span>
-                            <span class="mockup-ping-label">1 ms</span>
-                            <i class="mdi mdi-cog"></i>
-                        </div>
+                    <div class="mockup-toolbar-right">
+                        <span class="mockup-signal">
+                            <span></span><span></span><span></span><span></span>
+                        </span>
+                        <span class="mockup-ping-label">1 ms</span>
+                        <i class="mdi mdi-cog"></i>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="hero-footer">
+            <span class="hero-badge">
+                <i class="mdi mdi-flask-outline"></i> Closed beta - invite key required
+                <a th:href="@{/#beta-access}">Request access</a>
+            </span>
+
+            <div class="hero-platforms" aria-label="Supported platforms">
+                <span class="platform-chip"><i class="mdi mdi-microsoft-windows"></i> Windows 10/11</span>
+                <span class="platform-chip"><i class="mdi mdi-linux"></i> Linux X11</span>
+                <span class="platform-chip"><i class="mdi mdi-linux"></i> Linux Wayland</span>
+            </div>
+        </div>
         </div>
     </section>
 
     <!-- --------------- TRUST STRIP --------------- -->
     <section class="trust-strip">
         <div class="container trust-strip-grid">
-            <div class="trust-item">
-                <i class="mdi mdi-lock-check"></i>
-                <span>Mutual certificate authentication</span>
-            </div>
-            <div class="trust-item">
-                <i class="mdi mdi-database-lock"></i>
-                <span>Your messages stay on your hardware</span>
-            </div>
-            <div class="trust-item">
-                <i class="mdi mdi-currency-usd-off"></i>
-                <span>Free - no ads, no tracking</span>
-            </div>
-            <div class="trust-item">
-                <i class="mdi mdi-github"></i>
-                <span>Source available on GitHub</span>
-            </div>
+            <div class="trust-item"><i class="mdi mdi-lock-check"></i><span>Mutual certificate authentication</span></div>
+            <div class="trust-item"><i class="mdi mdi-database-lock"></i><span>Your messages stay on your hardware</span></div>
+            <div class="trust-item"><i class="mdi mdi-currency-usd-off"></i><span>Free - no ads, no tracking</span></div>
+            <div class="trust-item"><i class="mdi mdi-github"></i><span>Source available on GitHub</span></div>
         </div>
     </section>
     </div>
@@ -331,52 +345,59 @@
             </div>
 
             <div class="features-grid">
-                <div class="feature-card">
+                <div class="feature-card feature-card-lg">
                     <div class="feature-icon"><i class="mdi mdi-microphone"></i></div>
                     <h3 class="feature-title">Crystal-clear voice</h3>
                     <p class="feature-description">
                         Low-latency WebRTC voice channels with noise suppression, echo cancellation,
                         automatic gain control and voice activity detection built in.
                     </p>
+
+                    <div class="voice-pipeline" aria-label="Audio processing pipeline">
+                        <span class="voice-pipeline-step">AEC3</span>
+                        <i class="mdi mdi-arrow-right voice-pipeline-arrow"></i>
+                        <span class="voice-pipeline-step">RNNoise</span>
+                        <i class="mdi mdi-arrow-right voice-pipeline-arrow"></i>
+                        <span class="voice-pipeline-step">AGC2</span>
+                        <i class="mdi mdi-arrow-right voice-pipeline-arrow"></i>
+                        <span class="voice-pipeline-step">Silero VAD</span>
+                    </div>
+                    <p class="voice-pipeline-note">
+                        Your mic runs this full chain before it ever reaches the network -
+                        RNNoise falls back to WebRTC-NS, and Silero VAD (ONNX Runtime) gates out
+                        keyboard clatter between words. Jitter-buffered on the way back in, so
+                        playback stays smooth even on spiky connections.
+                    </p>
                 </div>
 
-                <div class="feature-card">
+                <div class="feature-card feature-card-wide">
                     <div class="feature-icon"><i class="mdi mdi-monitor-share"></i></div>
                     <h3 class="feature-title">HD screen sharing</h3>
                     <p class="feature-description">
-                        Share your screen in high quality - multiple people can stream at once, viewers can
-                        pop streams out into separate windows, and live viewer counts keep everyone in sync.
+                        Multiple people can stream at once, viewers can pop streams out into separate windows,
+                        and live viewer counts keep everyone in sync.
                     </p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon"><i class="mdi mdi-message-text"></i></div>
                     <h3 class="feature-title">Rich text chat</h3>
-                    <p class="feature-description">
-                        Channels and direct messages with editing, emoji reactions, typing indicators,
-                        GIFs and file attachments - everything you expect, and fast.
-                    </p>
+                    <p class="feature-description">Editing, emoji reactions, typing indicators, GIFs and file attachments.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon"><i class="mdi mdi-code-tags"></i></div>
                     <h3 class="feature-title">Code snippets</h3>
-                    <p class="feature-description">
-                        Share code in dedicated snippet blocks with automatic language detection and
-                        syntax highlighting - perfect for dev communities.
-                    </p>
+                    <p class="feature-description">Dedicated blocks with language detection and syntax highlighting.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon"><i class="mdi mdi-bullhorn"></i></div>
                     <h3 class="feature-title">Soundboards</h3>
-                    <p class="feature-description">
-                        Server-wide soundboards plus your own personal one. Trigger sounds in voice
-                        channels with a click or a global hotkey.
-                    </p>
+                    <p class="feature-description">Server-wide plus your own personal board, triggered by hotkey.</p>
                 </div>
 
-                <div class="feature-card">
+                <div class="feature-card feature-card-wide">
                     <div class="feature-icon"><i class="mdi mdi-shield-account"></i></div>
                     <h3 class="feature-title">Roles &amp; permissions</h3>
                     <p class="feature-description">
@@ -387,29 +408,26 @@
 
                 <div class="feature-card">
                     <div class="feature-icon"><i class="mdi mdi-gavel"></i></div>
-                    <h3 class="feature-title">Powerful moderation</h3>
-                    <p class="feature-description">
-                        Kick, ban, mute, deafen and move members between voice channels. Moderation flows
-                        through your server - you're always in control.
-                    </p>
+                    <h3 class="feature-title">Moderation</h3>
+                    <p class="feature-description">Kick, ban, mute, deafen, move - moderation flows through your server.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon"><i class="mdi mdi-keyboard"></i></div>
                     <h3 class="feature-title">Global hotkeys</h3>
-                    <p class="feature-description">
-                        Push-to-talk, mute, deafen and soundboard triggers work system-wide, even while
-                        you're in a game or another app. Fully rebindable.
-                    </p>
+                    <p class="feature-description">Push-to-talk and soundboard triggers work system-wide, fully rebindable.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon"><i class="mdi mdi-chart-line"></i></div>
                     <h3 class="feature-title">Connection insight</h3>
-                    <p class="feature-description">
-                        Live ping graphs and packet-loss tracking for you and everyone in your channel -
-                        see exactly how the connection is doing at any moment.
-                    </p>
+                    <p class="feature-description">Live ping graphs and packet-loss tracking for your whole channel.</p>
+                </div>
+
+                <div class="feature-card feature-card-wide">
+                    <div class="feature-icon"><i class="mdi mdi-account-multiple-outline"></i></div>
+                    <h3 class="feature-title">Friends &amp; DMs</h3>
+                    <p class="feature-description">Friend requests, direct messages and pokes that follow your account, not any one server - delivered over the hub's WebSocket wherever you are.</p>
                 </div>
             </div>
         </div>
@@ -429,30 +447,30 @@
 
             <div class="platforms-grid">
                 <div class="platform-card">
-                    <div class="platform-icon"><i class="mdi mdi-microsoft-windows"></i></div>
+                    <div class="platform-card-head">
+                        <div class="platform-icon-box"><i class="mdi mdi-microsoft-windows"></i></div>
+                        <span class="platform-code">WIN 10/11</span>
+                    </div>
                     <h3 class="feature-title">Windows</h3>
-                    <p class="feature-description">
-                        Native support for Windows 10 and 11 with system audio capture,
-                        global hotkeys and light/dark system theme detection.
-                    </p>
+                    <p class="feature-description">Native system audio capture, global hotkeys and light/dark theme detection.</p>
                 </div>
 
                 <div class="platform-card">
-                    <div class="platform-icon"><i class="mdi mdi-linux"></i></div>
+                    <div class="platform-card-head">
+                        <div class="platform-icon-box"><i class="mdi mdi-linux"></i></div>
+                        <span class="platform-code">LINUX / X11</span>
+                    </div>
                     <h3 class="feature-title">Linux - X11</h3>
-                    <p class="feature-description">
-                        Full-featured on classic X11 sessions: voice, screen sharing,
-                        hotkeys and audio loopback all work out of the box.
-                    </p>
+                    <p class="feature-description">Full-featured on classic X11 sessions: voice, screen share and hotkeys out of the box.</p>
                 </div>
 
                 <div class="platform-card">
-                    <div class="platform-icon"><i class="mdi mdi-linux"></i><span class="platform-tag">Wayland</span></div>
+                    <div class="platform-card-head">
+                        <div class="platform-icon-box"><i class="mdi mdi-linux"></i></div>
+                        <span class="platform-code">LINUX / WAYLAND</span>
+                    </div>
                     <h3 class="feature-title">Linux - Wayland</h3>
-                    <p class="feature-description">
-                        First-class Wayland support with PipeWire audio routing and screen capture -
-                        no XWayland workarounds required.
-                    </p>
+                    <p class="feature-description">PipeWire audio routing and screen capture - no XWayland workarounds required.</p>
                 </div>
             </div>
         </div>
@@ -463,7 +481,7 @@
         <div class="container">
             <div class="section-header">
                 <span class="section-kicker">Self-Hosting</span>
-                <h2 class="heading-md">Three pieces. You choose how many to run.</h2>
+                <h2 class="heading-md">Three components. You choose how many to run.</h2>
                 <p class="text-lg">
                     Komm is built around a simple idea: your community's messages and voice traffic
                     belong on hardware you control.
@@ -472,7 +490,7 @@
 
             <div class="architecture-grid">
                 <div class="arch-card featured">
-                    <span class="arch-badge">The app</span>
+                    <span class="arch-index">COMPONENT 01 / THE APP</span>
                     <div class="arch-icon"><i class="mdi mdi-laptop"></i></div>
                     <h3 class="feature-title">Komm Client</h3>
                     <p class="feature-description">
@@ -483,7 +501,7 @@
                 </div>
 
                 <div class="arch-card featured">
-                    <span class="arch-badge">Your community</span>
+                    <span class="arch-index">COMPONENT 02 / YOUR COMMUNITY</span>
                     <div class="arch-icon"><i class="mdi mdi-server"></i></div>
                     <h3 class="feature-title">Komm Server</h3>
                     <p class="feature-description">
@@ -495,7 +513,7 @@
                 </div>
 
                 <div class="arch-card">
-                    <span class="arch-badge subtle">For tinkerers</span>
+                    <span class="arch-index" style="color:var(--fg-subtle);">COMPONENT 03 / FOR TINKERERS</span>
                     <div class="arch-icon"><i class="mdi mdi-hub"></i></div>
                     <h3 class="feature-title">Komm Hub</h3>
                     <p class="feature-description">
@@ -538,9 +556,13 @@
 
     <!-- --------------- SECURITY --------------- -->
     <section id="security" class="security section">
-        <div class="container security-content">
-            <div class="security-text">
+        <div class="container">
+            <div class="section-header">
                 <span class="section-kicker">Security</span>
+            </div>
+
+            <div class="security-content">
+                <div class="security-text">
                 <h2 class="heading-md">Engineered to be trustworthy</h2>
                 <p class="text-lg">
                     Security in Komm isn't a feature - it's the architecture. Every connection between
@@ -584,109 +606,141 @@
                         </div>
                     </li>
                 </ul>
-            </div>
+                </div>
 
-            <div class="security-visual" aria-hidden="true">
-                <div class="security-diagram">
-                    <div class="diagram-node client"><i class="mdi mdi-laptop"></i><span>Client</span></div>
-                    <div class="diagram-link l1"><span class="diagram-label"><i class="mdi mdi-lock"></i> TLS - 60s ticket</span></div>
-                    <div class="diagram-node server"><i class="mdi mdi-server"></i><span>Your Server</span></div>
-                    <div class="diagram-link l2"><span class="diagram-label"><i class="mdi mdi-certificate"></i> X.509 mTLS</span></div>
-                    <div class="diagram-node hub"><i class="mdi mdi-hub"></i><span>Hub - CA</span></div>
+                <div class="security-visual" aria-hidden="true">
+                    <div class="trust-chain">
+                        <div class="chain-node">
+                            <span class="chain-node-icon"><i class="mdi mdi-laptop"></i></span>
+                            <span class="chain-node-name">Client</span>
+                            <span class="chain-node-role">Desktop app</span>
+                        </div>
+                        <div class="chain-link">
+                            <span class="chain-link-label"><i class="mdi mdi-lock"></i> TLS</span>
+                        </div>
+                        <div class="chain-node featured">
+                            <span class="chain-node-icon"><i class="mdi mdi-server"></i></span>
+                            <span class="chain-node-name">Your Server</span>
+                            <span class="chain-node-role">Self-hosted hardware</span>
+                        </div>
+                        <div class="chain-link">
+                            <span class="chain-link-label"><i class="mdi mdi-certificate"></i> X.509 mTLS</span>
+                        </div>
+                        <div class="chain-node">
+                            <span class="chain-node-icon"><i class="mdi mdi-hub"></i></span>
+                            <span class="chain-node-name">Hub</span>
+                            <span class="chain-node-role">Certificate authority</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- --------------- BETA ACCESS --------------- -->
-    <section id="beta-access" class="section">
-        <div class="container-narrow">
-            <div class="section-header">
-                <span class="section-kicker">Closed Beta</span>
-                <h2 class="heading-md">Want in? Ask us.</h2>
-                <p class="text-lg">
-                    Komm is in its first public phase: everything is ready to use, but registration on the
-                    official hub requires an invite key while we grow the network carefully. Tell us who you
-                    are and we'll send a key to your inbox.
-                </p>
-            </div>
+    <!-- --------------- CLOSED BETA: A REQUEST CONSOLE, NOT A CONTACT FORM --------------- -->
+    <section id="beta-access" class="beta-gate-section section">
+        <div class="container">
+            <div class="beta-gate">
+                <div class="beta-gate-text">
+                    <span class="section-kicker">Closed Beta</span>
+                    <h2 class="heading-md">Access is invite-only</h2>
+                    <p class="text-lg">
+                        Everything here is ready to use - registration on the official hub just needs a
+                        single-use key while we grow the network carefully. Request one below.
+                    </p>
+                    <div class="beta-facts">
+                        <span><i class="mdi mdi-check-circle"></i> Free, no strings attached</span>
+                        <span><i class="mdi mdi-check-circle"></i> Key delivered by email</span>
+                        <span><i class="mdi mdi-check-circle"></i> One key, one account</span>
+                    </div>
+                </div>
 
-            <div style="max-width:560px; margin:0 auto; background:var(--bg-card); border:1px solid var(--border);
-                        border-radius:var(--radius-lg); padding:28px;">
-                <div style="margin-bottom:16px;">
-                    <label for="beta-email" style="display:block; font-size:13px; font-weight:600; margin-bottom:6px;">Your email</label>
-                    <input type="email" id="beta-email" placeholder="you@example.com" autocomplete="email"
-                           style="width:100%; padding:11px 14px; background:var(--bg-input); color:var(--fg);
-                                  border:1px solid var(--border-strong); border-radius:var(--radius-md); font-size:14px; font-family:inherit;">
+                <div class="beta-console">
+                    <div class="panel-head">
+                        <img th:src="@{/favicon.svg}" alt="" class="panel-head-icon">
+                        <span class="panel-head-title">request-access</span>
+                        <span class="panel-head-controls">
+                            <i class="mdi mdi-window-minimize"></i>
+                            <i class="mdi mdi-window-maximize"></i>
+                            <i class="mdi mdi-window-close"></i>
+                        </span>
+                    </div>
+                    <div class="beta-console-body">
+                        <div class="beta-console-field">
+                            <label for="beta-email"><span class="console-prompt">&gt;</span> email</label>
+                            <input type="email" id="beta-email" placeholder="you@example.com" autocomplete="email">
+                        </div>
+                        <div class="beta-console-field">
+                            <label for="beta-message"><span class="console-prompt">&gt;</span> message</label>
+                            <textarea id="beta-message" rows="3" maxlength="2000" required
+                                      placeholder="Who you are, what community you'd bring, how you found Komm..."></textarea>
+                        </div>
+                        <button id="beta-submit" class="btn btn-primary" style="width:100%;" onclick="requestBetaAccess()">
+                            <i class="mdi mdi-email-fast-outline"></i> Request a beta key
+                        </button>
+                        <p id="beta-feedback" style="display:none; margin-top:14px; font-size:14px; text-align:center;"></p>
+                        <p class="beta-console-note">
+                            Already have a key? <a th:href="@{/register}" style="color:var(--accent-bright);">Create your account</a>
+                        </p>
+                    </div>
                 </div>
-                <div style="margin-bottom:18px;">
-                    <label for="beta-message" style="display:block; font-size:13px; font-weight:600; margin-bottom:6px;">Anything you'd like to add <span style="color:var(--fg-subtle); font-weight:400;">(optional)</span></label>
-                    <textarea id="beta-message" rows="4" maxlength="2000"
-                              placeholder="Who you are, what community you'd bring, how you found Komm…"
-                              style="width:100%; padding:11px 14px; background:var(--bg-input); color:var(--fg);
-                                     border:1px solid var(--border-strong); border-radius:var(--radius-md); font-size:14px;
-                                     font-family:inherit; resize:vertical;"></textarea>
-                </div>
-                <button id="beta-submit" class="btn btn-primary btn-lg" style="width:100%;" onclick="requestBetaAccess()">
-                    <i class="mdi mdi-email-fast-outline"></i> Request a beta key
-                </button>
-                <p id="beta-feedback" style="display:none; margin-top:14px; font-size:14px; text-align:center;"></p>
-                <p style="margin-top:16px; font-size:12.5px; color:var(--fg-subtle); text-align:center;">
-                    Already have a key? <a th:href="@{/register}" style="color:var(--accent);">Create your account</a> -
-                    you'll enter it during registration, in the app or right here on the site.
-                </p>
             </div>
         </div>
     </section>
 
-    <!-- --------------- FAQ --------------- -->
+    <!-- --------------- FAQ: A TERMINAL LOG, NOT AN ACCORDION --------------- -->
     <section id="faq" class="faq section">
         <div class="container-narrow">
-            <div class="section-header">
+            <div class="section-header centered">
                 <span class="section-kicker">FAQ</span>
                 <h2 class="heading-md">Frequently asked questions</h2>
             </div>
 
-            <div class="faq-list">
-                <details class="faq-item" open>
-                    <summary>Is Komm really free?</summary>
-                    <p>Yes. The client, the launcher, the self-hosted server and the hub are all free to
-                       download and use. There are no ads, no tracking and no paid tiers.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>What does "closed beta" mean?</summary>
-                    <p>Everything you see is ready to use, but new accounts on the official hub currently
-                       require a single-use beta key. We're growing the network deliberately during this
-                       first phase. <a th:href="@{/#beta-access}" style="color:var(--accent);">Request a key</a> and we'll email you one -
-                       once you have it, registration takes a minute.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Which platforms are supported?</summary>
-                    <p>Komm runs on Windows 10/11 and on Linux - both X11 and Wayland sessions are fully
-                       supported, including PipeWire audio and screen capture on Wayland.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Do I have to host my own server?</summary>
-                    <p>No. You can simply download the client, create an account and join communities through
-                       invite links. Hosting is for communities that want full ownership of their data - and
-                       the server launcher installs it as a system service with one installer on Windows or
-                       one script on Linux, so it takes minutes.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Can I run my own hub too?</summary>
-                    <p>Yes - but unlike the server, the hub isn't a one-click affair. It's aimed at developers:
-                       you'll need PostgreSQL, an SMTP account for verification emails and a few settings in a
-                       local properties file. The website you're reading right now ships with the hub as a
-                       showcase - if you run your own network, expect to fork it and make it yours. The
-                       <a th:href="${site.github.hub}" target="_blank" rel="noopener" style="color:var(--accent);">setup guide on GitHub</a>
-                       walks through all of it.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Does Komm update itself?</summary>
-                    <p>Yes. The Komm launcher checks for updates every time you start the app and keeps the
-                       client current automatically - install once and forget about it. It ships as a Windows
-                       installer and a Linux AppImage.</p>
-                </details>
+            <div class="faq-terminal">
+                <div class="panel-head">
+                    <img th:src="@{/favicon.svg}" alt="" class="panel-head-icon">
+                    <span class="panel-head-title">faq.log</span>
+                    <span class="panel-head-controls">
+                        <i class="mdi mdi-window-minimize"></i>
+                        <i class="mdi mdi-window-maximize"></i>
+                        <i class="mdi mdi-window-close"></i>
+                    </span>
+                </div>
+                <div class="faq-log">
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Is Komm really free?</p>
+                        <p class="faq-a">Yes. The client, the launcher, the self-hosted server and the hub are all free to
+                           download and use. There are no ads, no tracking and no paid tiers.</p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Which platforms are supported?</p>
+                        <p class="faq-a">Komm runs on Windows 10/11 and on Linux - both X11 and Wayland sessions are fully
+                           supported, including PipeWire audio and screen capture on Wayland.</p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Do I have to host my own server?</p>
+                        <p class="faq-a">No. You can simply download the client, create an account and join communities through
+                           invite links. Hosting is for communities that want full ownership of their data - and
+                           the server launcher installs it as a system service with one installer on Windows or
+                           one script on Linux, so it takes minutes.</p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Can I run my own hub too?</p>
+                        <p class="faq-a">Yes - but unlike the server, the hub isn't a one-click affair. It's aimed at developers:
+                           you'll need PostgreSQL, an SMTP account for verification emails and a few settings in a
+                           local properties file. The website you're reading right now ships with the hub as a
+                           showcase - if you run your own network, expect to fork it and make it yours. The
+                           <a th:href="${site.github.hub}" target="_blank" rel="noopener" style="color:var(--accent-bright);">setup guide on GitHub</a>
+                           walks through all of it.</p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Does Komm update itself?</p>
+                        <p class="faq-a">Yes. The Komm launcher checks for updates every time you start the app and keeps the
+                           client current automatically - install once and forget about it. It ships as a Windows
+                           installer and a Linux AppImage.</p>
+                    </div>
+                    <p class="faq-cursor"><span class="console-prompt">$</span><span class="faq-blink">_</span></p>
+                </div>
             </div>
         </div>
     </section>
@@ -726,6 +780,10 @@
                 show('Please enter a valid email address.', false);
                 return;
             }
+            if (!message) {
+                show('Please enter a message.', false);
+                return;
+            }
 
             btn.disabled = true;
             try {
@@ -747,9 +805,8 @@
             }
         }
 
-        // Reveal sections as they scroll into view
         (function () {
-            const targets = document.querySelectorAll('.feature-card, .platform-card, .arch-card, .step, .faq-item');
+            const targets = document.querySelectorAll('.platform-card, .arch-card, .faq-entry, .features-grid, .steps-grid');
             if (!('IntersectionObserver' in window)) return;
             const observer = new IntersectionObserver(function (entries) {
                 entries.forEach(function (entry) {

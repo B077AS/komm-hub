@@ -100,9 +100,9 @@ public class EmailService {
             sb.append(String.format(
                     "<td style=\"padding:0 5px;\">" +
                             "<span style=\"display:inline-block;width:52px;height:64px;" +
-                            "background-color:#1c1c1e;border:2px solid #9580ff;border-radius:8px;" +
+                            "background-color:#0d0d0f;border:2px solid #7c5cff;" +
                             "text-align:center;line-height:64px;font-size:30px;font-weight:700;" +
-                            "color:#9580ff;font-family:monospace;\">%s</span></td>",
+                            "color:#9a86ff;font-family:'SF Mono',Consolas,monospace;\">%s</span></td>",
                     digit));
         }
         return sb.toString();

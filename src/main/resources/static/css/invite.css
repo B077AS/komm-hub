@@ -1,5 +1,5 @@
 .server-avatar { margin: 0 auto 12px; }
-.server-name { font-size: 20px; font-weight: 700; text-align: center; color: var(--fg); margin-bottom: 6px; }
+.server-name { font-family: var(--font-display); font-size: 20px; font-weight: 700; text-align: center; color: var(--fg); margin-bottom: 6px; }
 .server-meta { font-size: 13px; color: var(--fg-subtle); text-align: center; margin-bottom: 6px; }
 #loading-section { text-align: center; padding: 24px 0; color: var(--fg-subtle); }
 #already-member  { display: none; }
