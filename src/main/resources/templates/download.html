@@ -28,14 +28,13 @@
 <body>
 <main layout:fragment="content">
 
-    <!-- --------------- HERO + CLIENT DOWNLOAD --------------- -->
-    <section class="dl-hero" id="client">
-        <div class="container dl-hero-content">
-            <span class="dl-hero-index">01</span>
-            <div class="dl-hero-body">
-                <span class="hero-badge"><i class="mdi mdi-download"></i> Latest release, straight off GitHub</span>
+    <!-- --------------- CLIENT: THE ONE MOMENT THAT MATTERS --------------- -->
+    <section class="dl-main" id="client">
+        <div class="container">
+            <div class="dl-main-content">
+                <span class="dl-release-tag">Latest release &middot; straight off GitHub</span>
 
-                <h1 class="heading-lg">Grab the client</h1>
+                <h1 class="heading-xl">Download Komm</h1>
 
                 <p class="hero-description">
                     One app, both desktops. Voice channels that don't lag, screen sharing that doesn't
@@ -60,110 +59,104 @@
 
                 <div class="dl-meta">
                     <span><i class="mdi mdi-check-circle"></i> Auto-updates via the launcher</span>
-                    <span><i class="mdi mdi-check-circle"></i> Wayland &amp; X11 supported</span>
                     <span><i class="mdi mdi-check-circle"></i> Java runtime bundled in</span>
                 </div>
 
-                <div class="dl-note">
+                <p class="dl-beta-line">
                     <i class="mdi mdi-flask-outline"></i>
-                    <span>
-                        Komm is in <strong>closed beta</strong>: creating an account needs an invite key.
-                        <a th:href="@{/#beta-access}" class="dl-inline-link">Request access</a> and we'll email
-                        you one.
-                    </span>
-                </div>
+                    Komm is in closed beta - an invite key is required.
+                    <a th:href="@{/#beta-access}" class="dl-inline-link">Request access</a>
+                </p>
             </div>
         </div>
     </section>
 
-    <!-- --------------- SERVER DOWNLOAD --------------- -->
-    <section class="dl-hero" id="server">
-        <div class="container dl-hero-content">
-            <span class="dl-hero-index">02</span>
-            <div class="dl-hero-body">
-                <span class="hero-badge"><i class="mdi mdi-server"></i> For community owners</span>
-
-                <h2 class="heading-lg">Run your own server</h2>
-
-                <p class="hero-description">
-                    Channels, messages, voice rooms and permissions, all on hardware you control.
-                    Database and media server are embedded - the launcher installs the rest as a
-                    proper OS service, not a script you babysit.
+    <!-- --------------- SELF-HOSTING: SERVER + HUB, SIDE BY SIDE --------------- -->
+    <section class="dl-hosting section-compact" id="self-host">
+        <div class="container">
+            <div class="section-header centered">
+                <span class="section-kicker dl-hosting-kicker">Self-hosting</span>
+                <h2 class="heading-md">Host it yourself</h2>
+                <p class="text-lg">
+                    Two separate, optional pieces - host one, both, or neither. Most people never touch
+                    this section.
                 </p>
-
-                <div class="dl-steps">
-                    <div class="dl-step">
-                        <span class="dl-step-num">1</span>
-                        <span><a th:href="@{/register}" class="dl-inline-link">Create an account</a>, then create an installation right from the Komm client - name it and pick your ports.</span>
-                    </div>
-                    <div class="dl-step">
-                        <span class="dl-step-num">2</span>
-                        <span>Run the Windows installer, or unpack the Linux package and run <code>sudo ./install.sh</code>. The launcher registers the server as a Windows Service or systemd unit.</span>
-                    </div>
-                    <div class="dl-step">
-                        <span class="dl-step-num">3</span>
-                        <span>Hand it the one-time verification code from the installation's card in the client. It fetches its certificate, verifies with the hub and comes online - <code>kommserver update</code> keeps it current.</span>
-                    </div>
-                </div>
-
-                <div class="dl-buttons">
-                    <a th:href="${site.downloads.serverWindows}" class="btn btn-primary btn-lg" rel="noopener">
-                        <i class="mdi mdi-microsoft-windows"></i> Download for Windows
-                    </a>
-                    <a th:href="${site.downloads.serverLinux}" class="btn btn-primary btn-lg" rel="noopener">
-                        <i class="mdi mdi-linux"></i> Download for Linux <span style="opacity:.75; font-weight:400;">(tar.gz)</span>
-                    </a>
-                </div>
-
-                <div class="dl-note">
-                    <i class="mdi mdi-information-outline"></i>
-                    <span>
-                        Prefer to run things yourself? Grab the
-                        <a th:href="${site.downloads.server}" class="dl-inline-link" rel="noopener">plain server JAR</a>
-                        instead - it carries <strong>no verification code built in</strong>: drop your code into a
-                        <code>setup-token.txt</code> next to it and run it with Java 21. The launcher remains the
-                        recommended way - service install, crash recovery and automatic updates included.
-                    </span>
-                </div>
             </div>
-        </div>
-    </section>
 
-    <!-- --------------- HUB --------------- -->
-    <section class="dl-hero" id="hub">
-        <div class="container dl-hero-content">
-            <span class="dl-hero-index">03</span>
-            <div class="dl-hero-body">
-                <span class="hero-badge"><i class="mdi mdi-hub"></i> For the fully independent</span>
+            <div class="dl-hosting-grid">
+                <div class="dl-hosting-card" id="server">
+                    <div class="dl-hosting-icon"><i class="mdi mdi-server"></i></div>
+                    <h3>Komm Server</h3>
+                    <p>
+                        Channels, messages, voice rooms and permissions, all on hardware you control.
+                        Database and media server are embedded - the launcher installs the rest as a
+                        proper OS service, not a script you babysit.
+                    </p>
 
-                <h2 class="heading-lg">Or run the whole network</h2>
+                    <div class="dl-steps">
+                        <div class="dl-step">
+                            <span class="dl-step-num">1</span>
+                            <span><a th:href="@{/register}" class="dl-inline-link">Create an account</a>, then create an installation right from the Komm client - name it and pick your ports.</span>
+                        </div>
+                        <div class="dl-step">
+                            <span class="dl-step-num">2</span>
+                            <span>Run the Windows installer, or unpack the Linux package and run <code>sudo ./install.sh</code>. The launcher registers it as a Windows Service or systemd unit.</span>
+                        </div>
+                        <div class="dl-step">
+                            <span class="dl-step-num">3</span>
+                            <span>Hand it the one-time verification code from the installation's card. It fetches its certificate, verifies with the hub and comes online.</span>
+                        </div>
+                    </div>
 
-                <p class="hero-description">
-                    The hub manages accounts, friends and direct messages, and acts as the certificate
-                    authority every server registers with. Most people just use the official hub at
-                    kommvoice.com - this is for the ones who'd rather not.
-                </p>
+                    <div class="dl-buttons">
+                        <a th:href="${site.downloads.serverWindows}" class="btn btn-secondary" rel="noopener">
+                            <i class="mdi mdi-microsoft-windows"></i> Windows
+                        </a>
+                        <a th:href="${site.downloads.serverLinux}" class="btn btn-secondary" rel="noopener">
+                            <i class="mdi mdi-linux"></i> Linux <span style="opacity:.75; font-weight:400;">(tar.gz)</span>
+                        </a>
+                    </div>
 
-                <div class="dl-reqs">
-                    <span class="dl-req"><i class="mdi mdi-language-java"></i> Java 21+</span>
-                    <span class="dl-req"><i class="mdi mdi-database"></i> PostgreSQL</span>
-                    <span class="dl-req"><i class="mdi mdi-email-outline"></i> SMTP account</span>
-                    <span class="dl-req"><i class="mdi mdi-certificate"></i> Keys generated on first boot</span>
+                    <div class="dl-note">
+                        <i class="mdi mdi-information-outline"></i>
+                        <span>
+                            Prefer to run things yourself? Grab the
+                            <a th:href="${site.downloads.server}" class="dl-inline-link" rel="noopener">plain server JAR</a>
+                            instead - no verification code built in, drop your own into a <code>setup-token.txt</code>
+                            and run it with Java 21.
+                        </span>
+                    </div>
                 </div>
 
-                <div class="dl-buttons">
-                    <a th:href="${site.github.hub}" class="btn btn-primary btn-lg" target="_blank" rel="noopener">
-                        <i class="mdi mdi-github"></i> Source &amp; setup guide
-                    </a>
-                </div>
+                <div class="dl-hosting-card" id="hub">
+                    <div class="dl-hosting-icon"><i class="mdi mdi-hub"></i></div>
+                    <h3>Komm Hub</h3>
+                    <p>
+                        The directory that manages accounts, friends and direct messages, and acts as the
+                        certificate authority every server registers with. Most people just use the
+                        official hub at kommvoice.com - this is for the ones who'd rather not.
+                    </p>
 
-                <div class="dl-note">
-                    <i class="mdi mdi-wrench-outline"></i>
-                    <span>
-                        Fair warning: the hub is aimed at developers. It needs a database, mail credentials
-                        and a local properties file - and the bundled website is this site, meant to be
-                        forked and personalized rather than used as-is. The setup guide covers everything.
-                    </span>
+                    <div class="dl-reqs">
+                        <span class="dl-req"><i class="mdi mdi-language-java"></i> Java 21+</span>
+                        <span class="dl-req"><i class="mdi mdi-database"></i> PostgreSQL</span>
+                        <span class="dl-req"><i class="mdi mdi-email-outline"></i> SMTP account</span>
+                        <span class="dl-req"><i class="mdi mdi-certificate"></i> Keys generated on first boot</span>
+                    </div>
+
+                    <div class="dl-buttons">
+                        <a th:href="${site.github.hub}" class="btn btn-secondary" target="_blank" rel="noopener">
+                            <i class="mdi mdi-github"></i> Source &amp; setup guide
+                        </a>
+                    </div>
+
+                    <div class="dl-note">
+                        <i class="mdi mdi-wrench-outline"></i>
+                        <span>
+                            Fair warning: aimed at developers. The bundled website is this site, meant to
+                            be forked and personalized rather than used as-is - the setup guide covers everything.
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

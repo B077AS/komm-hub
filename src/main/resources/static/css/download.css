@@ -2,36 +2,115 @@
 /* DOWNLOAD                                                        */
 /* ============================================================ */
 
-.dl-hero {
-    padding: 72px 0;
-    position: relative;
+/* Three near-identical wide sections in a row, each a lone narrow text
+   column, read as monotonous and empty regardless of how that column is
+   split up. The actual fix is structural: one focused, centered download
+   moment for the 80% case (the client), then Server and Hub - which are
+   really one decision ("host it yourself or don't") - presented together
+   as a comparison, not as two more repeats of the same hero. */
+.dl-main { padding: 88px 0 64px; text-align: center; }
+
+.dl-main-content {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
 }
 
-.dl-hero + .dl-hero { border-top: 1px solid var(--border); }
+.dl-main .hero-platforms,
+.dl-main .dl-buttons { justify-content: center; }
 
-.dl-hero-content {
-    display: grid;
-    grid-template-columns: 34px minmax(0, 1fr);
-    gap: 32px;
-    max-width: 880px;
-}
-
-.dl-hero-index {
+/* A plain status readout instead of the bordered .hero-badge card used
+   elsewhere - a quiet line of text, not another boxed element stacked
+   above a heading that's about to introduce a whole page of boxes. */
+.dl-release-tag {
     font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--fg-subtle);
-    padding-top: 6px;
 }
 
-.dl-hero-body { display: flex; flex-direction: column; gap: 20px; }
+/* Two short facts, side by side rather than three stacked lines - the
+   third (Wayland & X11) just repeated the platform chips above it. */
+.dl-main .dl-meta { flex-direction: row; flex-wrap: wrap; justify-content: center; column-gap: 22px; }
+
+/* Beta note as a closing line under the checklist, not a separate
+   bordered card competing with it for attention. */
+.dl-beta-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--fg-muted);
+}
+
+.dl-beta-line i { color: var(--accent); font-size: 16px; }
+
+/* -- Self-hosting comparison -- */
+.dl-hosting { border-top: 1px solid var(--border); background: var(--bg-raised); }
+
+/* No leading dash on this kicker - it's centered on its own above the
+   grid, not leading into a line of text the dash would otherwise point into. */
+.dl-hosting-kicker::before { display: none; }
+
+.dl-hosting-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid var(--border-strong);
+}
+
+.dl-hosting-card {
+    background: var(--bg-card);
+    border-top: 2px solid var(--border-strong);
+    border-right: 1px solid var(--border-strong);
+    padding: 34px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dl-hosting-card:last-child { border-right: none; }
+
+.dl-hosting-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    font-size: 25px;
+    color: var(--accent-bright);
+}
+
+.dl-hosting-card h3 { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--fg); }
+.dl-hosting-card > p { font-size: 14px; line-height: 1.65; color: var(--fg-muted); }
+
+/* Pushes the buttons - and the note that follows them - down to the
+   card's bottom edge, so they line up across both cards regardless of
+   how long the steps/requirements content above happens to run. */
+.dl-hosting-card .dl-buttons { margin-top: auto; }
+
+@media (max-width: 860px) {
+    .dl-hosting-grid { grid-template-columns: 1fr; }
+    .dl-hosting-card { border-right: none; border-bottom: 1px solid var(--border-strong); }
+    .dl-hosting-card:last-child { border-bottom: none; }
+}
+
+@media (max-width: 640px) {
+    .dl-main { padding: 56px 0 48px; }
+}
 
 .dl-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
 
-.dl-meta { display: flex; gap: 20px; flex-wrap: wrap; }
+.dl-meta { display: flex; flex-direction: column; gap: 12px; }
 
-.dl-meta span { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; color: var(--fg-muted); }
-.dl-meta i { color: var(--success); font-size: 16px; }
+.dl-meta span { display: inline-flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 500; color: var(--fg-muted); }
+.dl-meta i { color: var(--success); font-size: 16px; flex-shrink: 0; }
 
 .dl-note {
     display: flex;
@@ -48,7 +127,8 @@
 
 .dl-note i { font-size: 18px; color: var(--accent-bright); flex-shrink: 0; margin-top: 2px; }
 
-.dl-hero code {
+.dl-main code,
+.dl-hosting-card code {
     font-family: var(--font-mono);
     font-size: 12px;
     color: var(--fg);
@@ -58,18 +138,20 @@
     white-space: nowrap;
 }
 
-.dl-steps { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--border); }
+.dl-steps { display: flex; flex-direction: column; gap: 0; }
 
 .dl-step {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
-    font-size: 13.5px;
+    gap: 12px;
+    font-size: 13px;
     line-height: 1.6;
     color: var(--fg-muted);
     padding: 14px 0;
     border-bottom: 1px solid var(--border);
 }
+
+.dl-step:last-child { border-bottom: none; padding-bottom: 0; }
 
 .dl-step-num {
     display: inline-flex;
@@ -87,31 +169,22 @@
     margin-top: 1px;
 }
 
-.dl-reqs { display: flex; gap: 10px; flex-wrap: wrap; }
+.dl-reqs { display: flex; flex-direction: column; gap: 12px; }
 
 .dl-req {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 7px;
-    padding: 7px 13px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    gap: 10px;
     font-size: 12.5px;
     font-weight: 500;
     color: var(--fg-muted);
     font-family: var(--font-mono);
 }
 
-.dl-req i { color: var(--accent); font-size: 15px; }
+.dl-req i { color: var(--accent); font-size: 16px; flex-shrink: 0; }
 
 .dl-inline-link { color: var(--accent-bright); font-weight: 600; text-decoration: none; }
 .dl-inline-link:hover { text-decoration: underline; }
-
-@media (max-width: 640px) {
-    .dl-hero { padding: 48px 0; }
-    .dl-hero-content { grid-template-columns: 1fr; gap: 12px; }
-    .dl-hero-index { display: none; }
-}
 
 /* ============================================================ */
 /* SOURCE / TRUST                                                  */
