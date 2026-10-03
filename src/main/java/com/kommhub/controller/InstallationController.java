@@ -15,9 +15,11 @@ import com.kommhub.repository.InstallationMemberRepository;
 import com.kommhub.repository.InstallationRepository;
 import com.kommhub.repository.ServerRepository;
 import com.kommhub.security.SecurityUtil;
+import com.kommhub.model.dto.summary.InstallationUptimeSummary;
 import com.kommhub.service.InstallationAccessTokenService;
 import com.kommhub.service.InstallationDeletionService;
 import com.kommhub.service.InstallationService;
+import com.kommhub.service.InstallationUptimeQueryService;
 import com.kommhub.service.ServerService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +48,7 @@ public class InstallationController {
     private final InstallationDeletionService installationDeletionService;
     private final InstallationAccessTokenService tokenService;
     private final ServerService serverService;
+    private final InstallationUptimeQueryService uptimeQueryService;
 
     @GetMapping("/list")
     public ResponseEntity<?> getUserInstallations() {
@@ -115,6 +118,30 @@ public class InstallationController {
                 .verificationCode(isOwner ? installation.getSetupToken() : null)
                 .build();
         return ResponseEntity.ok(detail);
+    }
+
+    @GetMapping("/{installationId}/uptime")
+    public ResponseEntity<?> getInstallationUptime(@PathVariable UUID installationId,
+                                                     @RequestParam(defaultValue = "90") int days) {
+        UUID userId = securityUtil.getCurrentUserId();
+        Installation installation = installationRepository.findById(installationId).orElse(null);
+        if (installation == null) {
+            return ErrorResponse.of(HttpStatus.NOT_FOUND, "Installation not found");
+        }
+        boolean isOwner = installation.getOwnerId().equals(userId);
+        boolean isMember = installationMemberRepository.existsByInstallationIdAndUserId(installationId, userId);
+        if (!isOwner && !isMember) {
+            return ErrorResponse.of(HttpStatus.FORBIDDEN, "Access denied");
+        }
+        try {
+            InstallationUptimeSummary summary = uptimeQueryService.getSummary(installationId, days);
+            return ResponseEntity.ok(summary);
+        } catch (NoSuchElementException e) {
+            return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            log.error("Failed to compute uptime summary for installation {}", installationId, e);
+            return ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to compute uptime summary");
+        }
     }
 
     @GetMapping("/{installationId}/servers")

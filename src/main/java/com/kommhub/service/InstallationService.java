@@ -1,6 +1,7 @@
 package com.kommhub.service;
 
 import com.kommhub.model.db.Installation;
+import com.kommhub.model.db.InstallationStatusEvent;
 import com.kommhub.model.dto.request.CreateInstallationRequest;
 import com.kommhub.model.dto.request.InstallationValidationRequest;
 import com.kommhub.model.dto.response.ErrorResponse;
@@ -40,6 +41,7 @@ public class InstallationService {
 
     private final InstallationRepository installationRepository;
     private final JwtUtil jwtUtil;
+    private final InstallationStatusEventService statusEventService;
 
     public ResponseEntity<?> createInstallation(CreateInstallationRequest request, UUID userId) {
         ResponseEntity<?> csrValidation = validateCsr(request, userId);
@@ -85,9 +87,12 @@ public class InstallationService {
         installation.setCertificateIssuedAt(LocalDateTime.now());
         installation.setIpAddress(resolveEffectiveIp(ipAddress));
         installation.setSetupToken(null);
+        Installation.InstallationStatus previousStatus = installation.getStatus();
         installation.setStatus(Installation.InstallationStatus.OFFLINE);
 
         installationRepository.save(installation);
+        statusEventService.recordTransition(installation.getInstallationId(), previousStatus,
+                Installation.InstallationStatus.OFFLINE, InstallationStatusEvent.Reason.VALIDATED);
 
         log.info("Installation verified and certificate issued: {} @ {}",
                 installation.getInstallationId(), ipAddress);
