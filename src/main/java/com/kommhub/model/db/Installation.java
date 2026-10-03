@@ -82,6 +82,14 @@ public class Installation {
     @Column(name = "tls_enabled")
     private Boolean tlsEnabled;
 
+    // Diagnostic info reported by the JAR on every WS connect, same mechanism as tlsEnabled -
+    // lets outages be correlated with a specific OS or komm-server release.
+    @Column(name = "os_info")
+    private String osInfo;
+
+    @Column(name = "server_version")
+    private String serverVersion;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

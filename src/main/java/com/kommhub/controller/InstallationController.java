@@ -116,6 +116,8 @@ public class InstallationController {
                 .status(installation.getStatus())
                 .ipAddress(installation.getIpAddress())
                 .verificationCode(isOwner ? installation.getSetupToken() : null)
+                .osInfo(installation.getOsInfo())
+                .serverVersion(installation.getServerVersion())
                 .build();
         return ResponseEntity.ok(detail);
     }
@@ -260,6 +262,8 @@ public class InstallationController {
                 .status(i.getStatus())
                 .ipAddress(i.getIpAddress())
                 .role(role)
+                .osInfo(i.getOsInfo())
+                .serverVersion(i.getServerVersion())
                 .build();
     }
 

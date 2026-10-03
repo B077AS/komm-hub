@@ -24,4 +24,6 @@ public class InstallationDetailSummary {
     private Installation.InstallationStatus status;
     private String ipAddress;
     private String verificationCode;
+    private String osInfo;
+    private String serverVersion;
 }

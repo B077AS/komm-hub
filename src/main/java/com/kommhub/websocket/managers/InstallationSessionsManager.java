@@ -73,12 +73,16 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
         installationSessions.put(installationId, session);
 
         Boolean tlsEnabled = (Boolean) session.getAttributes().get("tlsEnabled");
+        String osInfo = (String) session.getAttributes().get("osInfo");
+        String serverVersion = (String) session.getAttributes().get("serverVersion");
         installationRepository.findById(installationId).ifPresent(inst -> {
             Installation.InstallationStatus previousStatus = inst.getStatus();
             inst.setStatus(Installation.InstallationStatus.ONLINE);
             inst.setLastSeenAt(LocalDateTime.now());
             inst.setIpAddress(installationService.resolveEffectiveIp(ipAddress));
             inst.setTlsEnabled(Boolean.TRUE.equals(tlsEnabled));
+            if (osInfo != null && !osInfo.isBlank()) inst.setOsInfo(osInfo);
+            if (serverVersion != null && !serverVersion.isBlank()) inst.setServerVersion(serverVersion);
             installationRepository.save(inst);
             statusEventService.recordTransition(installationId, previousStatus,
                     Installation.InstallationStatus.ONLINE, InstallationStatusEvent.Reason.CONNECTED);

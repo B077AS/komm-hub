@@ -21,6 +21,8 @@ public class InstallationSummary {
     private Installation.InstallationStatus status;
     private String ipAddress;
     private InstallationRole role;
+    private String osInfo;
+    private String serverVersion;
 
     public enum InstallationRole {
         OWNER, MEMBER

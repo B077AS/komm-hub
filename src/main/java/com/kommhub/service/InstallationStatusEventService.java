@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 /**
@@ -36,6 +38,7 @@ public class InstallationStatusEventService {
                 .previousStatus(previousStatus)
                 .status(newStatus)
                 .reason(reason)
+                .occurredAt(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
         statusEventRepository.save(event);
         log.debug("Installation status event recorded: installationId={}, {} -> {} ({})",

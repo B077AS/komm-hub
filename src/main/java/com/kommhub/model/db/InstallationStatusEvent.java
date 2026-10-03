@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
@@ -46,7 +45,9 @@ public class InstallationStatusEvent {
     @Column(name = "reason", nullable = false)
     private Reason reason;
 
-    @CreationTimestamp
+    // Set explicitly in InstallationStatusEventService (LocalDateTime.now(ZoneOffset.UTC)), not via
+    // @CreationTimestamp - that defaults to the JVM's system timezone, which disagrees with the
+    // UTC day boundaries InstallationUptimeQueryService/RollupService use to window this table.
     @Column(name = "occurred_at", nullable = false, updatable = false)
     private LocalDateTime occurredAt;
 
