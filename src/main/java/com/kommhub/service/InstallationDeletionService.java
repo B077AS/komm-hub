@@ -2,6 +2,8 @@ package com.kommhub.service;
 
 import com.kommhub.model.db.Server;
 import com.kommhub.repository.InstallationRepository;
+import com.kommhub.repository.InstallationStatusEventRepository;
+import com.kommhub.repository.InstallationUptimeDailyRepository;
 import com.kommhub.repository.InviteLinkRepository;
 import com.kommhub.repository.ServerMemberRepository;
 import com.kommhub.repository.ServerRepository;
@@ -33,6 +35,8 @@ public class InstallationDeletionService {
     private final InviteLinkRepository inviteLinkRepository;
     private final InstallationSessionsManager installationSessionsManager;
     private final AppMessageSender appMessageSender;
+    private final InstallationStatusEventRepository installationStatusEventRepository;
+    private final InstallationUptimeDailyRepository installationUptimeDailyRepository;
 
     @Transactional
     public void deleteInstallation(UUID installationId, UUID requesterId) {
@@ -62,6 +66,8 @@ public class InstallationDeletionService {
         // Force-disconnect before deleting the row so afterConnectionClosed doesn't race with us
         installationSessionsManager.forceDisconnect(installationId);
 
+        installationStatusEventRepository.deleteByInstallationId(installationId);
+        installationUptimeDailyRepository.deleteByInstallationId(installationId);
         installationRepository.delete(installation);
 
         log.info("Installation deleted: installationId={}, requestedBy={}, serversRemoved={}, membersNotified={}",

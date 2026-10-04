@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kommhub.model.db.Installation;
+import com.kommhub.model.db.InstallationStatusEvent;
 import com.kommhub.repository.InstallationRepository;
 import com.kommhub.service.InstallationService;
+import com.kommhub.service.InstallationStatusEventService;
 import com.kommhub.websocket.interfaces.InstallationInboundMessageHandler;
 import com.kommhub.websocket.messages.WsAppMessage;
 import com.kommhub.websocket.messages.WsMessageType;
@@ -38,6 +40,7 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
     private final Gson gson;
     private final InstallationRepository installationRepository;
     private final InstallationService installationService;
+    private final InstallationStatusEventService statusEventService;
     private final ConfigurableApplicationContext applicationContext;
     private final InstallationMessageSender messageSender;
     private final List<InstallationInboundMessageHandler> inboundHandlerList;
@@ -70,12 +73,19 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
         installationSessions.put(installationId, session);
 
         Boolean tlsEnabled = (Boolean) session.getAttributes().get("tlsEnabled");
+        String osInfo = (String) session.getAttributes().get("osInfo");
+        String serverVersion = (String) session.getAttributes().get("serverVersion");
         installationRepository.findById(installationId).ifPresent(inst -> {
+            Installation.InstallationStatus previousStatus = inst.getStatus();
             inst.setStatus(Installation.InstallationStatus.ONLINE);
             inst.setLastSeenAt(LocalDateTime.now());
             inst.setIpAddress(installationService.resolveEffectiveIp(ipAddress));
             inst.setTlsEnabled(Boolean.TRUE.equals(tlsEnabled));
+            if (osInfo != null && !osInfo.isBlank()) inst.setOsInfo(osInfo);
+            if (serverVersion != null && !serverVersion.isBlank()) inst.setServerVersion(serverVersion);
             installationRepository.save(inst);
+            statusEventService.recordTransition(installationId, previousStatus,
+                    Installation.InstallationStatus.ONLINE, InstallationStatusEvent.Reason.CONNECTED);
         });
 
         messageSender.sendSyncRecap(session, installationId);
@@ -87,7 +97,8 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         installationSessions.entrySet().removeIf(entry -> {
             if (!entry.getValue().getId().equals(session.getId())) return false;
-            if (applicationContext.isActive()) markOffline(entry.getKey());
+            if (applicationContext.isActive())
+                markOffline(entry.getKey(), InstallationStatusEvent.Reason.WS_CLOSED);
             log.info("Server disconnected: installationId={}, closeStatus={}", entry.getKey(), status);
             return true;
         });
@@ -153,7 +164,7 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
 
     private void dropSession(UUID installationId, WebSocketSession session) {
         if (installationSessions.remove(installationId, session)) {
-            markOffline(installationId);
+            markOffline(installationId, InstallationStatusEvent.Reason.HEARTBEAT_TIMEOUT);
         }
         closeQuietly(session, CloseStatus.GOING_AWAY);
     }
@@ -161,7 +172,7 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
     @PreDestroy
     public void onShutdown() {
         log.info("Shutdown detected - marking {} connected installation(s) as OFFLINE", installationSessions.size());
-        installationSessions.keySet().forEach(this::markOffline);
+        installationSessions.keySet().forEach(id -> markOffline(id, InstallationStatusEvent.Reason.HUB_SHUTDOWN));
         installationSessions.clear();
     }
 
@@ -198,11 +209,14 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
         if (session != null) closeQuietly(session, CloseStatus.GOING_AWAY);
     }
 
-    private void markOffline(UUID installationId) {
+    private void markOffline(UUID installationId, InstallationStatusEvent.Reason reason) {
         installationRepository.findById(installationId).ifPresent(inst -> {
+            Installation.InstallationStatus previousStatus = inst.getStatus();
             inst.setStatus(Installation.InstallationStatus.OFFLINE);
             inst.setLastSeenAt(LocalDateTime.now());
             installationRepository.save(inst);
+            statusEventService.recordTransition(installationId, previousStatus,
+                    Installation.InstallationStatus.OFFLINE, reason);
         });
     }
 
