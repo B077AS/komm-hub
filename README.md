@@ -25,7 +25,7 @@ The platform has three pieces - you choose how many to run:
 
 | Piece | Role | Who runs it |
 |---|---|---|
-| [komm](https://github.com/B077AS/komm) (+ [komm-launcher](https://github.com/B077AS/komm-launcher)) | Desktop client for Windows & Linux, kept up to date by the launcher | Everyone |
+| [komm](https://github.com/B077AS/komm) | Desktop client for Windows & Linux, plus the launcher that installs and updates it (same repo) | Everyone |
 | [komm-server](https://github.com/B077AS/komm-server) | A community's own server: channels, messages, voice rooms, permissions. One JAR, embedded database | Community owners |
 | **komm-hub** (this repo) | The network's directory: accounts, friends, DMs, and the CA that vouches for servers | Almost nobody - see below |
 
@@ -95,7 +95,7 @@ The hub's EC P-384 key pair (generated in `keys/` on first boot) is both its JWT
 
 ## Client & launcher updates
 
-The hub is **not** involved in these anymore. The [komm](https://github.com/B077AS/komm) client and [komm-launcher](https://github.com/B077AS/komm-launcher) launcher each check GitHub's `releases/latest` API directly on every start and verify their download against the SHA-256 digest GitHub itself reports for that release asset - no hub polling, mirroring, or endpoint needed. See either repo's README for the mechanics.
+The hub is **not** involved in these. The client and its launcher both live in the [komm](https://github.com/B077AS/komm) repo and are installed and updated with [jpack](https://github.com/B077AS/jpack): on every start the launcher checks that repo's latest GitHub release, downloads only the parts that changed and verifies them by SHA-256 - no hub polling, mirroring, or endpoint needed. See the komm README for the mechanics.
 
 ## Tech stack
 
@@ -179,8 +179,7 @@ The hub applies token-bucket rate limits (Bucket4j, backed by an in-memory Caffe
 
 | Repo | What it is |
 |---|---|
-| [komm](https://github.com/B077AS/komm) | Desktop client (JavaFX, Windows & Linux) |
-| [komm-launcher](https://github.com/B077AS/komm-launcher) | Auto-updating launcher - Windows installer & Linux AppImage |
+| [komm](https://github.com/B077AS/komm) | Desktop client (JavaFX, Windows & Linux) and its auto-updating launcher - Windows installer & Linux AppImage |
 | [komm-server](https://github.com/B077AS/komm-server) | Self-hosted community server (single JAR, embedded database) |
 | komm-hub | This repo - accounts, DMs, server directory, CA, website |
 
