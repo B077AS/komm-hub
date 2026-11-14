@@ -25,7 +25,6 @@ public class SiteProperties {
         private String client;
         private String server;
         private String hub;
-        private String launcher;
         private String serverLauncher;
     }
 
