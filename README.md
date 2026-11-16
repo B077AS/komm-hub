@@ -26,7 +26,7 @@ The platform has three pieces - you choose how many to run:
 | Piece | Role | Who runs it |
 |---|---|---|
 | [komm](https://github.com/B077AS/komm) | Desktop client for Windows & Linux, plus the launcher that installs and updates it (same repo) | Everyone |
-| [komm-server](https://github.com/B077AS/komm-server) | A community's own server: channels, messages, voice rooms, permissions. One JAR, embedded database | Community owners |
+| [komm-server](https://github.com/B077AS/komm-server) | A community's own server: channels, messages, voice rooms, permissions. Embedded database; installed as an OS service and updated with its `kommserver` command (same repo) | Community owners |
 | **komm-hub** (this repo) | The network's directory: accounts, friends, DMs, and the CA that vouches for servers | Almost nobody - see below |
 
 > **You probably don't need to run this.** Most people just use the official hub at [kommvoice.com](https://kommvoice.com) - download the client, create an account, join or host community servers. Running your own hub means running a **fully independent Komm network** with its own accounts. It's aimed at developers and tinkerers.
@@ -69,7 +69,7 @@ What the hub deliberately does **not** do: channel messaging, voice, files and p
 **Server (installation) lifecycle:**
 
 1. A user creates an installation from the [Komm client](https://github.com/B077AS/komm) - the hub validates a CSR (P-384 EC key) generated there and issues a single-use setup token, shown back in the client as a verification code.
-2. The user gets the generic server JAR running (bare `java -jar`, or as a service via [komm-server-launcher](https://github.com/B077AS/komm-server-launcher)) and supplies that verification code to it.
+2. The user installs komm-server (the Windows installer or the Linux tarball from the [komm-server](https://github.com/B077AS/komm-server) releases, which register it as an OS service) and supplies that verification code to it.
 3. On first start, the JAR presents its CSR and setup token; the hub acts as a certificate authority (BouncyCastle), signs the certificate and marks the installation verified. The certificate doubles as the server's **TLS identity** - from its next start the installation serves HTTPS/WSS with it.
 4. The installation connects back over WebSocket (`/ws/installations`) and goes **online**, reporting whether it serves TLS - clients pick `wss://` or legacy `ws://` accordingly.
 
@@ -93,9 +93,14 @@ Security isn't a feature bolted on - it's the architecture:
 
 The hub's EC P-384 key pair (generated in `keys/` on first boot) is both its JWT signing key and its CA identity - **every certificate in your network chains to it**.
 
-## Client & launcher updates
+## Client & server updates
 
-The hub is **not** involved in these. The client and its launcher both live in the [komm](https://github.com/B077AS/komm) repo and are installed and updated with [jpack](https://github.com/B077AS/jpack): on every start the launcher checks that repo's latest GitHub release, downloads only the parts that changed and verifies them by SHA-256 - no hub polling, mirroring, or endpoint needed. See the komm README for the mechanics.
+The hub is **not** involved in these. Both are installed and updated with [jpack](https://github.com/B077AS/jpack), straight from their own repo's latest GitHub release: only the parts that changed are downloaded and each is verified by SHA-256 - no hub polling, mirroring, or endpoint needed.
+
+- **Client:** the client and its launcher live in the [komm](https://github.com/B077AS/komm) repo; the launcher updates on every start.
+- **Server:** the server and its `kommserver` command live in the [komm-server](https://github.com/B077AS/komm-server) repo; the owner runs `kommserver update`.
+
+See those READMEs for the mechanics.
 
 ## Tech stack
 
@@ -180,7 +185,7 @@ The hub applies token-bucket rate limits (Bucket4j, backed by an in-memory Caffe
 | Repo | What it is |
 |---|---|
 | [komm](https://github.com/B077AS/komm) | Desktop client (JavaFX, Windows & Linux) and its auto-updating launcher - Windows installer & Linux AppImage |
-| [komm-server](https://github.com/B077AS/komm-server) | Self-hosted community server (single JAR, embedded database) |
+| [komm-server](https://github.com/B077AS/komm-server) | Self-hosted community server (embedded database) and its `kommserver` command - Windows installer & Linux tarball |
 | komm-hub | This repo - accounts, DMs, server directory, CA, website |
 
 ## FAQ

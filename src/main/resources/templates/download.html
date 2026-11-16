@@ -89,9 +89,13 @@
                     <h3>Komm Server</h3>
                     <p>
                         Channels, messages, voice rooms and permissions, all on hardware you control.
-                        Database and media server are embedded - the launcher installs the rest as a
-                        proper OS service, not a script you babysit.
+                        Database and media server are embedded - the installer sets it up as a proper
+                        OS service, not a script you babysit, and <code>kommserver update</code> keeps it current.
                     </p>
+
+                    <div class="dl-reqs">
+                        <span class="dl-req"><i class="mdi mdi-language-java"></i> Java 21+ installed</span>
+                    </div>
 
                     <div class="dl-steps">
                         <div class="dl-step">
@@ -100,7 +104,7 @@
                         </div>
                         <div class="dl-step">
                             <span class="dl-step-num">2</span>
-                            <span>Run the Windows installer, or unpack the Linux package and run <code>sudo ./install.sh</code>. The launcher registers it as a Windows Service or systemd unit.</span>
+                            <span>Run the Windows installer, or unpack the Linux package and run <code>sudo ./install.sh</code>. It installs everything into one folder and registers a Windows Service or systemd unit.</span>
                         </div>
                         <div class="dl-step">
                             <span class="dl-step-num">3</span>
@@ -122,8 +126,8 @@
                         <span>
                             Prefer to run things yourself? Grab the
                             <a th:href="${site.downloads.server}" class="dl-inline-link" rel="noopener">plain server JAR</a>
-                            instead - no verification code built in, drop your own into a <code>setup-token.txt</code>
-                            and run it with Java 21.
+                            instead: put your verification code into <code>data/setup-token.txt</code> in the folder
+                            you run it from, and start it with Java 21. It does not update itself.
                         </span>
                     </div>
                 </div>
@@ -175,8 +179,6 @@
                 <a th:href="${site.github.client}" target="_blank" rel="noopener" class="dl-inline-link">komm (client)</a>
                 <span class="dl-source-sep">/</span>
                 <a th:href="${site.github.server}" target="_blank" rel="noopener" class="dl-inline-link">komm-server</a>
-                <span class="dl-source-sep">/</span>
-                <a th:href="${site.github.serverLauncher}" target="_blank" rel="noopener" class="dl-inline-link">komm-server-launcher</a>
                 <span class="dl-source-sep">/</span>
                 <a th:href="${site.github.hub}" target="_blank" rel="noopener" class="dl-inline-link">komm-hub</a>
             </div>
