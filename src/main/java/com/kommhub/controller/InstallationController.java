@@ -109,7 +109,6 @@ public class InstallationController {
                 .installationId(installation.getInstallationId())
                 .installationName(installation.getInstallationName())
                 .installationPort(installation.getPort() != null ? installation.getPort() : 0)
-                .signalPort(installation.getSignalPort() != null ? installation.getSignalPort() : 0)
                 .tcpPort(installation.getTcpPort() != null ? installation.getTcpPort() : 0)
                 .mediaPort(installation.getMediaPort() != null ? installation.getMediaPort() : 0)
                 .hostedServersCount((int) serverRepository.countByInstallationId(installationId))

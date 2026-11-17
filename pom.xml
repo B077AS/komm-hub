@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.1</version>
+		<version>4.1.2</version>
 	</parent>
 
 	<groupId>com.komm-hub</groupId>
@@ -61,7 +61,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.7.11</version>
+			<version>42.7.14</version>
 		</dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 		<dependency>
@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk18on</artifactId>
-            <version>1.86</version>
+            <version>1.87</version>
         </dependency>
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>

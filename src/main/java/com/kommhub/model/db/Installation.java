@@ -41,9 +41,6 @@ public class Installation {
     @Column(name = "port")
     private Integer port;
 
-    @Column(name = "signal_port")
-    private Integer signalPort;
-
     @Column(name = "tcp_port")
     private Integer tcpPort;
 

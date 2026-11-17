@@ -17,7 +17,6 @@ public class InstallationDetailSummary {
     private UUID installationId;
     private String installationName;
     private int installationPort;
-    private int signalPort;
     private int tcpPort;
     private int mediaPort;
     private int hostedServersCount;

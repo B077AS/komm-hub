@@ -55,7 +55,6 @@ public class InstallationService {
                 .installationName(request.getInstallationName())
                 .ownerId(userId)
                 .port(request.getInstallationPort())
-                .signalPort(request.getSignalPort())
                 .tcpPort(request.getTcpPort())
                 .mediaPort(request.getMediaPort())
                 .status(Installation.InstallationStatus.NOT_VERIFIED)
@@ -104,7 +103,6 @@ public class InstallationService {
                 .installationName(installation.getInstallationName())
                 .ownerId(installation.getOwnerId())
                 .port(installation.getPort())
-                .signalPort(installation.getSignalPort())
                 .tcpPort(installation.getTcpPort())
                 .mediaPort(installation.getMediaPort())
                 .build();
