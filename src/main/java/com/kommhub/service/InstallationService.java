@@ -47,6 +47,15 @@ public class InstallationService {
         ResponseEntity<?> csrValidation = validateCsr(request, userId);
         if (csrValidation != null) return csrValidation;
 
+        String publicAddress = null;
+        if (request.getPublicAddress() != null && !request.getPublicAddress().isBlank()) {
+            publicAddress = PublicAddressValidator.validate(request.getPublicAddress());
+            if (publicAddress == null) {
+                return ErrorResponse.of(HttpStatus.BAD_REQUEST,
+                        "Public address must be a host name like example.com (no http://, port or path)");
+            }
+        }
+
         String setupToken = generateSetupToken();
 
         log.debug("Setup Token: {}", setupToken);
@@ -54,6 +63,7 @@ public class InstallationService {
         Installation installation = Installation.builder()
                 .installationName(request.getInstallationName())
                 .ownerId(userId)
+                .publicAddress(publicAddress)
                 .port(request.getInstallationPort())
                 .tcpPort(request.getTcpPort())
                 .mediaPort(request.getMediaPort())
@@ -84,7 +94,7 @@ public class InstallationService {
         installation.setCsr(req.getCsr());
         installation.setCertificate(signedCertPem);
         installation.setCertificateIssuedAt(LocalDateTime.now());
-        installation.setIpAddress(resolveEffectiveIp(ipAddress));
+        installation.setIpAddress(effectiveAddress(installation, ipAddress));
         installation.setSetupToken(null);
         Installation.InstallationStatus previousStatus = installation.getStatus();
         installation.setStatus(Installation.InstallationStatus.OFFLINE);
@@ -159,6 +169,17 @@ public class InstallationService {
     private String extractRdn(X500Name name, ASN1ObjectIdentifier oid) {
         RDN[] rdns = name.getRDNs(oid);
         return rdns.length == 0 ? null : IETFUtils.valueToString(rdns[0].getFirst().getValue());
+    }
+
+    /**
+     * What players should connect to: the owner's chosen public address if there is one,
+     * otherwise the IP the hub detected for the installation.
+     */
+    public String effectiveAddress(Installation installation, String detectedIp) {
+        String publicAddress = installation.getPublicAddress();
+        return publicAddress != null && !publicAddress.isBlank()
+                ? publicAddress
+                : resolveEffectiveIp(detectedIp);
     }
 
     public String resolveEffectiveIp(String ipAddress) {

@@ -114,6 +114,7 @@ public class InstallationController {
                 .hostedServersCount((int) serverRepository.countByInstallationId(installationId))
                 .status(installation.getStatus())
                 .ipAddress(installation.getIpAddress())
+                .publicAddress(installation.getPublicAddress())
                 .verificationCode(isOwner ? installation.getSetupToken() : null)
                 .osInfo(installation.getOsInfo())
                 .serverVersion(installation.getServerVersion())

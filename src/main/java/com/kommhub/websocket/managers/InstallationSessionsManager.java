@@ -79,7 +79,7 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
             Installation.InstallationStatus previousStatus = inst.getStatus();
             inst.setStatus(Installation.InstallationStatus.ONLINE);
             inst.setLastSeenAt(LocalDateTime.now());
-            inst.setIpAddress(installationService.resolveEffectiveIp(ipAddress));
+            inst.setIpAddress(installationService.effectiveAddress(inst, ipAddress));
             inst.setTlsEnabled(Boolean.TRUE.equals(tlsEnabled));
             if (osInfo != null && !osInfo.isBlank()) inst.setOsInfo(osInfo);
             if (serverVersion != null && !serverVersion.isBlank()) inst.setServerVersion(serverVersion);

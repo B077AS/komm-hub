@@ -38,6 +38,9 @@ public class Installation {
     @Column(name = "ip_address")
     private String ipAddress;
 
+    @Column(name = "public_address")
+    private String publicAddress;
+
     @Column(name = "port")
     private Integer port;
 
