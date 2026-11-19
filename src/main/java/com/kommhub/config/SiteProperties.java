@@ -19,6 +19,26 @@ public class SiteProperties {
 
     private Github github = new Github();
     private Downloads downloads = new Downloads();
+    private Legal legal = new Legal();
+
+    /**
+     * Who runs this hub, shown on the Privacy Policy and Terms pages. Set both in
+     * application-local.properties before going public; a hub that forks the site must put
+     * its own operator here.
+     */
+    @Data
+    public static class Legal {
+        /**
+         * Whether the Privacy Policy (/privacy) and Terms of Service (/terms) pages are served.
+         * When false, both URLs redirect to the home page and every link to them (footer,
+         * register page) is hidden. Off by default; komm.site.legal.pages-enabled=true turns them on.
+         */
+        private boolean pagesEnabled = false;
+        /** Person or organisation responsible for the hub (the data controller). */
+        private String operatorName;
+        /** Where users send privacy requests and legal notices. */
+        private String contactEmail;
+    }
 
     @Data
     public static class Github {

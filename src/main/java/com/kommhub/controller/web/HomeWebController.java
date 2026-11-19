@@ -46,4 +46,24 @@ public class HomeWebController {
         model.addAttribute("canonicalPath", "/download");
         return "download";
     }
+
+    // Privacy Policy and Terms of Service: only served when komm.site.legal.pages-enabled=true,
+    // otherwise they redirect home (same as any other unknown route).
+    @GetMapping("/privacy")
+    public String privacyPage(Model model) {
+        if (!siteProperties.getLegal().isPagesEnabled()) {
+            return "redirect:/";
+        }
+        model.addAttribute("canonicalPath", "/privacy");
+        return "privacy";
+    }
+
+    @GetMapping("/terms")
+    public String termsPage(Model model) {
+        if (!siteProperties.getLegal().isPagesEnabled()) {
+            return "redirect:/";
+        }
+        model.addAttribute("canonicalPath", "/terms");
+        return "terms";
+    }
 }

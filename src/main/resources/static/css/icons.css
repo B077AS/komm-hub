@@ -41,6 +41,10 @@
   content: "\F00E6";
 }
 
+.mdi-calendar::before {
+  content: "\F00ED";
+}
+
 .mdi-certificate::before {
   content: "\F0124";
 }
@@ -185,16 +189,16 @@
   content: "\F033D";
 }
 
-.mdi-lock::before {
-  content: "\F033E";
-}
-
 .mdi-lock-check::before {
   content: "\F139A";
 }
 
 .mdi-lock-check-outline::before {
   content: "\F16A8";
+}
+
+.mdi-lock-open-variant-outline::before {
+  content: "\F0FC7";
 }
 
 .mdi-lock-outline::before {
@@ -275,6 +279,10 @@
 
 .mdi-shield-account::before {
   content: "\F088F";
+}
+
+.mdi-shield-lock::before {
+  content: "\F099D";
 }
 
 .mdi-timer-lock::before {

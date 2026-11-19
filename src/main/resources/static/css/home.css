@@ -843,79 +843,156 @@
 .security-list strong { display: block; font-family: var(--font-display); font-size: 15px; color: var(--fg); margin-bottom: 3px; }
 .security-list span { font-size: 13.5px; line-height: 1.6; color: var(--fg-muted); }
 
-/* -- Trust chain: the client/server/hub cubes stacked one over the other,
-      joined by a vertical line with the protocol label sitting on it. -- */
-.trust-chain {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* -- Security diagrams: two tall, vertical cards. "Who vouches for whom" shows the hub ->
+      server -> client trust chain; "Inside a call" shows the call path with a green
+      end-to-end bracket running past the server. -- */
+.security-visual { display: flex; flex-direction: column; gap: 28px; }
+
+.sv-card {
+    padding: 22px 24px 30px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
 }
 
-.chain-node {
+.sv-card--e2ee { border-top-color: var(--success); }
+
+.sv-title {
+    margin-bottom: 24px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-subtle);
+}
+
+.sv-chain { display: flex; flex-direction: column; align-items: center; }
+
+.sv-node {
     width: 100%;
-    max-width: 280px;
+    max-width: 300px;
+    height: 84px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
-    gap: 10px;
-    padding: 26px 20px;
-    background: var(--bg-card);
+    gap: 16px;
+    padding: 0 18px;
+    background: var(--bg-raised);
     border: 1px solid var(--border);
     border-top: 2px solid var(--border-strong);
 }
 
-.chain-node.featured {
+.sv-node.featured {
     border-top-color: var(--accent);
-    background: linear-gradient(180deg, var(--accent-glow), var(--bg-card) 65%);
+    background: linear-gradient(180deg, var(--accent-glow), var(--bg-raised) 75%);
 }
 
-.chain-node-icon {
-    width: 56px;
-    height: 56px;
+.sv-node > i {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-raised);
+    background: var(--bg-card);
     border: 1px solid var(--border-strong);
-    font-size: 28px;
+    font-size: 24px;
     color: var(--accent-bright);
 }
 
-.chain-node.featured .chain-node-icon { border-color: var(--accent-dim); }
+.sv-node strong { display: block; font-family: var(--font-display); font-size: 17px; line-height: 1.2; color: var(--fg); }
+.sv-node span { display: block; margin-top: 3px; font-family: var(--font-mono); font-size: 11px; color: var(--fg-subtle); }
 
-.chain-node-name { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--fg); }
-.chain-node-role { font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-subtle); }
-
-.chain-link {
+/* the line between two boxes, with its protocol label on it */
+.sv-link {
     position: relative;
-    width: 2px;
-    height: 64px;
-    background: var(--border-strong);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 0;
+    height: 84px;
+    border-left: 2px solid var(--border-strong);
 }
 
-.chain-link-label {
+.sv-link.dashed { border-left: 2px dashed var(--accent); }
+
+.sv-link .sv-chip {
     position: absolute;
-    left: 50%;
     top: 50%;
+    left: -1px;
     transform: translate(-50%, -50%);
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-    padding: 6px 10px;
-    background: var(--bg);
+    padding: 4px 10px;
+    background: var(--bg-card);
     border: 1px solid var(--border-strong);
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 600;
     color: var(--fg-muted);
+    white-space: nowrap;
 }
 
-.chain-link-label i { color: var(--success); font-size: 12px; }
+.sv-link.dashed .sv-chip { color: var(--accent-bright); border-color: var(--accent-dim); }
+
+.sv-link small {
+    position: absolute;
+    top: 50%;
+    left: 56px;
+    width: 190px;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.5;
+    color: var(--fg-subtle);
+}
+
+/* the call: boxes centred, green bracket down the left running from You to Friend */
+.sv-call {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+    padding-left: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sv-call .sv-node { width: 300px; max-width: 100%; }
+
+.sv-bracket {
+    position: absolute;
+    top: 42px;
+    bottom: 42px;
+    left: 16px;
+    width: 40px;
+    border: 2px solid var(--success);
+    border-right: 0;
+    box-shadow: -6px 0 18px -10px rgba(86, 227, 159, 0.6);
+}
+
+.sv-bracket span {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    writing-mode: vertical-rl;
+    padding: 14px 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--success);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--success);
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .sv-card { padding: 18px 16px 24px; }
+    .sv-node { gap: 12px; padding: 0 14px; }
+    .sv-node > i { width: 40px; height: 40px; font-size: 20px; }
+    .sv-link small { display: none; }
+    .sv-call { padding-left: 48px; }
+    .sv-bracket { left: 12px; width: 36px; }
+}
 
 @media (max-width: 1024px) { .security-content { grid-template-columns: 1fr; gap: 44px; } }
 
@@ -1009,3 +1086,122 @@
 @keyframes faqBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 .faq-blink { animation: faqBlink 1s step-end infinite; }
 @media (prefers-reduced-motion: reduce) { .faq-blink { animation: none; } }
+
+/* ============================================================ */
+/* FEATURE LINK — small inline "learn more" link inside a card    */
+/* ============================================================ */
+
+.feature-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--accent-bright);
+    text-decoration: none;
+}
+
+.feature-link i { font-size: 15px; transition: transform 0.2s ease; }
+.feature-link:hover i { transform: translateX(3px); }
+
+/* ============================================================ */
+/* SCREEN SHARING — spec readout + one card per codec             */
+/* ============================================================ */
+
+.codec-specs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border);
+    border-bottom: 0;
+    background: var(--bg-raised);
+}
+
+.codec-spec {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 22px;
+    border-right: 1px solid var(--border);
+}
+
+.codec-spec:last-child { border-right: 0; }
+
+.codec-spec-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-subtle);
+}
+
+.codec-spec-value { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--fg); }
+
+.codec-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+}
+
+.codec-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 26px 24px;
+    background: var(--bg-card);
+    transition: background 0.2s ease;
+}
+
+.codec-card:hover { background: var(--bg-card-hover); }
+
+.codec-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.codec-name { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--fg); letter-spacing: -0.01em; }
+
+.codec-tag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    padding: 4px 8px;
+    border: 1px solid var(--border-strong);
+}
+
+.codec-tag.gpu { color: var(--cyan); border-color: rgba(62, 230, 184, 0.35); background: rgba(62, 230, 184, 0.07); }
+.codec-tag.cpu { color: var(--accent-bright); border-color: var(--accent-dim); background: var(--accent-glow); }
+
+.codec-text { font-size: 13.5px; line-height: 1.65; color: var(--fg-muted); flex: 1; }
+
+.codec-e2ee {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 7px;
+    box-sizing: content-box;
+    min-height: 3em; /* two lines, so every card's divider lines up even when one footer wraps */
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.codec-e2ee i { font-size: 14px; line-height: 1.3; }
+.codec-e2ee.yes { color: var(--success); }
+.codec-e2ee.no { color: var(--warning); }
+
+@media (max-width: 1100px) {
+    .codec-grid { grid-template-columns: repeat(2, 1fr); }
+    .codec-specs { grid-template-columns: repeat(2, 1fr); }
+    .codec-spec:nth-child(2) { border-right: 0; }
+    .codec-spec:nth-child(-n+2) { border-bottom: 1px solid var(--border); }
+}
+
+@media (max-width: 560px) {
+    .codec-grid { grid-template-columns: 1fr; }
+    .codec-specs { grid-template-columns: 1fr; }
+    .codec-spec { border-right: 0; border-bottom: 1px solid var(--border); }
+    .codec-spec:last-child { border-bottom: 0; }
+}

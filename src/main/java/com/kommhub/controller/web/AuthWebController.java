@@ -1,5 +1,6 @@
 package com.kommhub.controller.web;
 
+import com.kommhub.config.SiteProperties;
 import com.kommhub.model.dto.request.LoginRequest;
 import com.kommhub.model.dto.response.AuthResponse;
 import com.kommhub.security.CustomUserDetails;
@@ -36,6 +37,7 @@ public class AuthWebController {
     private static final String DASHBOARD = "/dashboard";
 
     private final BetaKeyService betaKeyService;
+    private final SiteProperties siteProperties;
     private final AuthService authService;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
@@ -98,6 +100,8 @@ public class AuthWebController {
     @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("betaEnabled", betaKeyService.isBetaEnabled());
+        // The terms/privacy consent line links to pages that only exist when they're switched on.
+        model.addAttribute("legalPagesEnabled", siteProperties.getLegal().isPagesEnabled());
         return "auth/register";
     }
 

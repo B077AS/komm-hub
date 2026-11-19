@@ -57,6 +57,11 @@
                 </p>
             </div>
             <button class="btn btn-primary" onclick="register()"><i class="mdi mdi-account-plus"></i> Create Account</button>
+            <p th:if="${legalPagesEnabled}" style="color:var(--fg-subtle); font-size:12px; margin-top:12px; text-align:center;">
+                By creating an account you agree to the
+                <a class="inline-link" href="/terms" target="_blank" rel="noopener">Terms of Service</a> and the
+                <a class="inline-link" href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+            </p>
             <div id="error-msg" class="error-msg"></div>
         </div>
         <div class="link-row">

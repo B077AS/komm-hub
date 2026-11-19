@@ -56,7 +56,11 @@
         </div>
 
         <div class="site-footer-bottom">
-            <span>© 2026 Komm. All rights reserved.</span>
+            <span class="site-footer-legal">
+                <span>© 2026 Komm. All rights reserved.</span>
+                <a th:if="${site.legal.pagesEnabled}" th:href="@{/privacy}" class="site-footer-legal-link">Privacy</a>
+                <a th:if="${site.legal.pagesEnabled}" th:href="@{/terms}" class="site-footer-legal-link">Terms</a>
+            </span>
             <span class="site-footer-platforms">
                 <i class="mdi mdi-microsoft-windows" title="Windows"></i>
                 <i class="mdi mdi-linux" title="Linux X11 &amp; Wayland"></i>

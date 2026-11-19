@@ -763,6 +763,10 @@ i, [class^="mdi-"], [class*=" mdi-"] {
     border-top: 1px solid var(--border);
 }
 
+.site-footer-legal { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px 18px; }
+.site-footer-legal-link { color: var(--fg-muted); text-decoration: none; transition: color 0.15s; }
+.site-footer-legal-link:hover { color: var(--accent-bright); }
+
 .site-footer-platforms { display: inline-flex; align-items: center; gap: 8px; }
 .site-footer-platforms i { font-size: 15px; color: var(--accent); }
 

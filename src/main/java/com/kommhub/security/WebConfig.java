@@ -189,7 +189,7 @@ public class WebConfig implements WebMvcConfigurer {
 
                 .authorizeHttpRequests(auth -> auth
                         // Public pages
-                        .requestMatchers("/", "/home", "/download").permitAll()
+                        .requestMatchers("/", "/home", "/download", "/privacy", "/terms").permitAll()
                         .requestMatchers("/login", "/register", "/forgot-password", "/reset-password", "/verify-email").permitAll()
                         .requestMatchers(HttpMethod.POST, "/logout").permitAll()
                         .requestMatchers("/invite/**").permitAll()
