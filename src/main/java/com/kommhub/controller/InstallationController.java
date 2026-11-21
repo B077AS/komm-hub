@@ -20,6 +20,7 @@ import com.kommhub.service.InstallationAccessTokenService;
 import com.kommhub.service.InstallationDeletionService;
 import com.kommhub.service.InstallationService;
 import com.kommhub.service.InstallationUptimeQueryService;
+import com.kommhub.service.SetupCodeRejectedException;
 import com.kommhub.service.ServerService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -84,6 +85,9 @@ public class InstallationController {
             String ipAddress = extractClientIp(httpRequest);
             InstallationValidationResponse result = installationService.validateAndIssue(req, ipAddress);
             return ResponseEntity.ok(result);
+        } catch (SetupCodeRejectedException e) {
+            log.warn("Server validation rejected ({}): {}", e.getCode(), e.getMessage());
+            return ErrorResponse.of(HttpStatus.UNPROCESSABLE_ENTITY, e.getCode(), e.getMessage());
         } catch (IllegalArgumentException e) {
             log.warn("Server validation rejected: {}", e.getMessage());
             return ErrorResponse.of(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());

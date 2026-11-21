@@ -607,8 +607,8 @@
                     <h3 class="feature-title">Komm Server</h3>
                     <p class="feature-description">
                         A self-hosted server that owns your channels, messages, voice rooms and permissions.
-                        Database and media server are embedded, and the installer sets it up as a real
-                        OS service - Windows or Linux, one installer, zero configuration.
+                        Database and media server are built in. Install it as a real OS service on Windows or
+                        Linux, or run it in Docker - then it sets itself up: zero configuration.
                     </p>
                     <a th:href="@{/download#server}" class="arch-link">Host your own server <i class="mdi mdi-arrow-right"></i></a>
                 </div>
@@ -637,13 +637,13 @@
                     </div>
                     <div class="step">
                         <span class="step-number">2</span>
-                        <h4 class="step-title">Run the installer</h4>
-                        <p class="step-text">The installer sets Komm Server up as a real OS service - Windows Service or systemd - hand it your verification code and it takes care of the rest. Updates are one command: <code>kommserver update</code>.</p>
+                        <h4 class="step-title">Install it</h4>
+                        <p class="step-text">Run the Windows installer, the Linux script or the Docker image and hand it your verification code. It runs as a real service, and updates are one command: <code>kommserver update</code> (or <code>docker compose pull</code>).</p>
                     </div>
                     <div class="step">
                         <span class="step-number">3</span>
-                        <h4 class="step-title">It verifies itself</h4>
-                        <p class="step-text">Your server exchanges certificates with the hub automatically and comes online, secured.</p>
+                        <h4 class="step-title">It sets itself up</h4>
+                        <p class="step-text">On its first start your server gets its certificate from the hub, comes up on HTTPS and tells voice which address to use. No restart, no certificate to buy, nothing to configure.</p>
                     </div>
                     <div class="step">
                         <span class="step-number">4</span>
@@ -860,7 +860,7 @@
                         <p class="faq-a">No. You can simply download the client, create an account and join communities through
                            invite links. Hosting is for communities that want full ownership of their data - and
                            Komm Server installs as a system service with one installer on Windows or one script
-                           on Linux, so it takes minutes.</p>
+                           on Linux - or runs in Docker - and sets itself up, so it takes minutes.</p>
                     </div>
                     <div class="faq-entry">
                         <p class="faq-q"><span class="console-prompt">$</span> Can I run my own hub too?</p>

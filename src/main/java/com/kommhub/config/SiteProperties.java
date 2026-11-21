@@ -54,5 +54,7 @@ public class SiteProperties {
         private String serverWindows;
         private String serverLinux;
         private String server;
+        /** Where the Docker image and its compose file are documented (the docker/ folder of the server repo). */
+        private String serverDocker;
     }
 }

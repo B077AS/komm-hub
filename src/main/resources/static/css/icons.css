@@ -97,6 +97,10 @@
   content: "\F0AAA";
 }
 
+.mdi-docker::before {
+  content: "\F0868";
+}
+
 .mdi-dots-vertical::before {
   content: "\F01D9";
 }
@@ -157,10 +161,6 @@
   content: "\F1C95";
 }
 
-.mdi-information-outline::before {
-  content: "\F02FD";
-}
-
 .mdi-key-chain-variant::before {
   content: "\F1575";
 }
@@ -175,6 +175,10 @@
 
 .mdi-keyboard::before {
   content: "\F030C";
+}
+
+.mdi-lan-connect::before {
+  content: "\F0318";
 }
 
 .mdi-language-java::before {
@@ -249,6 +253,10 @@
   content: "\F03CC";
 }
 
+.mdi-package-variant-closed::before {
+  content: "\F03D7";
+}
+
 .mdi-paperclip::before {
   content: "\F03E2";
 }
@@ -263,6 +271,10 @@
 
 .mdi-pound::before {
   content: "\F0423";
+}
+
+.mdi-router-wireless::before {
+  content: "\F0469";
 }
 
 .mdi-seal::before {

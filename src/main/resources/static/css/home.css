@@ -1065,7 +1065,7 @@
 
 /* Centered on its own above the terminal log below, not leading into a
    line of text the dash would otherwise point into - same reasoning as
-   .dl-hosting-kicker::before in download.css. */
+   .dl-host-kicker::before in download.css. */
 .faq .section-kicker::before { display: none; }
 
 .faq-terminal { background: var(--bg); border: 1px solid var(--border-strong); }

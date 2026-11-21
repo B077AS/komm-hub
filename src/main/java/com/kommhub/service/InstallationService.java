@@ -81,10 +81,14 @@ public class InstallationService {
 
         Installation installation = installationRepository
                 .findBySetupToken(req.getSetupToken())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid setup token"));
+                .orElseThrow(() -> new SetupCodeRejectedException(SetupCodeRejectedException.INVALID,
+                        "This verification code is not valid, or it was already used. Copy it again from the Komm client "
+                                + "(installation card, \"Get Verification Code\"). A code works once: if this installation "
+                                + "was already set up, create a new installation instead."));
 
         if (installation.getStatus() != Installation.InstallationStatus.NOT_VERIFIED) {
-            throw new IllegalArgumentException("Installation already verified");
+            throw new SetupCodeRejectedException(SetupCodeRejectedException.ALREADY_VERIFIED,
+                    "This installation was already verified. Create a new installation in the Komm client.");
         }
 
         String signedCertPem = jwtUtil.signCsr(req.getCsr(), installation.getInstallationId());
@@ -94,7 +98,8 @@ public class InstallationService {
         installation.setCsr(req.getCsr());
         installation.setCertificate(signedCertPem);
         installation.setCertificateIssuedAt(LocalDateTime.now());
-        installation.setIpAddress(effectiveAddress(installation, ipAddress));
+        String playerAddress = effectiveAddress(installation, ipAddress);
+        installation.setIpAddress(playerAddress);
         installation.setSetupToken(null);
         Installation.InstallationStatus previousStatus = installation.getStatus();
         installation.setStatus(Installation.InstallationStatus.OFFLINE);
@@ -112,6 +117,7 @@ public class InstallationService {
                 .installationId(installation.getInstallationId())
                 .installationName(installation.getInstallationName())
                 .ownerId(installation.getOwnerId())
+                .publicAddress(playerAddress)
                 .port(installation.getPort())
                 .tcpPort(installation.getTcpPort())
                 .mediaPort(installation.getMediaPort())

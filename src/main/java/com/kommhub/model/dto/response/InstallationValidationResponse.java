@@ -20,4 +20,5 @@ public class InstallationValidationResponse {
     private Integer port;
     private Integer tcpPort;
     private Integer mediaPort;
+    private String publicAddress;
 }

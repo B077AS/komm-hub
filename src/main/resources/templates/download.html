@@ -71,96 +71,171 @@
         </div>
     </section>
 
-    <!-- --------------- SELF-HOSTING: SERVER + HUB, SIDE BY SIDE --------------- -->
-    <section class="dl-hosting section-compact" id="self-host">
+    <!-- --------------- SELF-HOSTING: KOMM SERVER --------------- -->
+    <section class="dl-host section-compact" id="server">
         <div class="container">
             <div class="section-header centered">
-                <span class="section-kicker dl-hosting-kicker">Self-hosting</span>
-                <h2 class="heading-md">Host it yourself</h2>
+                <span class="section-kicker dl-host-kicker">Host it yourself</span>
+                <h2 class="heading-md">Komm Server</h2>
                 <p class="text-lg">
-                    Two separate, optional pieces - host one, both, or neither. Most people never touch
-                    this section.
+                    Channels, messages, voice rooms and permissions, all on hardware you control. Optional:
+                    most people never touch this.
                 </p>
             </div>
 
-            <div class="dl-hosting-grid">
-                <div class="dl-hosting-card featured" id="server">
-                    <div class="dl-hosting-icon"><i class="mdi mdi-server"></i></div>
-                    <h3>Komm Server</h3>
+            <p class="dl-lead">
+                Database and media server are built in, and the server sets itself up: on its first start it gets
+                its certificate, comes up on HTTPS and points voice at the right address. Run it as an OS service
+                on Windows or Linux, or in Docker.
+            </p>
+
+            <ol class="dl-flow">
+                <li>
+                    <span class="dl-step-num">1</span>
+                    <h3>Create the installation</h3>
                     <p>
-                        Channels, messages, voice rooms and permissions, all on hardware you control.
-                        Database and media server are embedded - the installer sets it up as a proper
-                        OS service, not a script you babysit, and <code>kommserver update</code> keeps it current.
+                        <a th:href="@{/register}" class="dl-inline-link">Create an account</a>, then create an
+                        installation right from the Komm client: name it, pick your ports and, if you have one, a
+                        public address such as a domain. Its card shows a one-time verification code.
                     </p>
+                </li>
+                <li>
+                    <span class="dl-step-num">2</span>
+                    <h3>Install with your code</h3>
+                    <p>Pick how you want to run it below and give it the verification code.</p>
+                </li>
+                <li>
+                    <span class="dl-step-num">3</span>
+                    <h3>It sets itself up</h3>
+                    <p>
+                        It activates itself with the hub and serves HTTPS on your ports from the very first start,
+                        with no restart and no certificate to buy. Update later with <code>kommserver update</code>
+                        or <code>docker compose pull &amp;&amp; docker compose up -d</code>.
+                    </p>
+                </li>
+            </ol>
 
-                    <div class="dl-reqs">
-                        <span class="dl-req"><i class="mdi mdi-language-java"></i> Java 21+ installed</span>
+            <div class="dl-options">
+                <div class="dl-option">
+                    <div class="dl-option-head">
+                        <i class="mdi mdi-microsoft-windows"></i>
+                        <div>
+                            <h3>Windows</h3>
+                            <span class="dl-option-sub">installer &middot; needs Java 21+</span>
+                        </div>
                     </div>
-
-                    <div class="dl-steps">
-                        <div class="dl-step">
-                            <span class="dl-step-num">1</span>
-                            <span><a th:href="@{/register}" class="dl-inline-link">Create an account</a>, then create an installation right from the Komm client - name it and pick your ports.</span>
-                        </div>
-                        <div class="dl-step">
-                            <span class="dl-step-num">2</span>
-                            <span>Run the Windows installer, or unpack the Linux package and run <code>sudo ./install.sh</code>. It installs everything into one folder and registers a Windows Service or systemd unit.</span>
-                        </div>
-                        <div class="dl-step">
-                            <span class="dl-step-num">3</span>
-                            <span>Hand it the one-time verification code from the installation's card. It fetches its certificate, verifies with the hub and comes online.</span>
-                        </div>
-                    </div>
-
+                    <p>
+                        Run the installer and paste your verification code when asked. It sets Komm Server up as a
+                        Windows Service, with a Start-menu shortcut and a tray icon.
+                    </p>
                     <div class="dl-buttons">
                         <a th:href="${site.downloads.serverWindows}" class="btn btn-secondary" rel="noopener">
-                            <i class="mdi mdi-microsoft-windows"></i> Windows
+                            <i class="mdi mdi-download"></i> Download installer
                         </a>
-                        <a th:href="${site.downloads.serverLinux}" class="btn btn-secondary" rel="noopener">
-                            <i class="mdi mdi-linux"></i> Linux <span style="opacity:.75; font-weight:400;">(tar.gz)</span>
-                        </a>
-                    </div>
-
-                    <div class="dl-note">
-                        <i class="mdi mdi-information-outline"></i>
-                        <span>
-                            Prefer to run things yourself? Grab the
-                            <a th:href="${site.downloads.server}" class="dl-inline-link" rel="noopener">plain server JAR</a>
-                            instead: put your verification code into <code>data/setup-token.txt</code> in the folder
-                            you run it from, and start it with Java 21. It does not update itself.
-                        </span>
                     </div>
                 </div>
 
-                <div class="dl-hosting-card" id="hub">
-                    <div class="dl-hosting-icon"><i class="mdi mdi-hub"></i></div>
-                    <h3>Komm Hub</h3>
+                <div class="dl-option">
+                    <div class="dl-option-head">
+                        <i class="mdi mdi-linux"></i>
+                        <div>
+                            <h3>Linux</h3>
+                            <span class="dl-option-sub">systemd &middot; needs Java 21+</span>
+                        </div>
+                    </div>
+                    <pre class="dl-code"><code>tar xzf komm-server-linux-x64.tar.gz
+cd komm-server-linux-x64
+sudo ./install.sh --code &lt;code&gt;</code></pre>
+                    <div class="dl-buttons">
+                        <a th:href="${site.downloads.serverLinux}" class="btn btn-secondary" rel="noopener">
+                            <i class="mdi mdi-download"></i> Download tar.gz
+                        </a>
+                    </div>
+                </div>
+
+                <div class="dl-option">
+                    <div class="dl-option-head">
+                        <i class="mdi mdi-docker"></i>
+                        <div>
+                            <h3>Docker</h3>
+                            <span class="dl-option-sub">Linux host &middot; no Java needed</span>
+                        </div>
+                    </div>
+                    <pre class="dl-code"><code>KOMM_SETUP_TOKEN=&lt;code&gt; \
+docker compose up -d</code></pre>
+                    <div class="dl-buttons">
+                        <a th:href="${site.downloads.serverDocker}" class="btn btn-secondary" rel="noopener">
+                            <i class="mdi mdi-open-in-new"></i> Compose file &amp; docs
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="dl-subhead">Good to know</h3>
+            <dl class="dl-facts">
+                <div class="dl-fact">
+                    <dt><i class="mdi mdi-lan-connect"></i> Ports</dt>
+                    <dd>
+                        Friends joining over the internet need your server port, plus <code>7881</code> (TCP) and
+                        <code>7882</code> (UDP) for voice, to be reachable through your router or firewall.
+                    </dd>
+                </div>
+                <div class="dl-fact">
+                    <dt><i class="mdi mdi-router-wireless"></i> Home router</dt>
+                    <dd>
+                        Voice works behind a home router: the server advertises the address the hub gives players
+                        for it, and follows it if your IP changes.
+                    </dd>
+                </div>
+                <div class="dl-fact">
+                    <dt><i class="mdi mdi-package-variant-closed"></i> No installer</dt>
+                    <dd>
+                        Prefer to run things yourself? Grab the
+                        <a th:href="${site.downloads.server}" class="dl-inline-link" rel="noopener">plain server JAR</a>,
+                        put your verification code into <code>data/setup-token.txt</code> (or set
+                        <code>KOMM_SETUP_TOKEN</code>) in the folder you run it from, and start it with Java 21.
+                        It activates itself on that first start, but does not update itself.
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </section>
+
+    <!-- --------------- SELF-HOSTING: KOMM HUB --------------- -->
+    <section class="dl-host alt section-compact" id="hub">
+        <div class="container">
+            <div class="section-header centered">
+                <span class="section-kicker dl-host-kicker">Host it yourself &middot; for tinkerers</span>
+                <h2 class="heading-md">Komm Hub</h2>
+                <p class="text-lg">
+                    Your own accounts and your own network. Most people just use the official hub at kommvoice.com.
+                </p>
+            </div>
+
+            <div class="dl-hub">
+                <div class="dl-hub-main">
                     <p>
                         The directory that manages accounts, friends and direct messages, and acts as the
-                        certificate authority every server registers with. Most people just use the
-                        official hub at kommvoice.com - this is for the ones who'd rather not.
+                        certificate authority every server registers with. Run your own and you have a fully
+                        independent Komm network.
                     </p>
-
-                    <div class="dl-reqs">
-                        <span class="dl-req"><i class="mdi mdi-language-java"></i> Java 21+</span>
-                        <span class="dl-req"><i class="mdi mdi-database"></i> PostgreSQL</span>
-                        <span class="dl-req"><i class="mdi mdi-email-outline"></i> SMTP account</span>
-                        <span class="dl-req"><i class="mdi mdi-certificate"></i> Acts as its own CA</span>
-                    </div>
-
                     <div class="dl-buttons">
                         <a th:href="${site.github.hub}" class="btn btn-secondary" target="_blank" rel="noopener">
                             <i class="mdi mdi-github"></i> Source &amp; setup guide
                         </a>
                     </div>
-
-                    <div class="dl-note">
+                    <p class="dl-aside">
                         <i class="mdi mdi-wrench-outline"></i>
-                        <span>
-                            Fair warning: aimed at developers. The bundled website is this site, meant to
-                            be forked and personalized rather than used as-is - the setup guide covers everything.
-                        </span>
-                    </div>
+                        Fair warning: aimed at developers. The bundled website is this site, meant to be forked and
+                        personalized rather than used as-is. The setup guide covers everything.
+                    </p>
+                </div>
+
+                <div class="dl-reqs">
+                    <span class="dl-req"><i class="mdi mdi-language-java"></i> Java 21+</span>
+                    <span class="dl-req"><i class="mdi mdi-database"></i> PostgreSQL</span>
+                    <span class="dl-req"><i class="mdi mdi-email-outline"></i> SMTP account</span>
+                    <span class="dl-req"><i class="mdi mdi-certificate"></i> Acts as its own CA</span>
                 </div>
             </div>
         </div>

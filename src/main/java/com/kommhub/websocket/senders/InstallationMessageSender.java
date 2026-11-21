@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.kommhub.repository.ServerRepository;
 import com.kommhub.websocket.messages.WsInstallationMessage;
 import com.kommhub.websocket.messages.WsMessageType;
+import com.kommhub.websocket.messages.payloads.AddressUpdatePayload;
 import com.kommhub.websocket.messages.payloads.SyncRecapPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,14 @@ public class InstallationMessageSender {
                         .membersList(members)
                         .pendingDeletionServerIds(pendingDeletions)
                         .build())
+                .build());
+    }
+
+    /** Tells an installation the address players use for it, so its voice server can advertise the current one. */
+    public void sendAddressUpdate(WebSocketSession session, UUID installationId, String publicAddress) {
+        send(session, installationId, WsInstallationMessage.builder()
+                .type(WsMessageType.ADDRESS_UPDATE)
+                .payload(AddressUpdatePayload.builder().publicAddress(publicAddress).build())
                 .build());
     }
 
