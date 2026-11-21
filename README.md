@@ -4,7 +4,7 @@
 </h1>
 
 <p align="center">
-  <b>The central hub server for <a href="https://kommvoice.com">Komm</a> - a free, self-hosted voice, video &amp; text chat platform.</b><br>
+  <b>The central hub for <a href="https://kommvoice.com">Komm</a> - a free, self-hosted voice, video &amp; text chat platform.</b><br>
   Accounts · Friends &amp; DMs · Server directory · Certificate authority · The kommvoice.com website
 </p>
 
@@ -19,183 +19,100 @@
 
 ## What is Komm?
 
-Komm is a modern chat platform built around a simple idea: **your community's messages and voice traffic belong on hardware you control.** Every community runs on its own self-hosted server - crystal-clear WebRTC voice channels, HD screen sharing, rich messaging, soundboards, roles & permissions, moderation tools and global hotkeys - without handing your conversations to anyone else. Free, no ads, no tracking, on Windows 10/11 and Linux (both X11 and Wayland, with native PipeWire support).
-
-The platform has three pieces - you choose how many to run:
+Komm is a chat platform built around one idea: **your community's messages and voice traffic belong on hardware you control.** Every community runs on its own self-hosted server; the hub only handles accounts and introductions.
 
 | Piece | Role | Who runs it |
 |---|---|---|
-| [komm](https://github.com/B077AS/komm) | Desktop client for Windows & Linux, plus the launcher that installs and updates it (same repo) | Everyone |
-| [komm-server](https://github.com/B077AS/komm-server) | A community's own server: channels, messages, voice rooms, permissions. Embedded database; installed as an OS service and updated with its `kommserver` command (same repo) | Community owners |
-| **komm-hub** (this repo) | The network's directory: accounts, friends, DMs, and the CA that vouches for servers | Almost nobody - see below |
+| [komm](https://github.com/B077AS/komm) | Desktop client (Windows & Linux) and its launcher | Everyone |
+| [komm-server](https://github.com/B077AS/komm-server) | A community's own server: channels, messages, voice, permissions. Windows installer, Linux script or Docker image | Community owners |
+| **komm-hub** (this repo) | Accounts, friends, DMs, the server directory, and the CA that vouches for servers | Almost nobody |
 
-> **You probably don't need to run this.** Most people just use the official hub at [kommvoice.com](https://kommvoice.com) - download the client, create an account, join or host community servers. Running your own hub means running a **fully independent Komm network** with its own accounts. It's aimed at developers and tinkerers.
+> **You probably don't need to run this.** Most people use the official hub at [kommvoice.com](https://kommvoice.com). Running your own hub means running a **fully independent Komm network** with its own accounts. It's aimed at developers and tinkerers.
 
 ## What the hub does
 
-- **Accounts & identity** - registration with email verification, JWT (ES384) sessions
-- **Friends & direct messages** - friend lists, DMs with editing, reactions, GIFs and file attachments, delivered over WebSocket
-- **Server directory & certificate authority** - community servers register here; the hub signs their X.509 certificates and issues short-lived connection tickets to clients
-- **Public website** - the server-rendered pages (home, download, register, dashboard, invites) that power kommvoice.com
+- **Accounts & identity** - registration with email verification, ES384 JWT sessions
+- **Friends & direct messages** - friend lists and DMs (editing, reactions, GIFs, attachments) over WebSocket
+- **Server directory & CA** - servers register here; the hub signs their X.509 certificates and issues short-lived connection tickets to clients
+- **Public website** - the server-rendered pages (home, download, register, dashboard, invites) behind kommvoice.com
 
-What the hub deliberately does **not** do: channel messaging, voice, files and permissions all live on each community's own komm-server. **The hub never sees your community's content.**
+It deliberately does **not** carry channel messages, voice, files or permissions: those live on each community's own server, and **the hub never sees them.**
 
-## Architecture
-
-**Trust bootstrap** (once, when a server is created - the numbered steps below cover it in detail):
-
-```
-┌────────────────┐                                  ┌────────────────┐
-│  Komm Server   │ ───────────────────────────────► │    komm-hub    │
-│ (installation) │ ◄─────────────────────────────── │       CA       │
-└────────────────┘                                  └────────────────┘
-```
-
-**Runtime** (every session):
+## How it works
 
 ```
 ┌────────────┐     ticket + TLS      ┌───────────────┐
 │   Client   │ ────────────────────► │  Komm Server  │  ← channels, messages,
 │ (Komm app) │ (CN-pinned to hub CA) │ (komm-server) │    voice, permissions
 └─────┬──────┘                       └───────┬───────┘
-      │ account, friends, DMs                │ X.509 mutual auth (mTLS)
+      │ account, friends, DMs                │ X.509 mutual auth
       ▼                                      ▼
 ┌──────────────────────────────────────────────┐
-│              komm-hub  ·  CA                 │  ← accounts, friends, DMs,
-│  accounts · directory · certificate signing  │    directory, website
+│              komm-hub  ·  CA                 │
 └──────────────────────────────────────────────┘
 ```
 
-**Server (installation) lifecycle:**
+**Creating a server (once):**
 
-1. A user creates an installation from the [Komm client](https://github.com/B077AS/komm) - the hub validates a CSR (P-384 EC key) generated there and issues a single-use setup token, shown back in the client as a verification code.
-2. The user installs komm-server (the Windows installer or the Linux tarball from the [komm-server](https://github.com/B077AS/komm-server) releases, which register it as an OS service) and supplies that verification code to it.
-3. On first start, the JAR presents its CSR and setup token; the hub acts as a certificate authority (BouncyCastle), signs the certificate and marks the installation verified. The certificate doubles as the server's **TLS identity** - from its next start the installation serves HTTPS/WSS with it.
-4. The installation connects back over WebSocket (`/ws/installations`) and goes **online**, reporting whether it serves TLS - clients pick `wss://` or legacy `ws://` accordingly.
+1. In the [Komm client](https://github.com/B077AS/komm), the owner creates an installation: a name, ports, an optional **public address** (a name or IP players should use, e.g. a reverse-proxy domain) and a P-384 CSR generated locally. The hub validates it and returns a single-use **verification code**.
+2. The owner installs komm-server (Windows installer, Linux script or the Docker image `ghcr.io/b077as/komm-server`) and gives it the code.
+3. **The server activates before it starts serving.** It posts `{setupToken, csr}` to `POST /api/installations/validate`; the hub signs the certificate (BouncyCastle) and answers with the certificate, its public key, the ports and `publicAddress`, the address players use (the public address, else the IP the hub saw the server call from). The server writes all of it to disk first, so its very first start is already **HTTPS on the chosen port**: no plain-HTTP phase, no restart.
+4. The server connects over WebSocket (`/ws/installations`) and goes **online**. **On every connect** the hub records the address it sees and sends an `ADDRESS_UPDATE` message with the address players use; the server hands it to its media server (LiveKit) as the address to advertise for voice, so voice works behind a home router and follows a changing IP.
 
-**A client joining a community server:**
+A rejected code comes back as `422` with a machine-readable `code` (`SETUP_CODE_INVALID`, `INSTALLATION_ALREADY_VERIFIED`) plus a human message; the server shows it and waits for a corrected code instead of crash-looping. `/api/installations/validate` is rate limited (5 per minute per IP), and a busy or unreachable hub makes the server retry with a growing pause.
 
-1. The client asks the hub for a ticket (`POST /api/servers/{serverId}/ticket`). The hub verifies membership, checks that the installation is online and its certificate is not revoked.
-2. The hub issues a short-lived (**60 s**) single-purpose JWT ticket; the client connects **directly** to the community's server with it, over TLS validated against the hub CA. Messages never pass through the hub.
+**Joining a community:** the client asks `POST /api/servers/{serverId}/ticket`; the hub checks membership, that the installation is online and its certificate not revoked, and issues a **60 s** single-use JWT. The client then connects **directly** to the community's server, validating its certificate against the hub CA (public `GET /api/auth/ca`) and the installation ID inside it - not a hostname. Messages never pass through the hub.
 
-**WebSockets:** two separate endpoints with distinct session managers - `/ws` for app clients, `/ws/installations` for server JARs. Message types are dispatched to handler beans auto-registered at startup; some features (permissions, voice presence, moderation) are proxied hub → installation via `CompletableFuture` pending registries.
+**WebSockets:** `/ws` for app clients and `/ws/installations` for servers, each with its own session manager. Message types are dispatched to auto-registered handler beans; permissions, voice presence and moderation are proxied hub → server via `CompletableFuture` registries.
 
-## Security model
+## Security
 
-Security isn't a feature bolted on - it's the architecture:
+- **X.509 mutual authentication** - every server proves its identity with a certificate signed by the hub's CA (P-384).
+- **Automatic TLS** - that certificate is also the server's HTTPS/WSS identity, so servers get real transport encryption on a bare IP, with no domain and no third-party certificate. (A reverse proxy in front has to pass TLS through untouched.)
+- **ES384 tokens, single-use tickets** - sessions use elliptic-curve signatures; join tickets expire in 60 seconds.
+- **Rate limiting** - token buckets on `/api/**` (Bucket4j), per user when authenticated, per client IP otherwise. See [Rate limiting](#rate-limiting).
+- **Data stays with you** - the hub never sees community content.
 
-- **X.509 mutual authentication** - every self-hosted server proves its identity with a certificate signed by the hub's built-in CA (P-384 elliptic curve).
-- **Automatic TLS for every server** - that same hub-signed certificate is the server's HTTPS/WSS identity. Clients fetch the hub CA (public `GET /api/auth/ca`) and validate a server's certificate against it, verifying the installation's identity embedded in the certificate instead of a hostname - so community servers get real transport encryption on a bare IP, with no domain name and no third-party certificate.
-- **ES384 signed tokens** - sessions use modern elliptic-curve signatures. No shared secrets, nothing to leak.
-- **Short-lived connection tickets** - joining a server uses a single-purpose ticket that expires in 60 seconds, verified against membership and certificate status.
-- **API rate limiting** - token-bucket limits on `/api/**` (Bucket4j), keyed per user for authenticated calls and per client IP for public ones, guarding login, registration, email sending and your GIF/CA resources against abuse. See [Rate limiting](#rate-limiting--running-behind-a-proxy).
-- **Data stays with you** - channel messages, voice and files live on the community's server; the hub never sees them.
+The hub's EC P-384 key pair (generated in `keys/` on first boot) is both its JWT signing key and its CA identity: **every certificate in your network chains to it.**
 
-The hub's EC P-384 key pair (generated in `keys/` on first boot) is both its JWT signing key and its CA identity - **every certificate in your network chains to it**.
+Updates are not the hub's business: the client and the server update from their own repos' GitHub releases (via [jpack](https://github.com/B077AS/jpack)), and the server image is published to GHCR on every release.
 
-## Client & server updates
+## Run your own hub
 
-The hub is **not** involved in these. Both are installed and updated with [jpack](https://github.com/B077AS/jpack), straight from their own repo's latest GitHub release: only the parts that changed are downloaded and each is verified by SHA-256 - no hub polling, mirroring, or endpoint needed.
+**Needs:** Java 21, PostgreSQL (any recent version; the schema is auto-managed) and an SMTP account (registration sends verification codes).
 
-- **Client:** the client and its launcher live in the [komm](https://github.com/B077AS/komm) repo; the launcher updates on every start.
-- **Server:** the server and its `kommserver` command live in the [komm-server](https://github.com/B077AS/komm-server) repo; the owner runs `kommserver update`.
-
-See those READMEs for the mechanics.
-
-## Tech stack
-
-| Layer | Technology |
-|---|---|
-| Language / runtime | Java 21 |
-| Framework | Spring Boot 4 (Web MVC, Security, WebSocket, Data JPA, Validation, Mail) |
-| Database | PostgreSQL (schema auto-managed by Hibernate, `ddl-auto=update`) |
-| Auth & crypto | JJWT (ES384 JWTs), BouncyCastle (X.509 CA / CSR signing) |
-| Website | Thymeleaf + Layout Dialect (SSR), Material Design Icons (purged at build time via PurgeCSS) |
-| Build | Maven (`frontend-maven-plugin` pulls Node/npm automatically for the icon/font pipeline) |
-| Rate limiting | Bucket4j (token buckets) backed by an in-memory Caffeine store |
-| Misc | Lombok, Gson, Commons IO, Ikonli MaterialDesign2 (badge icon validation, kept in sync with the client) |
-
-## Requirements
-
-- **Java 21**
-- **PostgreSQL** (any recent version - the hub auto-manages its schema)
-- An **SMTP account** for verification emails (any provider)
-
-## Setup
-
-1. Create a PostgreSQL database (e.g. `komm`).
-2. Copy `src/main/resources/application-local.properties.example` to `src/main/resources/application-local.properties` and fill in:
-   - **database credentials** (required)
-   - **SMTP credentials** (required - registration sends verification codes)
-   - optionally: a [Klipy](https://klipy.com) API key for GIF search, closed-beta settings, site overrides
+1. Create a database (e.g. `komm`).
+2. Copy `src/main/resources/application-local.properties.example` to `application-local.properties` (gitignored) and fill in the database and SMTP credentials. Optional: a [Klipy](https://klipy.com) key for GIF search, beta mode, `komm.site.*` overrides.
 3. Build and run:
 
 ```bash
 mvn clean package -DskipTests
-java -jar target/komm-hub-*.jar
+java -jar target/komm-hub-*.jar        # listens on port 8085
 ```
 
-The hub starts on port **8085**. On first boot it generates its EC P-384 key pair in `keys/` - **back this directory up**: it is the identity of your hub and the CA that all your installations' certificates chain to. Lose it and every server in your network has to re-verify.
+**Back up `keys/`**: it is your hub's identity and CA. Lose it and every server in your network has to re-verify.
 
-`application-local.properties` is gitignored on purpose: it holds your credentials and deployment-specific settings. Everything in the committed `application.properties` is a default you can override there.
-
-> **Running from an IDE (frontend assets):** `mvn package` and `mvn spring-boot:run` run the icon/font pipeline automatically - the `frontend-maven-plugin` purges the Material Design icon CSS and copies the webfonts into `src/main/resources/static/` during the `generate-resources` phase. Those outputs live in the source tree and survive `mvn clean`, so you rarely think about them. The one exception: on a **fresh clone**, the font files are gitignored (only the purged CSS is committed), so if you launch the app by **running the main class directly in your IDE** - which bypasses Maven - the website's icons will be missing. Run `mvn generate-resources` once (or build/run through Maven) to generate them; it persists afterward. This affects only the bundled website, never the API or the desktop client.
-
-### Configuration at a glance
+Maven runs the icon/font pipeline for the website automatically (`frontend-maven-plugin`, during `generate-resources`). Only if you start the main class straight from an IDE on a fresh clone do you need to run `mvn generate-resources` once, or the site's icons are missing (the API is unaffected).
 
 | Property | Required | Purpose |
 |---|---|---|
-| `spring.datasource.*` | ✅ | PostgreSQL connection |
-| `spring.mail.*` | ✅ | SMTP for verification codes & beta requests |
-| `klipy.api-key` | - | GIF search in the client (empty picker without it) |
+| `spring.datasource.*` | yes | PostgreSQL connection |
+| `spring.mail.*` | yes | SMTP for verification codes and beta requests |
+| `klipy.api-key` | - | GIF search in the client |
 | `komm.beta.enabled` | - | Require an invite key to register (off by default) |
-| `komm.beta.request-recipient` | - | Where beta access requests are emailed (default: SMTP username) |
-| `komm.site.*` | - | Base URL, GitHub repo links and download links for the bundled website |
-| `komm.ratelimit.enabled` | - | Master switch for API rate limiting (on by default) |
-| `komm.ratelimit.enforce` | - | `true` returns HTTP 429 on breach; `false` is shadow mode (log only) |
-| `server.forward-headers-strategy` | - | `framework` behind a reverse proxy so limits see the real client IP |
+| `komm.site.*` | - | Base URL, GitHub repo and download links (including the server's Docker link) for the website |
+| `komm.ratelimit.enabled` / `.enforce` | - | Rate limiting on (default) / `false` = shadow mode (log only) |
 
-## A note on the bundled website
+**The bundled website** (`src/main/resources/templates/`) is the kommvoice.com showcase, not a white-label product: if you run your own hub, expect to fork and rebrand the marketing pages. The functional ones (register, login, verify-email, dashboard, invite) work out of the box.
 
-The Thymeleaf pages under `src/main/resources/templates/` are the **kommvoice.com showcase site** - hero, features, downloads, FAQ and all. They are not a white-label, ready-to-brand product: they exist to show how the hub works and to give passionate developers a working starting point. If you self-host a hub, expect to **fork and personalize** them (texts, branding, links, legal pages). The functional pages (register, login, verify-email, dashboard, invite) work out of the box; the marketing pages talk about Komm itself.
+### Closed beta
 
-Basic customization without touching templates is possible via the `komm.site.*` properties - see `application-local.properties.example`.
+Optional and off by default (`komm.beta.enabled=true` to enable). A `SUPER_ADMIN` generates single-use keys (`KOMM-XXXX-XXXX-XXXX`) from `/dashboard` (promote your account with `role = 'SUPER_ADMIN'` in the `users` table); visitors without one can request access, emailed to `komm.beta.request-recipient`. Accounts that never verify their email are deleted after 7 days.
 
-## Closed beta mode
+### Rate limiting
 
-The official hub is currently in **closed beta**: registration requires an invite key. This is optional and **off by default** for self-hosted hubs.
-
-- Enable with `komm.beta.enabled=true` in `application-local.properties`.
-- Keys are generated by a `SUPER_ADMIN` user from the website dashboard (`/dashboard`, or `POST /api/admin/beta-keys`). Promote your account by setting `role = 'SUPER_ADMIN'` on your row in the `users` table.
-- Each key (`KOMM-XXXX-XXXX-XXXX`) is single-use and gets bound to the account that registers with it.
-- Visitors without a key can request access from the website; requests are emailed to `komm.beta.request-recipient`.
-- Accounts that never verify their email are deleted after 7 days (`app.unverified-accounts.retention-days`), freeing their username/email and the beta key they consumed.
-
-## Rate limiting & running behind a proxy
-
-The hub applies token-bucket rate limits (Bucket4j, backed by an in-memory Caffeine store) to every `/api/**` endpoint via `RateLimitFilter`. Authenticated requests are keyed **per user**; public ones (login, registration, invite lookups) **per client IP**. Each endpoint group has its own bucket, so exhausting one never blocks another. Limits are generous for real usage and tight only where abuse is costly - credential brute-forcing, account/email spam, and your GIF-provider and CA resources.
-
-- **`komm.ratelimit.enabled`** (default `true`) - master switch; set `false` to disable entirely.
-- **`komm.ratelimit.enforce`** (default `true`) - when `true`, breaches get HTTP `429` with a `Retry-After` header. Set `false` for **shadow mode**: breaches are only logged (`RATE LIMIT (shadow) would block …`), letting you watch real traffic and tune limits before enforcing.
-
-**Behind a reverse proxy:** per-IP limits are only correct if the hub sees the real client IP, not the proxy's. `application.properties` sets `server.forward-headers-strategy=framework` so the hub trusts the `X-Forwarded-For` header from your proxy (e.g. nginx). This is only safe when port **8085 is reachable *only* through the proxy** - never expose it directly, or clients could spoof that header to dodge the limits.
-
-## Related repositories
-
-| Repo | What it is |
-|---|---|
-| [komm](https://github.com/B077AS/komm) | Desktop client (JavaFX, Windows & Linux) and its auto-updating launcher - Windows installer & Linux AppImage |
-| [komm-server](https://github.com/B077AS/komm-server) | Self-hosted community server (embedded database) and its `kommserver` command - Windows installer & Linux tarball |
-| komm-hub | This repo - accounts, DMs, server directory, CA, website |
-
-## FAQ
-
-**Is Komm really free?** Yes - the client, launcher, server and hub are all free. No ads, no tracking, no paid tiers.
-
-**Do I have to host anything to use Komm?** No. Download the client, create an account and join communities via invite links. Hosting is for communities that want full ownership of their data.
-
-**Can I run my own hub?** Yes - that's this repo. Unlike komm-server (one JAR, zero config), the hub needs PostgreSQL, SMTP credentials and a properties file. See [Setup](#setup).
+Per-endpoint buckets, so exhausting one never blocks another; breaches get `429` with `Retry-After`. Behind a reverse proxy the hub must see the real client IP: `server.forward-headers-strategy=framework` trusts `X-Forwarded-For`, which is only safe when port **8085 is reachable only through the proxy**.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+[MIT](LICENSE)

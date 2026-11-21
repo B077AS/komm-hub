@@ -47,6 +47,15 @@ public class InstallationService {
         ResponseEntity<?> csrValidation = validateCsr(request, userId);
         if (csrValidation != null) return csrValidation;
 
+        String publicAddress = null;
+        if (request.getPublicAddress() != null && !request.getPublicAddress().isBlank()) {
+            publicAddress = PublicAddressValidator.validate(request.getPublicAddress());
+            if (publicAddress == null) {
+                return ErrorResponse.of(HttpStatus.BAD_REQUEST,
+                        "Public address must be a host name like example.com (no http://, port or path)");
+            }
+        }
+
         String setupToken = generateSetupToken();
 
         log.debug("Setup Token: {}", setupToken);
@@ -54,8 +63,8 @@ public class InstallationService {
         Installation installation = Installation.builder()
                 .installationName(request.getInstallationName())
                 .ownerId(userId)
+                .publicAddress(publicAddress)
                 .port(request.getInstallationPort())
-                .signalPort(request.getSignalPort())
                 .tcpPort(request.getTcpPort())
                 .mediaPort(request.getMediaPort())
                 .status(Installation.InstallationStatus.NOT_VERIFIED)
@@ -72,10 +81,14 @@ public class InstallationService {
 
         Installation installation = installationRepository
                 .findBySetupToken(req.getSetupToken())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid setup token"));
+                .orElseThrow(() -> new SetupCodeRejectedException(SetupCodeRejectedException.INVALID,
+                        "This verification code is not valid, or it was already used. Copy it again from the Komm client "
+                                + "(installation card, \"Get Verification Code\"). A code works once: if this installation "
+                                + "was already set up, create a new installation instead."));
 
         if (installation.getStatus() != Installation.InstallationStatus.NOT_VERIFIED) {
-            throw new IllegalArgumentException("Installation already verified");
+            throw new SetupCodeRejectedException(SetupCodeRejectedException.ALREADY_VERIFIED,
+                    "This installation was already verified. Create a new installation in the Komm client.");
         }
 
         String signedCertPem = jwtUtil.signCsr(req.getCsr(), installation.getInstallationId());
@@ -85,7 +98,8 @@ public class InstallationService {
         installation.setCsr(req.getCsr());
         installation.setCertificate(signedCertPem);
         installation.setCertificateIssuedAt(LocalDateTime.now());
-        installation.setIpAddress(resolveEffectiveIp(ipAddress));
+        String playerAddress = effectiveAddress(installation, ipAddress);
+        installation.setIpAddress(playerAddress);
         installation.setSetupToken(null);
         Installation.InstallationStatus previousStatus = installation.getStatus();
         installation.setStatus(Installation.InstallationStatus.OFFLINE);
@@ -103,8 +117,8 @@ public class InstallationService {
                 .installationId(installation.getInstallationId())
                 .installationName(installation.getInstallationName())
                 .ownerId(installation.getOwnerId())
+                .publicAddress(playerAddress)
                 .port(installation.getPort())
-                .signalPort(installation.getSignalPort())
                 .tcpPort(installation.getTcpPort())
                 .mediaPort(installation.getMediaPort())
                 .build();
@@ -161,6 +175,17 @@ public class InstallationService {
     private String extractRdn(X500Name name, ASN1ObjectIdentifier oid) {
         RDN[] rdns = name.getRDNs(oid);
         return rdns.length == 0 ? null : IETFUtils.valueToString(rdns[0].getFirst().getValue());
+    }
+
+    /**
+     * What players should connect to: the owner's chosen public address if there is one,
+     * otherwise the IP the hub detected for the installation.
+     */
+    public String effectiveAddress(Installation installation, String detectedIp) {
+        String publicAddress = installation.getPublicAddress();
+        return publicAddress != null && !publicAddress.isBlank()
+                ? publicAddress
+                : resolveEffectiveIp(detectedIp);
     }
 
     public String resolveEffectiveIp(String ipAddress) {

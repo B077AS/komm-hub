@@ -79,13 +79,17 @@ public class InstallationSessionsManager extends TextWebSocketHandler {
             Installation.InstallationStatus previousStatus = inst.getStatus();
             inst.setStatus(Installation.InstallationStatus.ONLINE);
             inst.setLastSeenAt(LocalDateTime.now());
-            inst.setIpAddress(installationService.resolveEffectiveIp(ipAddress));
+            String playerAddress = installationService.effectiveAddress(inst, ipAddress);
+            inst.setIpAddress(playerAddress);
             inst.setTlsEnabled(Boolean.TRUE.equals(tlsEnabled));
             if (osInfo != null && !osInfo.isBlank()) inst.setOsInfo(osInfo);
             if (serverVersion != null && !serverVersion.isBlank()) inst.setServerVersion(serverVersion);
             installationRepository.save(inst);
             statusEventService.recordTransition(installationId, previousStatus,
                     Installation.InstallationStatus.ONLINE, InstallationStatusEvent.Reason.CONNECTED);
+            // Its IP may have changed since it last connected: players get the new one from the row above, and its
+            // voice server has to advertise the same one.
+            messageSender.sendAddressUpdate(session, installationId, playerAddress);
         });
 
         messageSender.sendSyncRecap(session, installationId);

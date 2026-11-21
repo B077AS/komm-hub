@@ -3,6 +3,7 @@ package com.kommhub.websocket.messages;
 public enum WsMessageType {
 
     SYNC_RECAP,
+    ADDRESS_UPDATE,
     CHAT_MESSAGE,
     CHAT_MESSAGE_READ,
     TYPING_INDICATOR,
@@ -54,8 +55,8 @@ public enum WsMessageType {
     MEMBER_LEFT,
     MEMBER_STATUS_UPDATED,
     MEMBER_ROLE_UPDATED,
-    SERVER_DELETED,             // hub → app client: remove the server from the user's list
-    SERVER_DELETE_NOTIFICATION, // hub → installation: purge this server's data
-    SERVER_DELETION_COMPLETE,   // installation → hub: purge finished, finalize removal
-    INSTALLATION_DELETED        // hub → app client: installation and all its servers have been deleted
+    SERVER_DELETED,
+    SERVER_DELETE_NOTIFICATION,
+    SERVER_DELETION_COMPLETE,
+    INSTALLATION_DELETED
 }

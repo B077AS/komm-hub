@@ -18,7 +18,7 @@ public class InstallationValidationResponse {
     private UUID installationId;
     private UUID ownerId;
     private Integer port;
-    private Integer signalPort;
     private Integer tcpPort;
     private Integer mediaPort;
+    private String publicAddress;
 }

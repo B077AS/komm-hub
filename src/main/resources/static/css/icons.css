@@ -41,6 +41,10 @@
   content: "\F00E6";
 }
 
+.mdi-calendar::before {
+  content: "\F00ED";
+}
+
 .mdi-certificate::before {
   content: "\F0124";
 }
@@ -91,6 +95,10 @@
 
 .mdi-database-lock::before {
   content: "\F0AAA";
+}
+
+.mdi-docker::before {
+  content: "\F0868";
 }
 
 .mdi-dots-vertical::before {
@@ -153,10 +161,6 @@
   content: "\F1C95";
 }
 
-.mdi-information-outline::before {
-  content: "\F02FD";
-}
-
 .mdi-key-chain-variant::before {
   content: "\F1575";
 }
@@ -173,6 +177,10 @@
   content: "\F030C";
 }
 
+.mdi-lan-connect::before {
+  content: "\F0318";
+}
+
 .mdi-language-java::before {
   content: "\F0B37";
 }
@@ -185,16 +193,16 @@
   content: "\F033D";
 }
 
-.mdi-lock::before {
-  content: "\F033E";
-}
-
 .mdi-lock-check::before {
   content: "\F139A";
 }
 
 .mdi-lock-check-outline::before {
   content: "\F16A8";
+}
+
+.mdi-lock-open-variant-outline::before {
+  content: "\F0FC7";
 }
 
 .mdi-lock-outline::before {
@@ -245,6 +253,10 @@
   content: "\F03CC";
 }
 
+.mdi-package-variant-closed::before {
+  content: "\F03D7";
+}
+
 .mdi-paperclip::before {
   content: "\F03E2";
 }
@@ -261,6 +273,10 @@
   content: "\F0423";
 }
 
+.mdi-router-wireless::before {
+  content: "\F0469";
+}
+
 .mdi-seal::before {
   content: "\F047A";
 }
@@ -275,6 +291,10 @@
 
 .mdi-shield-account::before {
   content: "\F088F";
+}
+
+.mdi-shield-lock::before {
+  content: "\F099D";
 }
 
 .mdi-timer-lock::before {

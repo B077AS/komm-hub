@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/site-layout}">
+<head>
+    <title>Terms of Service - Komm</title>
+    <meta name="description"
+          content="The rules for using the official Komm hub and website: accounts, acceptable use, community servers, and the closed-beta disclaimer.">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" th:content="${site.baseUrl + '/terms'}">
+    <meta property="og:site_name" content="Komm">
+    <meta property="og:title" content="Komm Terms of Service">
+    <meta property="og:description" content="The rules for using the official Komm hub and website.">
+    <meta property="og:image" th:content="${site.baseUrl + '/logo.png'}">
+
+    <link rel="stylesheet" th:href="@{/css/legal.css}">
+</head>
+<body>
+<main layout:fragment="content">
+    <article class="legal-page">
+        <div class="legal-wrap">
+
+            <header class="legal-head">
+                <span class="section-kicker">Legal</span>
+                <h1 class="heading-xl">Terms of Service</h1>
+                <div class="legal-meta">
+                    <span><i class="mdi mdi-calendar"></i>Last updated 18 November 2026</span>
+                    <span><i class="mdi mdi-flask-outline"></i>Applies during the closed beta</span>
+                </div>
+                <p class="legal-lead">
+                    These terms govern your use of the official Komm hub and website at kommvoice.com. By creating an account or using
+                    the hub you agree to them. If you don't agree, please don't use the service.
+                </p>
+            </header>
+
+            <div class="legal-callout warn">
+                <strong>Closed beta.</strong>
+                Komm is still being built. Features can change or break, and the service is provided without guarantees (see section 09).
+            </div>
+
+            <section class="legal-section" id="who">
+                <h2><span class="legal-index">01</span> Who we are</h2>
+                <p>
+                    The official hub is run by
+                    <strong th:if="${!#strings.isEmpty(site.legal.operatorName)}" th:text="${site.legal.operatorName}">Operator</strong>
+                    <span th:if="${#strings.isEmpty(site.legal.operatorName)}" class="legal-missing">[operator name not configured]</span>
+                    (&ldquo;we&rdquo;). Contact:
+                    <a th:if="${!#strings.isEmpty(site.legal.contactEmail)}"
+                       th:href="'mailto:' + ${site.legal.contactEmail}" th:text="${site.legal.contactEmail}">contact</a>
+                    <span th:if="${#strings.isEmpty(site.legal.contactEmail)}" class="legal-missing">[contact email not configured]</span>.
+                    How we handle personal data is described in the <a th:href="@{/privacy}">Privacy Policy</a>.
+                </p>
+            </section>
+
+            <section class="legal-section" id="accounts">
+                <h2><span class="legal-index">02</span> Your account</h2>
+                <ul>
+                    <li>You must be at least 16 years old, or old enough to agree to these terms where you live.</li>
+                    <li>Give a real, working email address and keep your details accurate.</li>
+                    <li>Registration during the beta needs a single-use invite key. One key creates one account; don't sell, trade or share keys.</li>
+                    <li>Keep your password secret. You are responsible for what happens under your account, so tell us promptly if you think it was taken over.</li>
+                </ul>
+            </section>
+
+            <section class="legal-section" id="use">
+                <h2><span class="legal-index">03</span> Acceptable use</h2>
+                <p>You agree not to use Komm to:</p>
+                <ul>
+                    <li>break the law or help anyone else break it, including sharing illegal content or content that sexually exploits minors;</li>
+                    <li>harass, threaten, stalk or abuse other people, or spread hate or doxxing;</li>
+                    <li>send spam, scams, phishing or malware, or impersonate another person or organisation;</li>
+                    <li>attack, overload, probe or reverse-engineer the hub or other people's servers, or get around rate limits, bans or other protections;</li>
+                    <li>collect other users' data by automated means, or create accounts in bulk.</li>
+                </ul>
+            </section>
+
+            <section class="legal-section" id="servers">
+                <h2><span class="legal-index">04</span> Community servers</h2>
+                <p>
+                    Communities run on servers hosted by independent people. We do not host, monitor or control what happens on them,
+                    and we are not responsible for their content or conduct. Whoever hosts a server is responsible for it, including
+                    legal compliance, moderation and the personal data it stores.
+                </p>
+                <p>
+                    If you host a server you must follow these terms, and we may revoke its certificate or remove it from the directory
+                    if it is used for abuse or puts the network or its users at risk.
+                </p>
+            </section>
+
+            <section class="legal-section" id="content">
+                <h2><span class="legal-index">05</span> Your content</h2>
+                <p>
+                    You keep ownership of what you send. You give us only the permission we need to run the service - for example to store
+                    and deliver your direct messages and profile picture to the people you choose. You are responsible for having the
+                    right to share what you share.
+                </p>
+            </section>
+
+            <section class="legal-section" id="software">
+                <h2><span class="legal-index">06</span> The software</h2>
+                <p>
+                    The Komm client, server and hub are open source and released under the licences in their GitHub repositories, which
+                    apply to the code. These terms apply to your use of the official hub and website, not to your rights in the code.
+                </p>
+            </section>
+
+            <section class="legal-section" id="suspension">
+                <h2><span class="legal-index">07</span> Suspension and ending your account</h2>
+                <p>
+                    You can stop using Komm at any time; to have your account deleted, contact us (see the Privacy Policy). We may warn,
+                    suspend or remove accounts or servers that break these terms or threaten the service or other users, and we may
+                    end the beta or the service itself, ideally with notice.
+                </p>
+            </section>
+
+            <section class="legal-section" id="availability">
+                <h2><span class="legal-index">08</span> Availability and changes</h2>
+                <p>
+                    The service may be interrupted, changed or reset during the beta. Keep your own copies of anything important,
+                    and back up the data of any server you host.
+                </p>
+            </section>
+
+            <section class="legal-section" id="liability">
+                <h2><span class="legal-index">09</span> Disclaimer and liability</h2>
+                <p>
+                    The hub and website are provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo;, without warranties of any kind, including that
+                    they will be uninterrupted, error-free or secure. To the extent the law allows, we are not liable for indirect or
+                    consequential losses, for loss of data, or for anything done by other users or by community servers. Nothing in these terms
+                    limits any liability that cannot be limited by law, or any mandatory rights you have as a consumer.
+                </p>
+            </section>
+
+            <section class="legal-section" id="law">
+                <h2><span class="legal-index">10</span> Changes and governing law</h2>
+                <p>
+                    We may update these terms; the date above shows the latest version, and we will tell registered users about significant
+                    changes. Continuing to use Komm after a change means you accept it. These terms are governed by the law of the country
+                    where the operator is established, without taking away mandatory consumer protections of the country where you live.
+                </p>
+            </section>
+
+            <nav class="legal-foot-nav" aria-label="Legal pages">
+                <a th:href="@{/privacy}">Privacy Policy &rarr;</a>
+                <a th:href="@{/}">&larr; Back to home</a>
+            </nav>
+        </div>
+    </article>
+</main>
+</body>
+</html>

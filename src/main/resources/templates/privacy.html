@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/site-layout}">
+<head>
+    <title>Privacy Policy - Komm</title>
+    <meta name="description"
+          content="How the Komm hub handles your data: what it stores, what stays on your community's own server, and your rights. Voice and video are end-to-end encrypted.">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" th:content="${site.baseUrl + '/privacy'}">
+    <meta property="og:site_name" content="Komm">
+    <meta property="og:title" content="Komm Privacy Policy">
+    <meta property="og:description" content="What the Komm hub stores, what stays on your community's server, and your rights.">
+    <meta property="og:image" th:content="${site.baseUrl + '/logo.png'}">
+
+    <link rel="stylesheet" th:href="@{/css/legal.css}">
+</head>
+<body>
+<main layout:fragment="content">
+    <article class="legal-page">
+        <div class="legal-wrap">
+
+            <header class="legal-head">
+                <span class="section-kicker">Legal</span>
+                <h1 class="heading-xl">Privacy Policy</h1>
+                <div class="legal-meta">
+                    <span><i class="mdi mdi-calendar"></i>Last updated 18 November 2026</span>
+                    <span><i class="mdi mdi-flask-outline"></i>Applies during the closed beta</span>
+                </div>
+                <p class="legal-lead">
+                    Komm is built so that your community's conversations live on hardware your community controls.
+                    This page explains what the Komm hub - the service behind kommvoice.com - does and does not
+                    know about you.
+                </p>
+            </header>
+
+            <section class="legal-section" id="who">
+                <h2><span class="legal-index">01</span> Who is responsible</h2>
+                <p>
+                    The official Komm hub and this website are operated by
+                    <strong th:if="${!#strings.isEmpty(site.legal.operatorName)}" th:text="${site.legal.operatorName}">Operator</strong>
+                    <span th:if="${#strings.isEmpty(site.legal.operatorName)}" class="legal-missing">[operator name not configured]</span>
+                    (&ldquo;we&rdquo;), who decides why and how your personal data is processed by the hub.
+                    You can reach us at
+                    <a th:if="${!#strings.isEmpty(site.legal.contactEmail)}"
+                       th:href="'mailto:' + ${site.legal.contactEmail}" th:text="${site.legal.contactEmail}">contact</a>
+                    <span th:if="${#strings.isEmpty(site.legal.contactEmail)}" class="legal-missing">[contact email not configured]</span>.
+                </p>
+                <p>
+                    Komm has three parts: the desktop <strong>client</strong>, the self-hosted <strong>server</strong> that
+                    each community runs, and the <strong>hub</strong>. This policy covers the official hub, this website, and
+                    the account services the client uses from the hub. It does <strong>not</strong> cover community servers -
+                    see <a href="#servers">section 03</a>. Anyone can run their own hub; if you use one, its operator's
+                    policy applies, not this one.
+                </p>
+            </section>
+
+            <section class="legal-section" id="collect">
+                <h2><span class="legal-index">02</span> What the hub stores</h2>
+                <div class="legal-table-wrap">
+                    <table class="legal-table">
+                        <thead>
+                        <tr><th>Data</th><th>What it includes</th><th>Why</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Account</td>
+                            <td>Username, email address, password (stored only as a salted bcrypt hash - we cannot read it),
+                                role, profile picture, status, status message and emoji, last-online time, voice mute/deafen
+                                indicators, your direct-message privacy setting, the invite key you registered with.</td>
+                            <td>To create and run your account.</td>
+                        </tr>
+                        <tr>
+                            <td>Sign-in</td>
+                            <td>Hashed refresh tokens with an expiry date (30 days), plus short-lived email verification and
+                                password-reset tokens.</td>
+                            <td>To keep you signed in and let you verify or recover your account.</td>
+                        </tr>
+                        <tr>
+                            <td>Friends &amp; direct messages</td>
+                            <td>Friend relationships and requests; the text, code snippets, reactions, edits and attachments
+                                (up to 10 MB each) of your direct messages; which conversations you hid or read; favourite GIFs.</td>
+                            <td>To deliver friends and DMs wherever you sign in.</td>
+                        </tr>
+                        <tr>
+                            <td>Server directory</td>
+                            <td>The community servers you belong to, invite links, and - for servers you host - the server's name,
+                                ports, the address players connect to (its IP address, or the domain you entered), online status,
+                                uptime history, operating system and version, and its certificate details.</td>
+                            <td>To let you and your friends find and join servers, and to vouch for servers with signed certificates.</td>
+                        </tr>
+                        <tr>
+                            <td>Technical data</td>
+                            <td>IP addresses of requests, used to rate-limit abuse and kept in short-lived memory; operational logs
+                                (rotated, at most 30 days and a fixed size cap), which can contain IP addresses and error details.</td>
+                            <td>To protect the service from abuse and to fix faults.</td>
+                        </tr>
+                        <tr>
+                            <td>Beta requests</td>
+                            <td>The email address and message you type into the beta request form.</td>
+                            <td>To read your request and send you a key. It is delivered to us by email.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top:14px;">
+                    <strong>Direct messages are stored on the hub and are not end-to-end encrypted.</strong>
+                    Keep that in mind before sending anything you would not want a hub operator to be technically able to read.
+                </p>
+            </section>
+
+            <section class="legal-section" id="servers">
+                <h2><span class="legal-index">03</span> What stays on community servers</h2>
+                <p>
+                    Channel messages, files, soundboard audio, voice, video and screen sharing of a community are handled by
+                    that community's own server, on a machine its owner controls. <strong>The hub never receives this content.</strong>
+                </p>
+                <ul>
+                    <li><strong>Voice, video and screen sharing are end-to-end encrypted</strong> between participants, so even
+                        the server's media engine only handles ciphertext.</li>
+                    <li><strong>Text messages and files in a community are not end-to-end encrypted.</strong> They are stored on
+                        the community server, and its owner and administrators can access them.</li>
+                    <li>When you connect to a server, its owner learns your Komm username and your IP address, as with any
+                        internet service.</li>
+                </ul>
+                <p>
+                    Community servers are run by independent people. They are responsible for what they store and how they handle
+                    it, and may set their own rules. Only join communities whose owners you trust.
+                </p>
+            </section>
+
+            <section class="legal-section" id="use">
+                <h2><span class="legal-index">04</span> How we use data, and why we may</h2>
+                <p>If you are in the EU/EEA or UK, the legal bases we rely on are:</p>
+                <ul>
+                    <li><strong>Providing the service you asked for</strong> (contract): your account, sign-in, friends, direct messages and the server directory.</li>
+                    <li><strong>Security and abuse prevention</strong> (legitimate interests): rate limiting, logs, enforcing the Terms, and revoking certificates of servers that abuse the network.</li>
+                    <li><strong>Email you need</strong> (contract / legitimate interests): verification and password-reset messages. We don't send marketing email.</li>
+                    <li><strong>Legal obligations</strong>, where the law requires us to keep or disclose something.</li>
+                </ul>
+                <p>We do not sell your data, use it for advertising, or build advertising profiles.</p>
+            </section>
+
+            <section class="legal-section" id="sharing">
+                <h2><span class="legal-index">05</span> Who else is involved</h2>
+                <ul>
+                    <li><strong>Email delivery.</strong> Verification, password-reset and beta-key emails go through an SMTP email provider, which therefore sees the recipient address and the message.</li>
+                    <li><strong>GIF search.</strong> When you search for GIFs, the hub sends your search term to <strong>Klipy</strong>. The request is made by our server, so Klipy doesn't receive your IP address from us.</li>
+                    <li><strong>Hosting.</strong> The hub runs on infrastructure rented from a hosting provider, which processes data on our behalf.</li>
+                    <li><strong>Website fonts.</strong> This website loads its typefaces from Google Fonts, so Google receives your IP address when a page loads. We use no analytics or advertising trackers.</li>
+                    <li><strong>Authorities.</strong> We disclose data only when legally required to.</li>
+                </ul>
+            </section>
+
+            <section class="legal-section" id="cookies">
+                <h2><span class="legal-index">06</span> Cookies</h2>
+                <p>
+                    We use only the cookies the site needs to work: a session cookie and a CSRF token for signing in on the website,
+                    and an HttpOnly cookie that keeps you signed in for up to 30 days. There are no advertising, analytics
+                    or tracking cookies. The desktop client keeps your settings and sign-in tokens on your own computer.
+                </p>
+            </section>
+
+            <section class="legal-section" id="retention">
+                <h2><span class="legal-index">07</span> How long we keep it</h2>
+                <ul>
+                    <li><strong>Account data and direct messages:</strong> while your account exists. You can delete a conversation yourself; the rest is removed when your account is deleted.</li>
+                    <li><strong>Unverified accounts</strong> that never confirm their email are deleted automatically after 7 days.</li>
+                    <li><strong>Sign-in tokens</strong> expire after 30 days and when you sign out.</li>
+                    <li><strong>Logs</strong> are rotated and kept at most 30 days.</li>
+                </ul>
+            </section>
+
+            <section class="legal-section" id="rights">
+                <h2><span class="legal-index">08</span> Your rights</h2>
+                <p>
+                    Depending on where you live you may have the right to access your data, correct it, delete it, restrict or object
+                    to its processing, and receive a copy of it. You can also complain to your local data protection authority.
+                </p>
+                <p>
+                    To use any of these rights, email us at
+                    <a th:if="${!#strings.isEmpty(site.legal.contactEmail)}"
+                       th:href="'mailto:' + ${site.legal.contactEmail}" th:text="${site.legal.contactEmail}">contact</a>
+                    <span th:if="${#strings.isEmpty(site.legal.contactEmail)}" class="legal-missing">[contact email not configured]</span>
+                    from the address on your account. There is no self-service account deletion yet, so deletion is done on request.
+                    For anything stored on a community server, ask that server's owner.
+                </p>
+            </section>
+
+            <section class="legal-section" id="security">
+                <h2><span class="legal-index">09</span> Security</h2>
+                <p>
+                    Passwords are hashed, sessions use signed short-lived tokens, servers authenticate to the hub with certificates it
+                    issues, client connections to servers are encrypted with TLS, and voice, video and screen sharing are end-to-end
+                    encrypted. No system is perfectly secure; if we learn of a breach affecting your data we will tell you as the law requires.
+                    See the <a th:href="@{/#security}">security overview</a>.
+                </p>
+            </section>
+
+            <section class="legal-section" id="transfers">
+                <h2><span class="legal-index">10</span> International transfers</h2>
+                <p>
+                    Depending on where the hub and its providers are located and where you are, your data may be processed in another
+                    country. Where the law requires it, we rely on safeguards such as standard contractual clauses.
+                </p>
+            </section>
+
+            <section class="legal-section" id="children">
+                <h2><span class="legal-index">11</span> Children</h2>
+                <p>
+                    Komm is not meant for anyone under 16. If we learn that an account belongs to a younger child, we will delete it.
+                </p>
+            </section>
+
+            <section class="legal-section" id="changes">
+                <h2><span class="legal-index">12</span> Changes</h2>
+                <p>
+                    Komm is in closed beta and its features, and so the data it handles, may change. When this policy changes we
+                    update the date at the top and, for significant changes, tell registered users by email.
+                </p>
+            </section>
+
+            <nav class="legal-foot-nav" aria-label="Legal pages">
+                <a th:href="@{/terms}">Terms of Service &rarr;</a>
+                <a th:href="@{/}">&larr; Back to home</a>
+            </nav>
+        </div>
+    </article>
+</main>
+</body>
+</html>

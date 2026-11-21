@@ -4,9 +4,9 @@
 <head>
     <title>Komm - Self-Hosted Voice, Video &amp; Text Chat for Windows and Linux</title>
     <meta name="description"
-          content="Komm is a free, self-hosted voice, video and text chat platform. Crystal-clear voice channels, HD screen sharing, rich messaging and full data ownership - on Windows, Linux X11 and Linux Wayland.">
+          content="Komm is a free, self-hosted voice, video and text chat platform. End-to-end encrypted voice and screen sharing (H.264, AV1, VP9, VP8), rich messaging and full data ownership - on Windows, Linux X11 and Linux Wayland.">
     <meta name="keywords"
-          content="self-hosted chat, voice chat, screen sharing, discord alternative, self-hosted discord, voice server, linux voice chat, wayland screen share, community chat, komm">
+          content="self-hosted chat, voice chat, end-to-end encrypted voice, screen sharing, av1 screen share, discord alternative, self-hosted discord, voice server, linux voice chat, wayland screen share, community chat, komm">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -92,7 +92,23 @@
           "name": "How is Komm secured?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Komm uses ES384 (P-384 elliptic curve) signed tokens, X.509 mutual certificate authentication between servers and the hub, TLS-encrypted client-to-server connections secured by hub-signed certificates, and short-lived single-use connection tickets."
+            "text": "Voice, video and screen sharing are end-to-end encrypted with SFrame. On top of that Komm uses ES384 (P-384 elliptic curve) signed tokens, X.509 mutual certificate authentication between servers and the hub, TLS-encrypted client-to-server connections secured by hub-signed certificates, and short-lived single-use connection tickets."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Komm end-to-end encrypted?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Voice, video and screen sharing are end-to-end encrypted with SFrame (RFC 9605): frames are encrypted on your device and only decrypted by the other participants, so the media server cannot read them. Keys are exchanged with X25519 and rotated whenever someone leaves the call. Text messages and files are stored on your community's own server and are not end-to-end encrypted."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which screen sharing codecs does Komm support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "H.264 and AV1 (hardware-encoded on your GPU, offered only where your machine supports them) and VP9 and VP8 (software-encoded on the CPU). You can share from 360p up to 1440p at 15, 30, 60 or 120 fps. H.264 is not available in end-to-end encrypted calls."
           }
         }
       ]
@@ -325,7 +341,7 @@
     <!-- --------------- TRUST STRIP --------------- -->
     <section class="trust-strip">
         <div class="container trust-strip-grid">
-            <div class="trust-item"><i class="mdi mdi-lock-check"></i><span>Mutual certificate authentication</span></div>
+            <div class="trust-item"><i class="mdi mdi-lock-check"></i><span>End-to-end encrypted voice &amp; video</span></div>
             <div class="trust-item"><i class="mdi mdi-database-lock"></i><span>Your messages stay on your hardware</span></div>
             <div class="trust-item"><i class="mdi mdi-currency-usd-off"></i><span>Free - no ads, no tracking</span></div>
             <div class="trust-item"><i class="mdi mdi-github"></i><span>Source available on GitHub</span></div>
@@ -374,9 +390,11 @@
                     <div class="feature-icon"><i class="mdi mdi-monitor-share"></i></div>
                     <h3 class="feature-title">HD screen sharing</h3>
                     <p class="feature-description">
-                        Multiple people can stream at once, viewers can pop streams out into separate windows,
-                        and live viewer counts keep everyone in sync.
+                        Share up to 1440p at up to 120 fps with your choice of H.264, AV1, VP9 or VP8 - on your
+                        GPU where it can, on your CPU where it can't. Multiple people can stream at once, viewers can
+                        pop streams out into separate windows, and every stream is end-to-end encrypted.
                     </p>
+                    <a th:href="@{/#screen-sharing}" class="feature-link">See the codecs <i class="mdi mdi-arrow-right"></i></a>
                 </div>
 
                 <div class="feature-card">
@@ -428,6 +446,89 @@
                     <div class="feature-icon"><i class="mdi mdi-account-multiple-outline"></i></div>
                     <h3 class="feature-title">Friends &amp; DMs</h3>
                     <p class="feature-description">Friend requests, direct messages and pokes that follow your account, not any one server - delivered over the hub's WebSocket wherever you are.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- --------------- SCREEN SHARING / CODECS --------------- -->
+    <section id="screen-sharing" class="screenshare section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-kicker">Screen Sharing</span>
+                <h2 class="heading-md">Pick your encoder. Keep it sharp.</h2>
+                <p class="text-lg">
+                    Choose the resolution, the frame rate and the video codec for every share. Komm uses your
+                    graphics card where it can encode a codec, and the CPU where it can't.
+                </p>
+            </div>
+
+            <div class="codec-specs">
+                <div class="codec-spec">
+                    <span class="codec-spec-label">Resolution</span>
+                    <span class="codec-spec-value">360p &rarr; 1440p</span>
+                </div>
+                <div class="codec-spec">
+                    <span class="codec-spec-label">Frame rate</span>
+                    <span class="codec-spec-value">15 &middot; 30 &middot; 60 &middot; 120 fps</span>
+                </div>
+                <div class="codec-spec">
+                    <span class="codec-spec-label">Codecs</span>
+                    <span class="codec-spec-value">H.264 &middot; AV1 &middot; VP9 &middot; VP8</span>
+                </div>
+                <div class="codec-spec">
+                    <span class="codec-spec-label">Encryption</span>
+                    <span class="codec-spec-value">End-to-end (SFrame)</span>
+                </div>
+            </div>
+
+            <div class="codec-grid">
+                <div class="codec-card">
+                    <div class="codec-card-head">
+                        <span class="codec-name">H.264</span>
+                        <span class="codec-tag gpu">GPU</span>
+                    </div>
+                    <p class="codec-text">
+                        Encoded by your graphics card, so a high-resolution share barely touches your CPU.
+                        Offered only on machines whose GPU can encode it.
+                    </p>
+                    <span class="codec-e2ee no"><i class="mdi mdi-lock-open-variant-outline"></i> Not available in end-to-end encrypted calls</span>
+                </div>
+
+                <div class="codec-card">
+                    <div class="codec-card-head">
+                        <span class="codec-name">AV1</span>
+                        <span class="codec-tag gpu">GPU</span>
+                    </div>
+                    <p class="codec-text">
+                        The newest codec, also encoded by your GPU. Offered only where your hardware supports
+                        AV1 encoding - and the one Auto prefers in encrypted calls.
+                    </p>
+                    <span class="codec-e2ee yes"><i class="mdi mdi-lock-check-outline"></i> Works with end-to-end encryption</span>
+                </div>
+
+                <div class="codec-card">
+                    <div class="codec-card-head">
+                        <span class="codec-name">VP9</span>
+                        <span class="codec-tag cpu">CPU</span>
+                    </div>
+                    <p class="codec-text">
+                        Software encoding that runs on any machine, no special GPU required.
+                        Higher resolutions and frame rates cost noticeably more CPU.
+                    </p>
+                    <span class="codec-e2ee yes"><i class="mdi mdi-lock-check-outline"></i> Works with end-to-end encryption</span>
+                </div>
+
+                <div class="codec-card">
+                    <div class="codec-card-head">
+                        <span class="codec-name">VP8</span>
+                        <span class="codec-tag cpu">CPU</span>
+                    </div>
+                    <p class="codec-text">
+                        The universal fallback. It runs everywhere, and it is what Komm uses when your GPU
+                        can't encode anything else.
+                    </p>
+                    <span class="codec-e2ee yes"><i class="mdi mdi-lock-check-outline"></i> Works with end-to-end encryption</span>
                 </div>
             </div>
         </div>
@@ -506,8 +607,8 @@
                     <h3 class="feature-title">Komm Server</h3>
                     <p class="feature-description">
                         A self-hosted server that owns your channels, messages, voice rooms and permissions.
-                        Database and media server are embedded, and the installer sets it up as a real
-                        OS service - Windows or Linux, one installer, zero configuration.
+                        Database and media server are built in. Install it as a real OS service on Windows or
+                        Linux, or run it in Docker - then it sets itself up: zero configuration.
                     </p>
                     <a th:href="@{/download#server}" class="arch-link">Host your own server <i class="mdi mdi-arrow-right"></i></a>
                 </div>
@@ -536,13 +637,13 @@
                     </div>
                     <div class="step">
                         <span class="step-number">2</span>
-                        <h4 class="step-title">Run the installer</h4>
-                        <p class="step-text">The installer sets Komm Server up as a real OS service - Windows Service or systemd - hand it your verification code and it takes care of the rest. Updates are one command: <code>kommserver update</code>.</p>
+                        <h4 class="step-title">Install it</h4>
+                        <p class="step-text">Run the Windows installer, the Linux script or the Docker image and hand it your verification code. It runs as a real service, and updates are one command: <code>kommserver update</code> (or <code>docker compose pull</code>).</p>
                     </div>
                     <div class="step">
                         <span class="step-number">3</span>
-                        <h4 class="step-title">It verifies itself</h4>
-                        <p class="step-text">Your server exchanges certificates with the hub automatically and comes online, secured.</p>
+                        <h4 class="step-title">It sets itself up</h4>
+                        <p class="step-text">On its first start your server gets its certificate from the hub, comes up on HTTPS and tells voice which address to use. No restart, no certificate to buy, nothing to configure.</p>
                     </div>
                     <div class="step">
                         <span class="step-number">4</span>
@@ -571,6 +672,20 @@
 
                 <ul class="security-list">
                     <li>
+                        <i class="mdi mdi-shield-lock"></i>
+                        <div>
+                            <strong>End-to-end encrypted voice, video &amp; screen sharing</strong>
+                            <span>Every audio and video frame is encrypted on your device with SFrame (RFC 9605) before it leaves it, and decrypted only on the other participants' devices. The media server just forwards frames it cannot read, and a frame that can't be encrypted is dropped - never sent in the clear.</span>
+                        </div>
+                    </li>
+                    <li>
+                        <i class="mdi mdi-key-chain-variant"></i>
+                        <div>
+                            <strong>Fresh keys for every call</strong>
+                            <span>Each participant creates a new X25519 key pair and media key per call. Keys are sealed for each recipient (X25519, HKDF-SHA256, AES-256-GCM) and relayed by your server, which can't open them. When someone leaves, everyone switches to a new key, so whoever left can't decrypt anything that follows.</span>
+                        </div>
+                    </li>
+                    <li>
                         <i class="mdi mdi-certificate"></i>
                         <div>
                             <strong>X.509 mutual authentication</strong>
@@ -581,7 +696,7 @@
                         <i class="mdi mdi-lock-check-outline"></i>
                         <div>
                             <strong>TLS between client and server</strong>
-                            <span>The hub-signed certificate doubles as the server's HTTPS/WSS certificate, so every client connection is encrypted - and validated against the hub CA and the installation's identity, stronger than a plain hostname check. Voice media is separately encrypted via WebRTC (DTLS/SRTP).</span>
+                            <span>The hub-signed certificate doubles as the server's HTTPS/WSS certificate, so every client connection is encrypted - and validated against the hub CA and the installation's identity, stronger than a plain hostname check. Voice and video are also encrypted in transit by WebRTC (DTLS-SRTP), and end-to-end on top of that.</span>
                         </div>
                     </li>
                     <li>
@@ -608,28 +723,51 @@
                 </ul>
                 </div>
 
-                <div class="security-visual" aria-hidden="true">
-                    <div class="trust-chain">
-                        <div class="chain-node">
-                            <span class="chain-node-icon"><i class="mdi mdi-laptop"></i></span>
-                            <span class="chain-node-name">Client</span>
-                            <span class="chain-node-role">Desktop app</span>
+                <div class="security-visual">
+                    <div class="sv-card">
+                        <div class="sv-title">Who vouches for whom</div>
+                        <div class="sv-chain" role="img" aria-label="The hub signs your server's certificate, and your server and the hub authenticate each other with X.509 mutual TLS. Clients connect to your server over TLS and validate its certificate against the hub.">
+                            <div class="sv-node">
+                                <i class="mdi mdi-hub"></i>
+                                <div><strong>Hub</strong><span>certificate authority</span></div>
+                            </div>
+                            <div class="sv-link dashed">
+                                <span class="sv-chip">X.509 mTLS</span>
+                                <small>signs your server's certificate</small>
+                            </div>
+                            <div class="sv-node featured">
+                                <i class="mdi mdi-server"></i>
+                                <div><strong>Your Server</strong><span>self-hosted</span></div>
+                            </div>
+                            <div class="sv-link">
+                                <span class="sv-chip">TLS</span>
+                                <small>verified against the hub</small>
+                            </div>
+                            <div class="sv-node">
+                                <i class="mdi mdi-laptop"></i>
+                                <div><strong>Client</strong><span>desktop app</span></div>
+                            </div>
                         </div>
-                        <div class="chain-link">
-                            <span class="chain-link-label"><i class="mdi mdi-lock"></i> TLS</span>
-                        </div>
-                        <div class="chain-node featured">
-                            <span class="chain-node-icon"><i class="mdi mdi-server"></i></span>
-                            <span class="chain-node-name">Your Server</span>
-                            <span class="chain-node-role">Self-hosted hardware</span>
-                        </div>
-                        <div class="chain-link">
-                            <span class="chain-link-label"><i class="mdi mdi-certificate"></i> X.509 mTLS</span>
-                        </div>
-                        <div class="chain-node">
-                            <span class="chain-node-icon"><i class="mdi mdi-hub"></i></span>
-                            <span class="chain-node-name">Hub</span>
-                            <span class="chain-node-role">Certificate authority</span>
+                    </div>
+
+                    <div class="sv-card sv-card--e2ee">
+                        <div class="sv-title">Inside a call</div>
+                        <div class="sv-call" role="img" aria-label="Your voice, video and screen are encrypted on your device, relayed through your server over TLS, and decrypted only on your friend's device. The server cannot read them.">
+                            <div class="sv-bracket"><span>End-to-end encrypted</span></div>
+                            <div class="sv-node">
+                                <i class="mdi mdi-laptop"></i>
+                                <div><strong>You</strong><span>encrypts on your device</span></div>
+                            </div>
+                            <div class="sv-link"><span class="sv-chip">TLS</span></div>
+                            <div class="sv-node featured">
+                                <i class="mdi mdi-server"></i>
+                                <div><strong>Your Server</strong><span>relays, can't read it</span></div>
+                            </div>
+                            <div class="sv-link"><span class="sv-chip">TLS</span></div>
+                            <div class="sv-node">
+                                <i class="mdi mdi-laptop"></i>
+                                <div><strong>Friend</strong><span>decrypts on theirs</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -722,7 +860,7 @@
                         <p class="faq-a">No. You can simply download the client, create an account and join communities through
                            invite links. Hosting is for communities that want full ownership of their data - and
                            Komm Server installs as a system service with one installer on Windows or one script
-                           on Linux, so it takes minutes.</p>
+                           on Linux - or runs in Docker - and sets itself up, so it takes minutes.</p>
                     </div>
                     <div class="faq-entry">
                         <p class="faq-q"><span class="console-prompt">$</span> Can I run my own hub too?</p>
@@ -732,6 +870,21 @@
                            showcase - if you run your own network, expect to fork it and make it yours. The
                            <a th:href="${site.github.hub}" target="_blank" rel="noopener" style="color:var(--accent-bright);">setup guide on GitHub</a>
                            walks through all of it.</p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Is Komm end-to-end encrypted?</p>
+                        <p class="faq-a">Voice, video and screen sharing are: frames are encrypted on your device with SFrame
+                           and only the other participants can decrypt them, so the server's media engine just forwards
+                           ciphertext. Text messages and files are <em>not</em> end-to-end encrypted - they sit on your
+                           community's own server, which you control, and direct messages are stored on the hub.
+                           <a th:href="@{/#security}" style="color:var(--accent-bright);">Details in the security section.</a></p>
+                    </div>
+                    <div class="faq-entry">
+                        <p class="faq-q"><span class="console-prompt">$</span> Which screen sharing codecs are supported?</p>
+                        <p class="faq-a">H.264 and AV1 are encoded on your GPU where your hardware supports them; VP9 and VP8 are encoded
+                           on the CPU and work everywhere. You can share from 360p up to 1440p at up to 120 fps. H.264 is not used in
+                           end-to-end encrypted calls, so Auto picks GPU AV1 or VP8 there.
+                           <a th:href="@{/#screen-sharing}" style="color:var(--accent-bright);">See the codecs.</a></p>
                     </div>
                     <div class="faq-entry">
                         <p class="faq-q"><span class="console-prompt">$</span> Does Komm update itself?</p>
@@ -806,7 +959,7 @@
         }
 
         (function () {
-            const targets = document.querySelectorAll('.platform-card, .arch-card, .faq-entry, .features-grid, .steps-grid');
+            const targets = document.querySelectorAll('.platform-card, .arch-card, .faq-entry, .features-grid, .steps-grid, .codec-grid');
             if (!('IntersectionObserver' in window)) return;
             const observer = new IntersectionObserver(function (entries) {
                 entries.forEach(function (entry) {
